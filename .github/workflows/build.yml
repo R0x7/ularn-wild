@@ -42,14 +42,14 @@ jobs:
           name: ularn-debug-apk
           path: ularn.apk
 
-      # Wild Edition branch: every push updates one prerelease, so this link always
+      # Wild Edition repo: every push to main updates one prerelease, so this link always
       # gets the newest experimental build:
       # https://github.com/<owner>/<repo>/releases/download/wild-latest/ularn-wild.apk
       - name: Publish Wild Edition prerelease
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/ularn-wild'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         run: cp ularn.apk ularn-wild.apk
       - uses: softprops/action-gh-release@v2
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/ularn-wild'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
           tag_name: wild-latest
           name: Ularn Wild Edition (experimental, build ${{ github.run_number }})
@@ -67,8 +67,10 @@ jobs:
 
       # Every push to main becomes a release, so this link always gets the newest build:
       # https://github.com/<owner>/<repo>/releases/latest/download/ularn.apk
+      # Not in the R0x7/ularn-wild repo, which merges this file in from here
+      # and publishes its own wild-latest prerelease instead.
       - name: Publish release
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.event.repository.name != 'ularn-wild'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}

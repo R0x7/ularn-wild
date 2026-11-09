@@ -1,16 +1,19 @@
 name: Sync web port
 
-# Lives on ularn-wild (and, via the merges, on the web branch too).
-# Every push to ularn-wild is merged into the web branch (WEB_BRANCH), which
-# is then built and published to GitHub Pages. The two branches stay
-# separate: the web branch is ularn-wild plus web/ and these workflows.
+# Lives on main (and, via the merges, on the web branch too).
+# Every push to main is merged into the web branch (WEB_BRANCH), which is
+# then built and published to GitHub Pages
+# (https://r0x7.github.io/ularn-wild/). The two branches stay separate: the
+# web branch is main plus web/ and these workflows. upstream-sync.yml starts
+# this by hand after it merges android-ularn's main, because a push made with
+# Actions' token does not start other workflows.
 #
 # If the merge conflicts, or GitHub refuses the push (Actions' token may not
 # push commits that change files under .github/workflows/), the run says so;
-# merge by hand once (git merge ularn-wild on the web branch) and push.
+# merge by hand once (git merge main on the web branch) and push.
 on:
   push:
-    branches: [ularn-wild]
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -35,14 +38,14 @@ jobs:
         with:
           ref: ${{ env.WEB_BRANCH }}
           fetch-depth: 0
-      - name: Merge ularn-wild into the web branch
+      - name: Merge main into the web branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch -q origin ularn-wild
-          if ! git merge --no-edit -m "Merge ularn-wild into ${WEB_BRANCH} (auto)" origin/ularn-wild; then
+          git fetch -q origin main
+          if ! git merge --no-edit -m "Merge main into ${WEB_BRANCH} (auto)" origin/main; then
             git merge --abort || true
-            echo "::error::ularn-wild does not merge cleanly into ${WEB_BRANCH}; merge it by hand."
+            echo "::error::main does not merge cleanly into ${WEB_BRANCH}; merge it by hand."
             exit 1
           fi
       - name: Push the web branch
@@ -51,10 +54,10 @@ jobs:
         run: git push origin "HEAD:${WEB_BRANCH}"
       - name: Warn if the push was refused
         if: steps.push.outcome == 'failure'
-        run: echo "::warning::Could not push ${WEB_BRANCH} (probably a workflow file changed on ularn-wild). The site is still published from the merged code; merge ularn-wild into ${WEB_BRANCH} by hand to catch the branch up."
+        run: echo "::warning::Could not push ${WEB_BRANCH} (probably a workflow file changed on main). The site is still published from the merged code; merge main into ${WEB_BRANCH} by hand to catch the branch up."
       - name: Build
         run: web/build.sh
       - name: Publish to gh-pages
         env:
           GH_TOKEN: ${{ github.token }}
-        run: web/publish.sh "ularn-wild $(git rev-parse --short origin/ularn-wild) merged into ${WEB_BRANCH}"
+        run: web/publish.sh "main $(git rev-parse --short origin/main) merged into ${WEB_BRANCH}"
