@@ -1,19 +1,21 @@
-# Ularn for Android — Wild Edition (experimental branch)
+# Ularn for Android — Wild Edition (experimental)
 
-> This branch is **Ularn: Wild Edition**: the same port with a pile of
+> This repo is **Ularn: Wild Edition**: the same port with a pile of
 > deliberately off-the-wall features bolted on (chiptune radio, monster
 > trading cards, vending machines, hats, a parody cryptocurrency, a glitch
 > realm, fishing, pets, level-up perks, weather, a Polaroid camera and a
 > town bounty board). It installs beside the normal app as **"Ularn Wild"** with its own saves.
+> The base app lives in [R0x7/android-ularn](https://github.com/R0x7/android-ularn);
+> every QoL change made there is merged in here automatically.
 >
-> **Play in your browser:** https://r0x7.github.io/android-ularn/ (no
+> **Play in your browser:** https://r0x7.github.io/ularn-wild/ (no
 > install; the same game compiled to WebAssembly, with a shared top-100
-> leaderboard). It is built from the [`ularn-web`](https://github.com/R0x7/android-ularn/tree/ularn-web/web)
-> branch, which follows this one automatically.
+> leaderboard). It is built from the [`ularn-web`](https://github.com/R0x7/ularn-wild/tree/ularn-web/web)
+> branch, which follows `main` automatically.
 >
 > **Install:** on your phone open
-> https://github.com/R0x7/android-ularn/releases/download/wild-latest/ularn-wild.apk
-> (every push to this branch rebuilds it). Each feature is described in
+> https://github.com/R0x7/ularn-wild/releases/download/wild-latest/ularn-wild.apk
+> (every push to `main` rebuilds it). Each feature is described in
 > [`docs/wild/`](docs/wild/README.md) and can be switched off in
 > Settings → *Wild features*; the design brief and agent plan is
 > [`docs/WILD_EDITION_PLAN.md`](docs/WILD_EDITION_PLAN.md). The core game

@@ -1,0 +1,125 @@
+name: Merge upstream main
+
+# Lives only in R0x7/ularn-wild. The base app's repo, R0x7/android-ularn, is
+# the original game plus QoL changes; this repo is that plus the Wild
+# features. Every hour, android-ularn's main is merged into this repo's main
+# so both apps get the same QoL changes. See AGENTS.md.
+#
+# Clean merge: pushed to main, then this repo's own workflows (APK build +
+# wild-latest prerelease, web port) are started by hand, because a push made
+# with Actions' token does not start other workflows.
+#
+# Conflicts, or a push GitHub refuses (Actions' token may not push commits
+# that change files under .github/workflows/): upstream's main is pushed to
+# the MERGE_BRANCH branch and a pull request into main is opened (an issue
+# if Actions may not open pull requests). Resolve it there, or by hand:
+#   git remote add upstream https://github.com/R0x7/android-ularn  # once
+#   git fetch upstream && git merge upstream/main && git push
+on:
+  schedule:
+    - cron: '17 * * * *'
+  repository_dispatch:
+    types: [upstream-main]
+  workflow_dispatch:
+
+env:
+  UPSTREAM: https://github.com/R0x7/android-ularn
+  MERGE_BRANCH: auto/upstream-main
+
+permissions:
+  contents: write       # push main and the merge branch
+  actions: write        # start this repo's other workflows
+  pull-requests: write  # open the pull request when the merge conflicts
+  issues: write         # fallback when Actions may not open pull requests
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: github.event.repository.name == 'ularn-wild'
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge upstream main
+        id: merge
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch -q "$UPSTREAM" main
+          up=$(git rev-parse FETCH_HEAD)
+          echo "upstream=$up" >> "$GITHUB_OUTPUT"
+          if git merge-base --is-ancestor "$up" HEAD; then
+            echo "android-ularn's main is already merged."
+            echo "result=nothing" >> "$GITHUB_OUTPUT"
+          elif git merge --no-edit -m "Merge android-ularn main into ularn-wild (auto)" "$up"; then
+            echo "result=merged" >> "$GITHUB_OUTPUT"
+          else
+            git merge --abort || true
+            echo "result=conflict" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Push main
+        id: push
+        if: steps.merge.outputs.result == 'merged'
+        continue-on-error: true
+        run: git push origin HEAD:main
+
+      - name: Build and publish the Wild Edition
+        if: steps.merge.outputs.result == 'merged' && steps.push.outcome == 'success'
+        run: |
+          gh workflow run build.yml --ref main
+          gh workflow run web-sync.yml --ref main
+
+      - name: Ask for a hand merge
+        if: steps.merge.outputs.result == 'conflict' || (steps.merge.outputs.result == 'merged' && steps.push.outcome != 'success')
+        env:
+          UP: ${{ steps.merge.outputs.upstream }}
+          WHY: ${{ steps.merge.outputs.result == 'conflict' && 'android-ularn main does not merge cleanly into ularn-wild' || 'GitHub refused the automatic push to main (most likely android-ularn changed a workflow file, which Actions may not push)' }}
+        run: |
+          echo "::warning::${WHY}; asking for a hand merge."
+          title="Merge android-ularn main into ularn-wild"
+          body=$(cat <<BODY
+          ${WHY}, so the automatic merge stopped.
+
+          Merge by hand:
+
+          \`\`\`
+          git checkout main && git pull
+          git remote add upstream ${UPSTREAM}   # once
+          git fetch upstream
+          git merge upstream/main
+          git push
+          \`\`\`
+
+          Or resolve the conflicts in this pull request and merge it (it brings android-ularn main, at ${UP::7}, into main).
+          Keep QoL changes from android-ularn and Wild features from here; see AGENTS.md.
+
+          Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+          BODY
+          )
+          # A branch at upstream's commit, so resolving conflicts in GitHub's
+          # editor commits to it and not to main.
+          if git push -f origin "${UP}:refs/heads/${MERGE_BRANCH}"; then
+            existing=$(gh pr list --head "${MERGE_BRANCH}" --base main --state open --json number --jq '.[0].number')
+            if [ -n "$existing" ]; then
+              echo "Pull request #$existing is already open; it now brings ${UP::7}."
+              exit 0
+            fi
+            if gh pr create --head "${MERGE_BRANCH}" --base main --title "$title" --body "$body"; then
+              exit 0
+            fi
+          fi
+          existing=$(gh issue list --state open --search "\"${title}\" in:title" --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            echo "Issue #$existing is already open."
+          else
+            gh issue create --title "$title" --body "$body"
+          fi
