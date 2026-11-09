@@ -4,8 +4,8 @@ name: Web build (GitHub Pages)
 # gh-pages branch, which GitHub Pages serves at https://<owner>.github.io/<repo>/
 # (Settings -> Pages -> Deploy from a branch -> gh-pages, / (root)).
 #
-# This runs for pushes to the web branch itself. Pushes to ularn-wild are
-# handled by web-sync.yml (on ularn-wild), which merges them into the web
+# This runs for pushes to the web branch itself. Pushes to main are
+# handled by web-sync.yml (on main), which merges them into the web
 # branch and publishes in one go.
 on:
   push:
