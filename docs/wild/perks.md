@@ -14,8 +14,9 @@ random perks you don't have yet.
   Bookworm (a quarter of your casts cost no spell point), Lucky (monsters
   drop their loot twice), Nimble (10% of melee blows miss you), Haggler (10%
   off at the DND store, 10% more at the trading post), Glass Cannon (+4 WC,
-  -10% max HP when taken), Second Wind (once per dungeon level a deadly blow
-  leaves you at 1 HP), Night Owl (+2 to all stats while in town at night;
+  -10% max HP when taken), Second Wind (a deadly blow leaves you at 1 HP, once on
+  each dungeon level for the whole game: coming back to a level does not
+  recharge it), Night Owl (+2 to all stats while in town at night;
   +1 INT for good when the Weather feature is off).
 * **See them:** the side panel's PERKS section, and the end of the `\`
   (known spells / scrolls / potions) list.

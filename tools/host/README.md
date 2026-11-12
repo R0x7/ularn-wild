@@ -9,6 +9,7 @@ tools/host/check.sh                 # gcc syntax check of every game source, And
 tools/host/build.sh                 # builds tools/host/out/ularn_host
 tools/host/play.sh [opts] STEP...   # runs a game, feeding STEPs; prints state after each
 tools/host/smoke.sh                 # regression: new game, walk, dungeon, save, restore
+tools/host/second_wind.sh           # regression: the Second Wind perk works once per level
 ```
 
 `play.sh --help` lists the options. The essentials:
@@ -18,6 +19,7 @@ tools/host/smoke.sh                 # regression: new game, walk, dungeon, save,
     object by id *under you* (then the game asks to take it), **(m)** create a
     monster by id next to you, **(g)** +1000 gold, **(x)** gain a level,
     **(t)** run N `wild_turn()` ticks without moving, **(h)** heal,
+    **(d)** take N damage (a blow through `losehp()`, so it can kill),
     **(f)** print the Wild attribute values.
   * `+` is upstream's create item (places it next to you), `_` max XP,
     `` ` `` debug mode.
