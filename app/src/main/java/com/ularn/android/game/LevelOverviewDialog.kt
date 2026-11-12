@@ -11,6 +11,7 @@ import android.graphics.Typeface
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import com.ularn.android.Settings
 
 /**
  * The whole current level, fitted to the screen in the minimap's dot style,
@@ -22,7 +23,7 @@ object LevelOverviewDialog {
         val dialog = Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         dialog.setContentView(OverviewView(context, stateOf) { dialog.dismiss() })
         dialog.setCanceledOnTouchOutside(true)
-        dialog.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        if (Settings(context).keepScreenOn) dialog.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         dialog.show()
     }
 

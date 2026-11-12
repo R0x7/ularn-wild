@@ -117,8 +117,10 @@ Requires Android 7.0+ (API 24). Builds for arm64-v8a, armeabi-v7a and x86_64.
 - **Checkpoints:** the game checkpoints every 25 moves and whenever the app
   goes to the background, so if Android closes it you can *Resume from
   checkpoint*. Use *Save game & quit* (or `S`) for a full save.
-- **Settings:** character name and gender, skip intro, no delays, no beep, and
-  1.6's *enhanced interface* (open doors with `o`, chests with `O`).
+- **Settings:** character name and gender, skip intro, no delays, no beep,
+  1.6's *enhanced interface* (open doors with `o`, chests with `O`), and
+  *Keep the screen on* (on by default; turn it off to let the screen dim and
+  lock as usual).
 
 ## Customizing the controls
 

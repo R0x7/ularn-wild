@@ -60,6 +60,9 @@ class Settings(context: Context) {
     /** A quick flick on the map runs instead of stepping. */
     var flickToRun by bool("flickRun", false)
 
+    /** Stop the screen from dimming and locking while the app is open. */
+    var keepScreenOn by bool("keepScreenOn", true)
+
     /** See [ORIENTATIONS]. */
     var orientation by int("orientation", 0)
 
