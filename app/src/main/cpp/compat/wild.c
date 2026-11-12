@@ -15,6 +15,7 @@
 #include "monster.h"
 #include "itm.h"
 #include "saveutils.h"
+#include "scores.h"
 #include "ularn_win.h"
 #include "../shared_state.h"
 #include "wild.h"
@@ -260,7 +261,7 @@ int wild_debug(void)
 {
   int t, a, x, y;
   t = get_prompt_input("\nWild debug: (o)bject here, (m)onster next to you, (g)old, (x)p level, "
-                       "(t)urns, (h)eal, (f)lags? ", "omgxthf\033", 1);
+                       "(t)urns, (h)eal, (d)amage, (f)lags? ", "omgxthdf\033", 1);
   switch (t)
   {
     case 'o':
@@ -299,6 +300,16 @@ int wild_debug(void)
       c[HP] = c[HPMAX];
       c[SPELLS] = c[SPELLMAX];
       Print("\nHealed.");
+      return ACTION_NULL;
+    case 'd':
+      /* a blow of N hit points through losehp(), like any monster's: the
+       * way to test what happens at death's door (Second Wind) */
+      Print(" Damage: ");
+      t = get_num_input(0);
+      if (t <= 0) return ACTION_NULL;
+      Printf("\nYou take %d damage.", t);
+      losehp(DIED_OWN_MAGIC, t);   /* a wizard asked for it */
+      UpdateStatus();
       return ACTION_NULL;
     case 'f':
       Printf("\nwild flags 0x%lx hat %ld perks 0x%lx egg %ld pet %ld coins %ld price %ld glitch %ld duck %ld weather 0x%lx",

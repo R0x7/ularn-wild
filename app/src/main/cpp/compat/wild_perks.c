@@ -13,9 +13,9 @@
  * turns (it comes back by itself, so a pick is never lost and the prompt can
  * never trap the player). With every perk taken, a pick is +5 max HP.
  *
- * All the state is in c[] (saved with the character) except the Second
- * Wind level, which is wild_extra[WX_PERK_WIND_LEVEL] (save trailer), and
- * the Escape delay, which is deliberately not saved: a restored game with a
+ * All the state is in c[] (saved with the character) except the levels
+ * Second Wind has been used on, which are wild_extra[WX_PERK_WIND_USED]
+ * (save trailer), and the Escape delay, which is deliberately not saved: a restored game with a
  * pick pending asks again after the first command.
  * =============================================================================
  */
@@ -309,14 +309,28 @@ int wild_perks_dodge(void)
   return wild_perk(PERK_NIMBLE) && rnd(100) <= PERK_NIMBLE_DODGE;
 }
 
+/* The levels Second Wind has been used on: bit n = level n (0 is the town,
+ * the volcano's levels follow the dungeon's, so NLEVELS bits in all).
+ * Saves from before this record kept only the level of the latest use, + 1,
+ * in WX_PERK_WIND_LEVEL; that one is carried over the first time through. */
+static int wind_used(void)
+{
+  int old = wild_extra[WX_PERK_WIND_LEVEL];
+  if (old > 0 && old <= NLEVELS) wild_extra[WX_PERK_WIND_USED] |= 1 << (old - 1);
+  wild_extra[WX_PERK_WIND_LEVEL] = 0;
+  return wild_extra[WX_PERK_WIND_USED];
+}
+
 /* Second Wind: called before losehp() takes `dmg` off c[HP]. Topping HP up
- * to dmg + 1 leaves the player at exactly 1 HP after the blow. The level is
- * stored + 1 so that 0 means "not used yet" (town is level 0). */
+ * to dmg + 1 leaves the player at exactly 1 HP after the blow. Once per
+ * level for the whole game: remembering only the latest level (as this did
+ * at first) armed it again on a level as soon as it was used on another. */
 void wild_perks_player_hit(int dmg)
 {
   if (!wild_perk(PERK_WIND) || dmg <= 0 || c[HP] - dmg > 0) return;
-  if (wild_extra[WX_PERK_WIND_LEVEL] == level + 1) return;
-  wild_extra[WX_PERK_WIND_LEVEL] = level + 1;
+  if (level < 0 || level >= NLEVELS) return;
+  if (wind_used() & (1 << level)) return;
+  wild_extra[WX_PERK_WIND_USED] |= 1 << level;
   c[HP] = dmg + 1;
   Print("\nSecond wind! You cling to life.");
   wild_event(US_EV_WILD_PERK, PERK_WIND, 1, 0);

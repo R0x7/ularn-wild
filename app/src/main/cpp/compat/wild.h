@@ -60,7 +60,7 @@ int wild_item_use(int obj);
 #define WX_KRAKEN_Y   5
 #define WX_GLITCH_SEED 6
 #define WX_WEATHER_NEXT 7
-#define WX_PERK_WIND_LEVEL 8
+#define WX_PERK_WIND_LEVEL 8  /* perks: old saves only; see WX_PERK_WIND_USED */
 #define WX_RADIO_TRACKS 9
 #define WX_KRAKEN_LEVEL 24    /* fishing: level+1 of the kraken's fountain, 0 = none */
 #define WX_FISH_ROD_LEVEL 25  /* fishing: dungeon level that gets the free rod */
@@ -68,7 +68,8 @@ int wild_item_use(int obj);
 #define WX_BOUNTY_GOLD    11  /* bounty: reward */
 #define WX_BOUNTY_CLAIMED 12  /* bounty: 1 = killed, collect in town */
 #define WX_BOUNTY_POSTED  13  /* bounty: gtime when the poster went up */
-/* 14..23 and 26..63 free: claim one by adding a define here */
+#define WX_PERK_WIND_USED 14  /* perks: levels Second Wind was used on (bit n = level n) */
+/* 15..23 and 26..63 free: claim one by adding a define here */
 extern int wild_extra[WILD_EXTRA_COUNT];
 
 /* ---- hooks called by upstream code (see wild.c) ---- */
