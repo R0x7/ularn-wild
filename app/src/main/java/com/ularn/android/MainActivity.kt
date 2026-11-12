@@ -96,7 +96,6 @@ class MainActivity : Activity(), ControlsOverlay.Listener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (Build.VERSION.SDK_INT >= 28) {
             window.attributes = window.attributes.apply {
                 layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
@@ -346,7 +345,13 @@ class MainActivity : Activity(), ControlsOverlay.Listener {
         game.danger.apply(settings)
         game.glitch.reduce = settings.reduceGlitch
         game.weather.reduce = settings.reduceWeather
+        applyKeepScreenOn()
         applyA11y()
+    }
+
+    private fun applyKeepScreenOn() {
+        val flag = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        if (settings.keepScreenOn) window.addFlags(flag) else window.clearFlags(flag)
     }
 
     private fun applyRotationSetting() {
@@ -571,43 +576,44 @@ class MainActivity : Activity(), ControlsOverlay.Listener {
 
     private fun showProfilesDialog() {
         val names = store.profileNames()
-        val items = mutableListOf("Save current layout as…")
-        items += names.map { "Load: $it" }
-        items += listOf("Copy layout to clipboard (JSON)", "Paste layout from clipboard")
-        if (names.isNotEmpty()) items += "Delete a profile…"
+        // Label -> action, so a profile's name can never be mistaken for a command.
+        val items = mutableListOf<Pair<String, () -> Unit>>("Save current layout as…" to { askProfileName() })
+        names.forEach { n -> items += "Load: $n" to { loadEditedLayout(store.loadProfile(n), "Loaded") } }
+        items += "Copy layout to clipboard (JSON)" to {
+            clipboard.setPrimaryClip(ClipData.newPlainText("Ularn controls", LayoutStore.toJson(overlay.layout)))
+            toast("Layout copied")
+        }
+        items += "Paste layout from clipboard" to {
+            val txt = clipboard.primaryClip?.getItemAt(0)?.coerceToText(this)?.toString()
+            val parsed = txt?.let { runCatching { LayoutStore.fromJson(it) }.getOrNull() }
+            if (parsed == null) toast("Clipboard doesn't contain a layout") else loadEditedLayout(parsed, "Pasted")
+        }
+        if (names.isNotEmpty()) items += "Delete a profile…" to {
+            AlertDialog.Builder(this).setTitle("Delete profile")
+                .setItems(names.toTypedArray()) { _, i -> store.deleteProfile(names[i]); toast("Deleted") }
+                .show()
+        }
         AlertDialog.Builder(this)
             .setTitle("Layout profiles")
-            .setItems(items.toTypedArray()) { _, which ->
-                val item = items[which]
-                when {
-                    which == 0 -> {
-                        val e = EditText(this).apply { hint = "Profile name"; isSingleLine = true }
-                        AlertDialog.Builder(this).setTitle("Save profile").setView(e)
-                            .setPositiveButton("Save") { _, _ ->
-                                val n = e.text.toString().trim()
-                                if (n.isNotEmpty()) { store.saveProfile(n, overlay.layout); toast("Saved \"$n\"") }
-                            }.setNegativeButton("Cancel", null).show()
-                    }
-                    item.startsWith("Load: ") -> store.loadProfile(item.removePrefix("Load: "))?.let {
-                        overlay.layout = it; refreshEditBar(); toast("Loaded — tap Done to keep it")
-                    }
-                    item.startsWith("Copy") -> {
-                        val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        cm.setPrimaryClip(ClipData.newPlainText("Ularn controls", LayoutStore.toJson(overlay.layout)))
-                        toast("Layout copied")
-                    }
-                    item.startsWith("Paste") -> {
-                        val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val txt = cm.primaryClip?.getItemAt(0)?.coerceToText(this)?.toString()
-                        val parsed = txt?.let { runCatching { LayoutStore.fromJson(it) }.getOrNull() }
-                        if (parsed == null) toast("Clipboard doesn't contain a layout")
-                        else { overlay.layout = parsed; refreshEditBar(); toast("Pasted — tap Done to keep it") }
-                    }
-                    item.startsWith("Delete") -> AlertDialog.Builder(this).setTitle("Delete profile")
-                        .setItems(names.toTypedArray()) { _, i -> store.deleteProfile(names[i]); toast("Deleted") }
-                        .show()
-                }
-            }.show()
+            .setItems(items.map { it.first }.toTypedArray()) { _, which -> items[which].second() }
+            .show()
+    }
+
+    private val clipboard get() = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+    private fun askProfileName() {
+        val e = EditText(this).apply { hint = "Profile name"; isSingleLine = true }
+        AlertDialog.Builder(this).setTitle("Save profile").setView(e)
+            .setPositiveButton("Save") { _, _ ->
+                val n = e.text.toString().trim()
+                if (n.isNotEmpty()) { store.saveProfile(n, overlay.layout); toast("Saved \"$n\"") }
+            }.setNegativeButton("Cancel", null).show()
+    }
+
+    /** Puts a loaded or pasted layout into the editor; Done keeps it, Cancel drops it. */
+    private fun loadEditedLayout(layout: ControlLayout?, verb: String) {
+        layout ?: return
+        overlay.layout = layout; refreshEditBar(); toast("$verb — tap Done to keep it")
     }
 
     // ------------------------------------------------------- start panel
@@ -718,7 +724,7 @@ class MainActivity : Activity(), ControlsOverlay.Listener {
         check("No beeping", settings.noBeep) { settings.noBeep = it }
         check("Enhanced interface: open doors with 'o', chests with 'O'", settings.enhancedInterface) { settings.enhancedInterface = it }
 
-        header("Screen rotation")
+        header("Screen")
         val rotation = Spinner(this).apply {
             adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, Settings.ORIENTATIONS.map { it.first })
             setSelection(settings.orientation.coerceIn(0, Settings.ORIENTATIONS.size - 1))
@@ -727,6 +733,7 @@ class MainActivity : Activity(), ControlsOverlay.Listener {
         box.addView(TextView(this).apply {
             text = "Portrait and landscape each keep their own control layout."; textSize = 12f; alpha = 0.7f
         })
+        check("Keep the screen on while the app is open", settings.keepScreenOn) { settings.keepScreenOn = it }
 
         header("Map")
         check("Swipe to step, hold to keep walking", settings.swipeToMove) { settings.swipeToMove = it }
