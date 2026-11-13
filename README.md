@@ -25,6 +25,120 @@
 > script (no device needed), `tools/tiles/` composes text-authored pixel
 > art onto the tile sheet. See `tools/host/README.md`.
 
+## What's different from normal Ularn
+
+Normal Ularn here means Julian Olds' Ularn 1.6.3a as it plays on a PC.
+This app changes it in two ways: the **Android port's quality-of-life
+changes**, shared with the base app, and the **Wild features**, which are
+only in this edition.
+
+### Wild features (this edition only)
+
+Every Wild feature is on by default for a new game and has its own
+checkbox in Settings → *Wild features*. A character keeps the set it was
+created with, so changing a checkbox affects only new games. With every
+checkbox off, the game plays like normal Ularn plus the QoL changes. Each
+feature has a page in [`docs/wild/`](docs/wild/README.md).
+
+- **Dungeon Radio** ([radio.md](docs/wild/radio.md)): chiptune music and
+  sound effects, made on the phone as they play. The track changes with
+  where you are (town, shallow levels, deep levels, volcano, shops) and there
+  are game-over and victory tunes. Three **cassette tapes** on dungeon levels
+  2 and 6 and volcano level 2 unlock bonus tracks for every later game.
+  *Menu → Radio* skips tracks and sets the volume.
+- **Monster trading cards** ([cards.md](docs/wild/cards.md)): kills can
+  drop collectible cards. The first kill of a species always drops one;
+  later kills drop one 15% of the time, and 5% of cards are **holo**. The
+  **Card album** on the start screen and in the menu keeps all 69 cards
+  across every game and save slot.
+- **Vending machines** ([vending.md](docs/wild/vending.md)): found on about
+  40% of levels 1–10 and V1–V3, and always one next to the DnD store. Buy
+  junk food for 50 gold or kick the machine (if you kick it too often, it
+  falls on you). New items: **Fizz** (haste), **pizza** (heals, sometimes
+  +1 CON), **energy drink** (spell points, but confuses you) and the
+  **rubber duck**, which identifies everything you carry, three times per
+  game. New monster: the **Roomba**, which eats items off the floor from
+  level 3 down and gives them all back when you kill it.
+- **Hats** ([hats.md](docs/wild/hats.md)): five hats, worn with `W` on top
+  of your armour and drawn on your character. Traffic cone (+2 AC, some
+  blows miss), propeller beanie (fly over pits and trap doors), wizard hat
+  (spells come back twice as fast), party hat (+3 CHA, cheaper DnD store)
+  and tinfoil hat (no confusion). They are found in the dungeon or bought on
+  the DnD store's last page.
+- **LarnCoin and the Tax Auditor** ([coin.md](docs/wild/coin.md)): the bank
+  trades a cryptocurrency whose price swings wildly. There is a **LarnCoin
+  ATM** on the home level and a small price ticker on the HUD. Coins count
+  towards your final score. If you owe taxes, a **Tax Auditor** monster may
+  come for 10% of your gold.
+- **The Glitch Realm** ([glitch.md](docs/wild/glitch.md)): a new **scroll of
+  segfault** (and, rarely, a teleport) corrupts the screen for 60–120 turns.
+  Items look like other items, monsters swap names, and a **null pointer**
+  monster appears. Kill it for items and gold.
+- **Fishing** ([fishing.md](docs/wild/fishing.md)): with a **fishing rod**
+  (250 gold at the DnD store, or found on level 1 or 2) you can fish at
+  fountains. Catches: fish (food), old boots, rings, potions and **messages
+  in a bottle**. A bottle holds a fortune or, below ground, a **treasure map**
+  to gold on that level. Sometimes the **Fountain Kraken** surfaces instead.
+- **Pets** ([pets.md](docs/wild/pets.md)): a **mysterious egg** on each of
+  levels 2–5 hatches after 300 turns in your pack. The pet (jackal, snake,
+  giant ant, floating eye or, rarely, a hell hound) follows you, fights
+  beside you, comes down the stairs with you and eats fish.
+- **Level-up perks** ([perks.md](docs/wild/perks.md)): each character level
+  offers a choice of three of ten perks, such as Magnet Hands, Thick Skin,
+  Vampiric, Bookworm, Lucky, Nimble, Haggler, Glass Cannon, Second Wind and
+  Night Owl.
+- **Weather and day/night** ([atmosphere.md](docs/wild/atmosphere.md)): the
+  town has a clock and a sky with rain, snow and storms. At night more
+  monsters turn up, and herds of **lemmings** march across the map. In a
+  storm, lightning can strike monsters near you. A *Reduce weather effects*
+  option keeps the motion down.
+- **Polaroid photo mode** ([atmosphere.md](docs/wild/atmosphere.md#polaroid-photo-mode-wildf_photo)):
+  *Take a photo* (menu or a button) saves the map as a captioned instant
+  photo to the gallery. A photo is also taken on death or victory.
+- **Town bounty board** ([bounty.md](docs/wild/bounty.md)): a WANTED poster
+  in town names a monster and offers a gold reward for killing it.
+
+The Wild features also add to the game itself:
+
+- **New monsters:** null pointer, Fountain Kraken, Tax Auditor and Roomba.
+  They are never generated at random; only their feature brings them in.
+  (The night-time lemming herds are ordinary Ularn lemmings.)
+- **New items:** hats, vending machines and junk food, the rubber duck, the
+  fishing rod, fish, old boots, bottles, cassette tapes, the scroll of
+  segfault, the mysterious egg and the LarnCoin ATM. They have new tiles.
+- **New way to die:** "crushed by a vending machine".
+- **Score:** LarnCoin you hold counts at the day's price.
+- **Saves:** a Wild save has an extra header and trailer for the new state,
+  so it is not compatible with the base app or the PC game. The app installs
+  as **"Ularn Wild"** next to the base app, with its own saves, scoreboard
+  and settings.
+- **Core sources:** unlike the base app, the C game core is changed. Each
+  change is a hook into `app/src/main/cpp/compat/wild*.c` and does nothing
+  when its feature is off.
+
+### Quality-of-life changes (also in the base app)
+
+These come from [R0x7/android-ularn](https://github.com/R0x7/android-ularn)
+and are described in detail under [Playing](#playing) and
+[Customizing the controls](#customizing-the-controls) below.
+
+- Touch play: swipe or tap to move, hold to keep walking, long-press to
+  run, pinch to zoom, and a swipe answers direction prompts.
+- Fully customizable on-screen buttons and D-pads, with key macros,
+  separate portrait and landscape layouts, and named profiles.
+- Answer buttons for every prompt (y/n, items, shops, amounts), a context
+  *Action* button (pick up, stairs, open, fountain, altar…) and a spell
+  picker that lists the spells you know.
+- A HUD with an HP bar, a round minimap with a full-level view, danger cues
+  at low HP, and a side panel on tablets and foldables.
+- Text pages re-wrapped to fit a phone screen; text size, high contrast and
+  TalkBack support.
+- Save slots with import and export, automatic checkpoints every 25 moves
+  and when the app is closed, lifetime statistics and 17 achievements.
+- Hardware keyboard support, any screen rotation, and a narrower
+  character-class screen. The upstream TTY, X11, Windows and Amiga front
+  ends are replaced by an Android one.
+
 
 An Android port of **Ularn 1.6.3a** (Julian Olds' graphical version, from
 [R0x7/ularn-1.6.3a](https://github.com/R0x7/ularn-1.6.3a)), with the original
