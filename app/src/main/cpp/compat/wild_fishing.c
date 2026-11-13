@@ -12,7 +12,9 @@
  *     bottle, a ring, a potion or the fountain kraken. c[WILD_FISH_XP] counts
  *     catches and shifts the odds away from boots and empty hooks.
  *   - A fish (OFISH) is eaten: heals 10 + character level. A bottle (OBOTTLE)
- *     is read: a fortune, then it's gone. An old boot (OOLDBOOT) sells for
+ *     is read: a fortune, then it's gone. Below ground, one note in four is
+ *     a treasure map instead: a stash of gold appears somewhere on the level
+ *     and is marked on the map (see treasure_map()). An old boot (OOLDBOOT) sells for
  *     1 gp; the first time it's picked up, 1 in 5 has a small gem inside
  *     (its iarg becomes 1 once searched, so dropping it doesn't re-roll).
  *   - The fountain kraken (FOUNTAINKRAKEN) takes the fountain's place and is
@@ -44,6 +46,7 @@
 #define FISH_DRY_CHANCE  15   /* % chance the fountain dries up after a catch */
 #define BOOT_GEM_CHANCE  20   /* % of old boots with a gem inside */
 #define KRAKEN_TETHER    2    /* cells the kraken may stray from its fountain */
+#define BOTTLE_MAP_CHANCE 25  /* % of bottles read below ground that hold a treasure map */
 
 /* iarg of an old boot: has it been shaken out yet? */
 #define BOOT_UNSEARCHED  0
@@ -356,17 +359,64 @@ static void eat_fish(void)
   UpdateStatus();
 }
 
+/* Which way (x,y) lies from the player, in words. y grows southwards. */
+static const char *compass(int x, int y)
+{
+  static const char *const names[3][3] =
+  {
+    { "north-west", "north", "north-east" },
+    { "west",       "here",  "east"       },
+    { "south-west", "south", "south-east" }
+  };
+  int dx = x - playerx, dy = y - playery;
+  int ax = dx < 0 ? -dx : dx, ay = dy < 0 ? -dy : dy;
+  int col = 1, row = 1;
+
+  /* call it a straight line unless the other axis is at least half as long */
+  if (ax * 2 >= ay) col = dx < 0 ? 0 : (dx > 0 ? 2 : 1);
+  if (ay * 2 >= ax) row = dy < 0 ? 0 : (dy > 0 ? 2 : 1);
+  return names[row][col];
+}
+
+/* The note is a treasure map of the level the reader is standing on: a stash
+ * of gold (more of it the deeper the level) appears on a random empty floor
+ * cell, which the player now knows about, so it shows on the map. Nothing is
+ * stored: the stash is an ordinary pile of gold from here on. Returns 0 if
+ * this note isn't a map (above ground, the luck of the draw, or no room). */
+static int treasure_map(void)
+{
+  int x, y, gold;
+
+  if (level == 0 || rnd(100) > BOTTLE_MAP_CHANCE) return 0;
+  if (!wild_free_cell(&x, &y)) return 0;
+
+  gold = 40 * level + rnd(60 * level);   /* 41..100 on level 1, about x level below */
+  item[x][y] = OGOLDPILE;
+  iarg[x][y] = (short) gold;
+  know[x][y] = OGOLDPILE;
+  show1cell(x, y);
+  wild_event(US_EV_WILD_FISHING, 3, x, y);
+
+  Print(" It is a map of this very level!");
+  Printf("\nAn X marks a spot to the %s. You mark it on your own map.", compass(x, y));
+  return 1;
+}
+
 static void read_bottle(void)
 {
-  char *p = fortune(fortfile);
+  char *p;
   Print("\nYou uncork the bottle and unroll the note.");
-  if (p != NULL)
+  if (!treasure_map())
   {
-    Print(" It says:\n");
-    Print(p);
+    p = fortune(fortfile);
+    if (p != NULL)
+    {
+      Print(" It says:\n");
+      Print(p);
+    }
+    else
+      Print(" The ink has washed out.");
   }
-  else
-    Print(" The ink has washed out.");
   Print("\nThe bottle slips from your fingers and is gone.");
 }
 

@@ -51,7 +51,7 @@ object Sfx {
         GameEvents.WILD_HAT -> POP
         GameEvents.WILD_COIN -> if (a == 0) null else GOLD   // a = 0 is the silent price tick
         GameEvents.WILD_GLITCH -> GLITCH
-        GameEvents.WILD_FISHING -> SPLASH
+        GameEvents.WILD_FISHING -> if (a == 3) GOLD else SPLASH   // a = 3 is a treasure map, read on dry land
         GameEvents.WILD_PET -> CHIRP
         GameEvents.WILD_PERK -> LEVEL_UP
         else -> null
