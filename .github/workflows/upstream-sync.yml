@@ -11,8 +11,10 @@ name: Merge upstream main
 #
 # Conflicts, or a push GitHub refuses (Actions' token may not push commits
 # that change files under .github/workflows/): upstream's main is pushed to
-# the MERGE_BRANCH branch and a pull request into main is opened (an issue
-# if Actions may not open pull requests). Resolve it there, or by hand:
+# the MERGE_BRANCH branch and a pull request into main is opened. If that
+# push is refused too (upstream changed a workflow file) or Actions may not
+# open pull requests, an issue is opened instead and the run fails, so it
+# shows red until main is merged. Resolve it there, or by hand:
 #   git remote add upstream https://github.com/R0x7/android-ularn  # once
 #   git fetch upstream && git merge upstream/main && git push
 on:
@@ -123,3 +125,9 @@ jobs:
           else
             gh issue create --title "$title" --body "$body"
           fi
+          # No pull request could be opened (the push of the merge branch was
+          # refused, usually because android-ularn changed a workflow file),
+          # so only an issue says the merge is stuck. Fail the run so it shows
+          # red in Actions until main is merged by hand.
+          echo "::error::android-ularn main (${UP::7}) is not merged into ularn-wild; merge it by hand (see the issue)."
+          exit 1

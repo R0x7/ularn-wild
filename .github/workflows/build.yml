@@ -47,7 +47,20 @@ jobs:
       # https://github.com/<owner>/<repo>/releases/download/wild-latest/ularn-wild.apk
       - name: Publish Wild Edition prerelease
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        run: cp ularn.apk ularn-wild.apk
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # The release action only sets target_commitish when it creates the
+        # tag, so wild-latest stayed on the first commit it was made from.
+        # Move the tag to this build's commit; if GitHub refuses (Actions'
+        # token may not push some refs), delete the prerelease and its tag so
+        # the next step makes them again at this commit.
+        run: |
+          cp ularn.apk ularn-wild.apk
+          git tag -f wild-latest "$GITHUB_SHA"
+          if ! git push -f origin refs/tags/wild-latest; then
+            echo "::notice::Could not move the wild-latest tag; recreating the prerelease at ${GITHUB_SHA::7}."
+            gh release delete wild-latest --cleanup-tag --yes || true
+          fi
       - uses: softprops/action-gh-release@v2
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
