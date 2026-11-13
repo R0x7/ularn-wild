@@ -10,6 +10,7 @@ tools/host/build.sh                 # builds tools/host/out/ularn_host
 tools/host/play.sh [opts] STEP...   # runs a game, feeding STEPs; prints state after each
 tools/host/smoke.sh                 # regression: new game, walk, dungeon, save, restore
 tools/host/second_wind.sh           # regression: the Second Wind perk works once per level
+tools/host/treasure_map.sh          # regression: bottles hold treasure maps below ground only
 ```
 
 `play.sh --help` lists the options. The essentials:

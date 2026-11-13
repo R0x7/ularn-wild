@@ -155,7 +155,8 @@ class Radio(
         when (e.type) {
             GameEvents.DIED -> { ended = TrackPicker.END_DIED; main.post { update() } }
             GameEvents.WON -> { ended = TrackPicker.END_WON; main.post { update() } }
-            GameEvents.WILD_FISHING -> main.post { picker.fishing(SystemClock.uptimeMillis()); update() }
+            // a = 3 is a treasure map from a bottle: no water involved, so no surf track
+            GameEvents.WILD_FISHING -> if (e.a != 3) main.post { picker.fishing(SystemClock.uptimeMillis()); update() }
             GameEvents.WILD_RADIO -> {
                 unlock(e.a)
                 val name = Songs.BONUS.getOrNull(e.a)?.name

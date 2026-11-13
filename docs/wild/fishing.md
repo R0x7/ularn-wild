@@ -10,6 +10,14 @@ line. You may reel in a **fish** (eat it with **e**: heals 10 + your level), not
 an **old boot** (the trading post pays 1 gold for it; one in five has a small gem
 inside the first time you pick it up), a **message in a bottle** (read it with
 **r** for a fortune; then the bottle is gone), a ring, or a potion someone threw in.
+
+Read below ground, about one bottle in four holds a **treasure map** of the
+level you are standing on instead of a fortune. The game tells you which way
+the X lies and marks it on your map; a stash of gold is waiting there, bigger
+the deeper you are (41–100 gold on level 1, about 300–700 on level 7). So it
+can pay to keep a bottle corked until you are deep in the dungeon. In town a
+bottle is always a fortune.
+
 Every catch makes you a better angler, so you get fewer empty hooks and boots.
 After a catch the fountain may dry up.
 
