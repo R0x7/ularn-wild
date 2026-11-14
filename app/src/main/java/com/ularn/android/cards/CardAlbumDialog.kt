@@ -19,7 +19,8 @@ import java.util.Date
 
 /**
  * The card album: every card in monster order, owned ones in full and the
- * rest as "???" silhouettes, with a progress count and a rarity filter.
+ * rest as "???" silhouettes, with a progress count and two filters: by
+ * rarity, and by whether you have the card (all / found / holo / not yet).
  * Tapping a card opens it full screen (holo cards shimmer).
  */
 object CardAlbumDialog {
@@ -34,6 +35,11 @@ object CardAlbumDialog {
         val filters = listOf<Pair<String, Rarity?>>("All rarities" to null) + Rarity.entries.map { it.label to it }
         val spinner = Spinner(context).apply {
             adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, filters.map { it.first })
+            contentDescription = "Filter by rarity"
+        }
+        val ownedSpinner = Spinner(context).apply {
+            adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, Owned.entries.map { it.label })
+            contentDescription = "Filter by found or not found"
         }
 
         var ids = album.ids(null)
@@ -70,23 +76,27 @@ object CardAlbumDialog {
 
         fun refresh() {
             val r = filters[spinner.selectedItemPosition.coerceAtLeast(0)].second
-            ids = album.ids(r)
-            val owned = ids.count { album.owns(it) }
-            progress.text = if (r == null)
-                "${album.collected}/${MonsterFacts.COUNT} collected · ${album.holoCollected} holo"
-            else "${r.label}: $owned/${ids.size} collected"
+            val o = Owned.entries[ownedSpinner.selectedItemPosition.coerceAtLeast(0)]
+            ids = album.ids(r, o)
+            progress.text = album.summary(r, o)
             adapter.notifyDataSetChanged()
         }
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        val onPick = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) = refresh()
             override fun onNothingSelected(p: AdapterView<*>?) {}
         }
+        spinner.onItemSelectedListener = onPick
+        ownedSpinner.onItemSelectedListener = onPick
 
         val box = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(16), dp(8), dp(16), 0)
             addView(progress)
-            addView(spinner)
+            addView(LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                addView(spinner, LinearLayout.LayoutParams(0, -2, 1f))
+                addView(ownedSpinner, LinearLayout.LayoutParams(0, -2, 1f))
+            })
             if (album.complete) addView(TextView(context).apply {
                 text = "Complete set! Gotta kill 'em all - and you did."
                 setTextColor(Color.rgb(255, 200, 80))

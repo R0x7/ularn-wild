@@ -99,6 +99,52 @@ class CardAlbumTest {
         for (r in Rarity.entries) assertTrue(r.label, a.ids(r).isNotEmpty())
     }
 
+    @Test fun ownedFilter() {
+        val a = CardAlbum()
+        assertEquals(emptyList<Int>(), a.ids(null, Owned.FOUND))
+        assertEquals(emptyList<Int>(), a.ids(null, Owned.HOLO))
+        assertEquals(MonsterFacts.COUNT, a.ids(null, Owned.MISSING).size)
+        a.add(17, false, 1, 1)                        // zombie, common
+        a.add(1, true, 1, 1)                          // lemming, common, holo
+        a.add(MonsterFacts.REDDRAGON, false, 1, 1)    // epic
+        assertEquals(a.ids(null), a.ids(null, Owned.ALL))
+        assertEquals(listOf(1, 17, MonsterFacts.REDDRAGON), a.ids(null, Owned.FOUND))   // monster order
+        assertEquals(listOf(1), a.ids(null, Owned.HOLO))
+        assertEquals(MonsterFacts.COUNT - 3, a.ids(null, Owned.MISSING).size)
+        assertFalse(17 in a.ids(null, Owned.MISSING))
+        // The two filters combine.
+        assertEquals(listOf(1, 17), a.ids(Rarity.COMMON, Owned.FOUND))
+        assertEquals(listOf(MonsterFacts.REDDRAGON), a.ids(Rarity.EPIC, Owned.FOUND))
+        assertEquals(emptyList<Int>(), a.ids(Rarity.EPIC, Owned.HOLO))
+        assertEquals(emptyList<Int>(), a.ids(Rarity.LEGENDARY, Owned.FOUND))
+        // Found and missing split every rarity exactly.
+        for (r in Rarity.entries)
+            assertEquals(a.ids(r).size, a.ids(r, Owned.FOUND).size + a.ids(r, Owned.MISSING).size)
+    }
+
+    @Test fun summaryLine() {
+        val a = CardAlbum()
+        val n = MonsterFacts.COUNT
+        assertEquals("0/$n collected · 0 holo", a.summary(null))
+        assertEquals("no cards found yet", a.summary(null, Owned.FOUND))
+        assertEquals("no holo cards yet", a.summary(null, Owned.HOLO))
+        assertEquals("$n of $n still to find", a.summary(null, Owned.MISSING))
+        a.add(17, false, 1, 1)
+        a.add(1, true, 1, 1)
+        a.add(MonsterFacts.REDDRAGON, false, 1, 1)
+        val commons = a.ids(Rarity.COMMON).size
+        assertEquals("3/$n collected · 1 holo", a.summary(null))
+        assertEquals("3/$n collected", a.summary(null, Owned.FOUND))
+        assertEquals("1 holo of 3 collected", a.summary(null, Owned.HOLO))
+        assertEquals("${n - 3} of $n still to find", a.summary(null, Owned.MISSING))
+        assertEquals("Common: 2/$commons collected", a.summary(Rarity.COMMON))
+        assertEquals("Common: 1 holo of 2 collected", a.summary(Rarity.COMMON, Owned.HOLO))
+        assertEquals("Legendary: no cards found yet", a.summary(Rarity.LEGENDARY, Owned.FOUND))
+        for (id in 1..n) a.add(id, false, 1, 1)
+        assertEquals("none left to find!", a.summary(null, Owned.MISSING))
+        assertEquals("Epic: none left to find!", a.summary(Rarity.EPIC, Owned.MISSING))
+    }
+
     @Test fun completeSet() {
         val a = CardAlbum()
         for (id in 1..MonsterFacts.COUNT) a.add(id, false, 1, 1)
