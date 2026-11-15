@@ -1880,6 +1880,7 @@ void annihilate(void)
         if (monst < DEMONLORD)
         {
           xp += monster[monst].experience;
+          wild_annihilated(monst, x, y);   /* Wild Edition: a kill like any other */
           mitem[x][y].mon = MONST_NONE;
         }
         else

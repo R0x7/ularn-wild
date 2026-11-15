@@ -113,6 +113,28 @@ void wild_kill(int monst, int x, int y)
   EACH(kill, (monst, x, y))
 }
 
+/* The scroll of annihilation (spell.c: annihilate()) takes its victims off
+ * the map itself instead of going through hitm(), so nothing reported them:
+ * the player got the experience, but no kill was counted, no card dropped,
+ * a WANTED monster stayed wanted, Vampiric didn't heal and an annihilated
+ * pet was only missed a turn later. Called while the monster is still on
+ * (x,y), like hitm() does.
+ *
+ * hitm() also drops what the dead monster carried; annihilation does not,
+ * so the roomba's meal is handed back here. wild_vending_kill() has just
+ * promised that it "coughs up its contents", and they can be things the
+ * game cannot be won without. */
+void wild_annihilated(int monst, int x, int y)
+{
+  int i, n;
+  wild_kill(monst, x, y);
+  if (monst != ROOMBA) return;
+  n = mitem[x][y].n;
+  mitem[x][y].n = 0;
+  for (i = 0; i < n; i++)
+    createitem(x, y, mitem[x][y].it[i].item, mitem[x][y].it[i].itemarg);
+}
+
 int wild_kill_count(int monst)
 {
   return (monst > 0 && monst < MONST_COUNT) ? kill_counts[monst] : 0;
