@@ -80,6 +80,7 @@ void wild_new_level(int lev);         /* newcavelevel(): level in memory */
 void wild_leaving_level(int lev);     /* newcavelevel(): before savelevel() */
 void wild_make_level(int lev);        /* makemaze()+makeobject() done, first visit */
 void wild_kill(int monst, int x, int y);   /* player killed a monster */
+void wild_annihilated(int monst, int x, int y);   /* ...with a scroll of annihilation */
 void wild_level_up(int newlevel);     /* character level went up */
 void wild_take(int obj, int arg);     /* item went into the pack */
 void wild_object(int obj);            /* stepped on a Wild object (>= OWILD_FIRST) */
