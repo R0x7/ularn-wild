@@ -14,4 +14,8 @@
  * blocked, the pet is not attacked). */
 int wild_pet_swap(int x, int y);
 
+/* One line describing the pet for the known-items page (show.c), or NULL
+ * when there is none (or WILDF_PETS is off). */
+const char *wild_pet_text(void);
+
 #endif

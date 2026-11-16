@@ -12,6 +12,12 @@ A mysterious egg that hatches into a loyal little monster, if you carry it long 
   It bites monsters next to it or close to you, and they can bite back. It heals
   slowly. If you walk into it, you swap places with it instead of hitting it.
   Feeding it a fish (`e` with the pet next to you) heals it 10 HP.
+* **Growing up:** a pet grows by fighting. After 5 kills of its own the baby
+  is a *young* one, after 15 a *grown* one and after 30 a *fearsome* one. Each
+  step gives it 8 more hit points (at once) and a harder bite. Only monsters
+  its own bite finishes off count, so let it have the last word now and then.
+  The `\` (known spells / scrolls / potions) list shows your pet, its hit
+  points, its kills and when it grows next. A new pet starts as a baby again.
 * **Stairs:** a pet next to you when you change level comes along. Otherwise it
   stays on that level ("You hear a sad whine behind you.") and is still there when
   you come back. Saving keeps it.
