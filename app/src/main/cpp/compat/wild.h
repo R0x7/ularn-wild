@@ -69,7 +69,8 @@ int wild_item_use(int obj);
 #define WX_BOUNTY_CLAIMED 12  /* bounty: 1 = killed, collect in town */
 #define WX_BOUNTY_POSTED  13  /* bounty: gtime when the poster went up */
 #define WX_PERK_WIND_USED 14  /* perks: levels Second Wind was used on (bit n = level n) */
-/* 15..23 and 26..63 free: claim one by adding a define here */
+#define WX_PET_KILLS      15  /* pets: monsters the pet has killed itself (it grows) */
+/* 16..23 and 26..63 free: claim one by adding a define here */
 extern int wild_extra[WILD_EXTRA_COUNT];
 
 /* ---- hooks called by upstream code (see wild.c) ---- */

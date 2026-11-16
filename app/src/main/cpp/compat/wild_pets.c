@@ -15,6 +15,9 @@
  *                            PET_TRAVELLING while it follows the player
  *                            through a level change
  *   wild_extra[WX_PET_X/Y]   its square; X = -1 while not placed yet
+ *   wild_extra[WX_PET_KILLS] monsters it has killed with its own bite; at
+ *                            5, 15 and 30 it grows (pet_stage()): more hit
+ *                            points and a worse bite
  *
  * Every turn the monster at that square is checked again (species, hit
  * points that only go down), so a pet that died, was teleported, polymorphed
@@ -60,6 +63,15 @@ extern UlarnShared *ularn_shared;
 #define PEV_ATTACK 1
 #define PEV_DIED   2
 #define PEV_FOLLOW 3
+#define PEV_GROW   4           /* b = species, c = new stage */
+
+/* A pet grows up by fighting: each stage reached adds PET_GROW_HP to its
+ * maximum hit points and PET_GROW_BITE to its bite. */
+#define PET_STAGES       3
+#define PET_GROW_HP      8
+#define PET_GROW_BITE    2
+static const int grow_at[PET_STAGES] = { 5, 15, 30 };   /* kills */
+static const char *const stage_name[PET_STAGES + 1] = { "baby", "young", "grown", "fearsome" };
 
 /* ---- helpers ---- */
 
@@ -74,11 +86,20 @@ static const char *pet_name(void)
   return monster[pet_species()].name;
 }
 
+/* How grown the pet is: 0 (as hatched) .. PET_STAGES. */
+static int pet_stage(void)
+{
+  int i, st = 0;
+  for (i = 0; i < PET_STAGES; i++)
+    if (wild_extra[WX_PET_KILLS] >= grow_at[i]) st = i + 1;
+  return st;
+}
+
 /* A pet gets more hit points than its wild cousins: a 1 HP jackal would
  * not survive its first kobold. */
 static int pet_maxhp(int m)
 {
-  return 10 + 3 * monster[m].hitpoints;
+  return 10 + 3 * monster[m].hitpoints + PET_GROW_HP * pet_stage();
 }
 
 static int max2(int a, int b) { return a > b ? a : b; }
@@ -119,6 +140,7 @@ static void pet_clear(void)
   wild_extra[WX_PET_X] = -1;
   wild_extra[WX_PET_Y] = -1;
   wild_extra[WX_PET_LEVEL] = 0;
+  wild_extra[WX_PET_KILLS] = 0;   /* the next pet starts as a baby again */
   pet_publish();
 }
 
@@ -277,6 +299,7 @@ static void hatch(void)
   iven[slot] = ONOTHING;
   m = random_species();
   c[WILD_EGG] = 0;
+  wild_extra[WX_PET_KILLS] = 0;
   pet_place(m, pet_maxhp(m), x, y);
   Printf("\nThe egg hatches! A baby %s blinks up at you.", monster[m].name);
   Print("\nIt seems to think you are its mother.");
@@ -353,6 +376,29 @@ static void pet_follow(void)
   if (bx >= 0) pet_move_to(bx, by);
 }
 
+/* Set while the pet's bite is inside hitm(): wild_pets_kill() counts a
+ * death reported in that window as the pet's own kill. */
+static int biting = 0;
+static int bite_killed = 0;
+
+/* The pet killed something by itself: count it, and at grow_at[] kills it
+ * grows a stage. The hit points the stage adds are given at once, so the
+ * growth is felt in the fight it happened in. */
+static void pet_made_kill(void)
+{
+  int x, y, before = pet_stage(), st;
+  if (wild_extra[WX_PET_KILLS] < 1000000) wild_extra[WX_PET_KILLS]++;
+  st = pet_stage();
+  if (st == before) return;
+  x = wild_extra[WX_PET_X];
+  y = wild_extra[WX_PET_Y];
+  hitp[x][y] = (short) (hitp[x][y] + PET_GROW_HP * (st - before));
+  c[WILD_PET_HP] = hitp[x][y];
+  Printf("\nYour %s has grown! It is a %s %s now: tougher, with a nastier bite.",
+         pet_name(), stage_name[st], pet_name());
+  wild_event(US_EV_WILD_PET, PEV_GROW, pet_species(), st);
+}
+
 /* Bites one adjacent monster. Returns 1 if it attacked. */
 static int pet_attack(void)
 {
@@ -368,15 +414,20 @@ static int pet_attack(void)
     ifblind(x, y);   /* sets lastmonst, which hitm() prints */
     Printf("\nYour %s %s the %s!", pet_name(), m == EYE ? "glares at" : "bites", lastmonst);
     wild_event(US_EV_WILD_PET, PEV_ATTACK, mitem[x][y].mon, 0);
-    dmg = rnd(monster[m].damage + 2);
+    dmg = rnd(monster[m].damage + 2 + PET_GROW_BITE * pet_stage());
     /* hitm() is the player's own blow: keep their hold-monster spell and
      * half-damage curse out of it. SpellFlag = 1 skips their weapon. */
     hold = c[HOLDMONST];
     half = c[HALFDAM];
     c[HALFDAM] = 0;
+    biting = 1;
+    bite_killed = 0;
     hitm(x, y, dmg, 1);
+    biting = 0;
     c[HOLDMONST] = hold;
     c[HALFDAM] = half;
+    /* hitm() may have done anything: only a pet that is still there grows */
+    if (bite_killed && pet_verify()) pet_made_kill();
     return 1;
   }
   return 0;
@@ -575,6 +626,7 @@ void wild_pets_make_level(int lev)
 /* The player killed it (a spell, mostly: walking into it swaps places). */
 void wild_pets_kill(int monst, int x, int y)
 {
+  if (biting) bite_killed = 1;   /* the pet's own bite did it (pet_attack()) */
   if (monst != pet_species() || !wild_is_pet(x, y)) return;
   Printf("\nYou killed your own %s! You feel terrible.", pet_name());
   wild_event(US_EV_WILD_PET, PEV_DIED, monst, 3);
@@ -638,4 +690,27 @@ int wild_pet_swap(int x, int y)
   pet_move_to(ox, oy);
   c[WILD_PET_HP] = hitp[ox][oy];
   return 1;
+}
+
+/* ---- called from show.c: seemagic() ---- */
+const char *wild_pet_text(void)
+{
+  static char buf[160];
+  int m, st, kills, n;
+  if (!wild_on(WILDF_PETS)) return NULL;
+  m = pet_species();
+  if (m == 0) return NULL;
+  st = pet_stage();
+  kills = wild_extra[WX_PET_KILLS];
+  n = snprintf(buf, sizeof buf, "A %s %s: %ld of %d hit points, %d kill%s",
+               stage_name[st], monster[m].name, (long) c[WILD_PET_HP], pet_maxhp(m),
+               kills, kills == 1 ? "" : "s");
+  if (n > 0 && n < (int) sizeof buf)
+  {
+    if (st < PET_STAGES)
+      snprintf(buf + n, sizeof buf - n, " (it grows at %d).", grow_at[st]);
+    else
+      snprintf(buf + n, sizeof buf - n, ".");
+  }
+  return buf;
 }

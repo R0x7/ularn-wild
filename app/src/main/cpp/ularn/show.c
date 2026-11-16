@@ -42,6 +42,7 @@
 #include "wild_hats.h"
 #include "wild_perks.h"
 #include "wild_bounty.h"
+#include "wild_pets.h"
 
 /* =============================================================================
  * Local variables
@@ -164,6 +165,32 @@ static void wild_show_perks(void)
       seepage();
     }
   }
+}
+
+/* =============================================================================
+ * FUNCTION: wild_show_pet
+ *
+ * DESCRIPTION:
+ * Wild Edition: the pet (compat/wild_pets.c) and how grown it is, after the
+ * perks on the known-items page.
+ * Prints nothing when the character has no pet (or the feature is off).
+ */
+static void wild_show_pet(void)
+{
+  const char *text = wild_pet_text();
+  if (text == NULL) return;
+
+  lincount += 3;
+  if (count != 0)
+  {
+    count = 2;
+    seepage();
+  }
+
+  Print("\nYour pet:\n\n");
+  Print((char *) text);
+  count = 2;
+  seepage();   /* ends the line and pages like the lists above */
 }
 
 /* =============================================================================
@@ -711,6 +738,7 @@ void seemagic(int arg)
   }
 
   wild_show_perks();   /* Wild Edition: level-up perks */
+  wild_show_pet();     /* Wild Edition: the pet */
   wild_show_bounty();  /* Wild Edition: bounty board */
 
   if (lincount!=0) more();
