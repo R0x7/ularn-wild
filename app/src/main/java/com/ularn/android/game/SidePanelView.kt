@@ -128,6 +128,19 @@ class SidePanelView(context: Context, private val stateOf: () -> GameState?) : V
             ui.textSize = dp(13f)
         }
 
+        // --- the pet (Wild Edition; compat/wild_pets.c)
+        s.pet?.let { pet ->
+            y += dp(8f)
+            y = header(canvas, "PET", x0, y, w)
+            bold.textSize = dp(13f); bold.color = Color.WHITE
+            y = text(canvas, pet.title, x0, y, w, bold)
+            ui.textSize = dp(13f)   // the effect and perk chips leave it at 11
+            y = bar(canvas, "HP", pet.hp, pet.hpMax, x0, y, w, hpColor(pet.hp, pet.hpMax))
+            ui.color = dim
+            y = text(canvas, pet.growth, x0, y, w, ui)
+            pet.whereabouts?.let { ui.color = accent; y = text(canvas, it, x0, y, w, ui) }
+        }
+
         // --- level overview
         y += dp(8f)
         y = header(canvas, "MAP", x0, y, w)

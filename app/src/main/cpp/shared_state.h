@@ -170,6 +170,15 @@ typedef struct UlarnShared
   int32_t weather;              /* hour (0-23) | weather state << 8 */
   int32_t coin_price;           /* LarnCoin price in gold; < 0: ticker hidden (wild_coin.c) */
   int32_t pet_x, pet_y;         /* the pet's cell, -1 = none on this level */
+  /* The pet for the side panel (wild_pets.c: pet_publish()): [0] species,
+   * 0 = no pet (the rest is 0 then); [1] hit points (as last seen, when it
+   * is on another level); [2] maximum hit points; [3] stage 0 baby .. 3
+   * fearsome; [4] kills of its own; [5] kills it grows at next, 0 = fully
+   * grown. pet_level: name of the level it was left on ("3", "V1"), "" when
+   * it is on the player's level or on its way there. */
+#define US_PET_INFO 6
+  int32_t pet_info[US_PET_INFO];
+  char    pet_level[8];
   int32_t kill_counts[US_KILL_COUNTS];
   /* Event ring: ev[seq & (US_EVENTS-1)] = {type, a, b, c}; the app keeps the
    * last seq it consumed and reads forward. US_EV_* types below. */

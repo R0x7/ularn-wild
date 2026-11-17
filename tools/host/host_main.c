@@ -146,6 +146,9 @@ static void dump(void)
            S->level_name, S->hp, S->hpmax, S->gold, S->plevel, S->game_time);
     printf(" wild=0x%x hat=%d glitch=%d weather=0x%x coin=%d pet=(%d,%d) ctx=%d/%d", S->wild_flags,
            S->hat_tile, S->glitch, S->weather, S->coin_price, S->pet_x, S->pet_y, S->ctx_kind, S->ctx_object);
+    if (S->pet_info[0])
+      printf(" petinfo=%d:%d/%d:stage%d:kills%d:next%d:at[%s]", S->pet_info[0], S->pet_info[1], S->pet_info[2],
+             S->pet_info[3], S->pet_info[4], S->pet_info[5], S->pet_level);
     printf(" tile=%d\n", S->tiles[S->player_y][S->player_x]);
   }
   for (i = last_ev_seq; i < S->ev_seq; i++)

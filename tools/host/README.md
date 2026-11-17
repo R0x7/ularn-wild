@@ -13,6 +13,7 @@ tools/host/second_wind.sh           # regression: the Second Wind perk works onc
 tools/host/treasure_map.sh          # regression: bottles hold treasure maps below ground only
 tools/host/annihilation.sh          # regression: a scroll of annihilation's victims count as kills
 tools/host/pet_growth.sh            # regression: a pet grows after 5 kills of its own, and a save keeps that
+tools/host/pet_panel.sh             # regression: the pet status the side panel shows, with you and left behind
 ```
 
 `play.sh --help` lists the options. The essentials:

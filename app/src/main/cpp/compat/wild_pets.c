@@ -131,6 +131,27 @@ static void pet_publish(void)
     s->pet_x = -1;
     s->pet_y = -1;
   }
+
+  /* the side panel's PET section */
+  {
+    int m = pet_species(), st = pet_stage(), lev = wild_extra[WX_PET_LEVEL] - 1;
+    memset(s->pet_info, 0, sizeof s->pet_info);
+    memset(s->pet_level, 0, sizeof s->pet_level);
+    if (m == 0) return;
+    s->pet_info[0] = m;
+    s->pet_info[1] = (int32_t) c[WILD_PET_HP];
+    s->pet_info[2] = pet_maxhp(m);
+    s->pet_info[3] = st;
+    s->pet_info[4] = wild_extra[WX_PET_KILLS];
+    s->pet_info[5] = st < PET_STAGES ? grow_at[st] : 0;
+    /* left behind on another level (not PET_TRAVELLING, which is -1) */
+    if (lev >= 0 && lev < NLEVELS && lev != level)
+    {
+      const char *name = levelname[lev];
+      while (*name == ' ') name++;   /* " H", " 3": padded for the status line */
+      strncpy(s->pet_level, name, sizeof s->pet_level - 1);
+    }
+  }
 }
 
 static void pet_clear(void)
