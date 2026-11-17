@@ -18,6 +18,11 @@ A mysterious egg that hatches into a loyal little monster, if you carry it long 
   its own bite finishes off count, so let it have the last word now and then.
   The `\` (known spells / scrolls / potions) list shows your pet, its hit
   points, its kills and when it grows next. A new pet starts as a baby again.
+* **At a glance:** the side panel has a PET section while you have one: what
+  it is ("Young jackal"), a hit point bar that turns yellow and red as it
+  gets hurt, its kills and the count it grows at next. If you left it
+  behind, the panel says where it is waiting ("Waiting on level 3"); its
+  hit points are then the ones it had when you last saw it.
 * **Stairs:** a pet next to you when you change level comes along. Otherwise it
   stays on that level ("You hear a sad whine behind you.") and is still there when
   you come back. Saving keeps it.

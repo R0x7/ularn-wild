@@ -43,6 +43,7 @@ class GameState(private val shared: ByteBuffer, layout: IntArray) {
         const val COIN_PRICE = 67; const val PET_X = 68; const val PET_Y = 69
         const val KILL_COUNTS = 70; const val KILL_COUNTS_N = 71
         const val EV_SEQ = 72; const val EV = 73; const val EVENTS_N = 74
+        const val PET_INFO = 75; const val PET_LEVEL = 76
     }
 
     private val off = layout
@@ -120,6 +121,12 @@ class GameState(private val shared: ByteBuffer, layout: IntArray) {
     /** The pet's cell on this level, or -1. */
     val petX get() = i(F.PET_X)
     val petY get() = i(F.PET_Y)
+    /** The pet as the side panel shows it (shared_state.h: pet_info, pet_level), or null without one. */
+    val pet: PetStatus? get() {
+        fun info(n: Int) = buf.getInt(off[F.PET_INFO] + 4 * n)
+        if (info(0) <= 0) return null
+        return PetStatus(info(0), info(1), info(2), info(3), info(4), info(5), cString(off[F.PET_LEVEL], 8).trim())
+    }
     val killCountSlots get() = off[F.KILL_COUNTS_N]
     /** Monsters of species [monst] this character has killed (saved with the game). */
     fun killCount(monst: Int): Int =
