@@ -147,6 +147,10 @@ generated because `monstlevel[]` is unchanged — spawn them with
 `MAXMONST` is now `#define MAXMONST DEMONLORD` so genocide/mimic logic still
 covers "ordinary monsters" (including the new ones), and `MAXMONST+8 ==
 LUCIFER` still holds. Stats rows are placeholders — tune them in your feature.
+Only their features make these monsters: code that picks a monster at random
+from `1..MAXMONST-1` (the step past a genocided species in `makemonst()` and
+`createmonster()`, polymorph, a mimic's disguise) leaves them out with
+`is_wild_monst()` (`monster.h`).
 
 **Objects** (`itm.h`, appended before `OCOUNT`; `OWILD_FIRST == OVENDING`):
 

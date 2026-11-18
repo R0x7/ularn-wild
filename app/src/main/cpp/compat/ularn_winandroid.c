@@ -353,7 +353,9 @@ static void GetTile(int x, int y, int *TileId)
         {
           if ((gtime % 10) == 0)
           {
-            while ((mimicmonst = rnd(MAXMONST)) == INVISIBLESTALKER);
+            /* Wild Edition: never disguised as one of its monsters */
+            do mimicmonst = rnd(MAXMONST);
+            while (mimicmonst == INVISIBLESTALKER || is_wild_monst(mimicmonst));
           }
           *TileId = monsttilelist[mimicmonst];
         }

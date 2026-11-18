@@ -1501,6 +1501,9 @@ void createmonster(MonsterIdType mon)
   while ((monster[mon].flags & FL_GENOCIDED) != 0 && (mon < MAXMONST))
   {
     mon++;    /* genocided? */
+    /* Wild Edition: after the last ordinary monster comes the first demon
+     * lord, as in the base game, not a Wild monster */
+    if (is_wild_monst(mon)) mon = MAXMONST;
   }
 
   /* choose direction, then try all */
@@ -2008,7 +2011,13 @@ int makemonst(int lev)
     tmp = min_monst_id + rund(num_ids);
   }
 
-  while ((monster[tmp].flags & FL_GENOCIDED) != 0 && (tmp < MAXMONST)) tmp++;
+  while ((monster[tmp].flags & FL_GENOCIDED) != 0 && (tmp < MAXMONST))
+  {
+    tmp++;
+    /* Wild Edition: after the last ordinary monster comes the first demon
+     * lord, as in the base game, not a Wild monster */
+    if (is_wild_monst(tmp)) tmp = MAXMONST;
+  }
 
   if (level <= DBOTTOM)
   {
