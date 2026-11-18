@@ -1019,7 +1019,7 @@ static void dirpoly(SpellType spnum)
   {
     m = rnd(MAXMONST + 7);
     mitem[x][y].mon = (char) m;
-  } while ((monster[m].flags & FL_GENOCIDED) != 0);
+  } while ((monster[m].flags & FL_GENOCIDED) != 0 || is_wild_monst(m));   /* Wild Edition: never one of its monsters */
 
   hitp[x][y] = monster[m].hitpoints;
   show1cell(x, y);  /* show the new monster */

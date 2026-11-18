@@ -53,6 +53,13 @@
  * so this follows the enum instead of being a fixed 57. MAXMONST + 8 == LUCIFER. */
 #define MAXMONST DEMONLORD
 
+/* Wild Edition: its monsters sit between the last ordinary monster and the
+ * demons, so they are inside 1..MAXMONST-1 although the base game has no
+ * monster there. Whatever picks a monster at random from that range
+ * (makemonst()/createmonster() stepping past a genocided species, polymorph,
+ * a mimic's disguise) must leave them out: only their features make them. */
+#define is_wild_monst(m) ((m) >= NULLPOINTER && (m) < DEMONLORD)
+
 struct monst {
   char  *name;
   char  level;
