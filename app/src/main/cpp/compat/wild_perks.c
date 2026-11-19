@@ -35,7 +35,7 @@
 
 /* c[WILD_PERKS] bit 15: Night Owl's +2 is on the stats right now. Kept in
  * c[] (not a static) so a save made at night restores consistently. Above
- * every perk bit, so Kotlin (which only names bits 0..9) ignores it. */
+ * every perk bit, so Kotlin (which only names bits 0..10) ignores it. */
 #define PERK_OWL_ON        (1L << 15)
 
 #define PERK_SKIN_AC        2   /* Thick Skin */
@@ -49,7 +49,8 @@
 static const char *perk_name[PERK_COUNT] =
 {
   "Magnet Hands", "Thick Skin", "Vampiric", "Bookworm", "Lucky",
-  "Nimble", "Haggler", "Glass Cannon", "Second Wind", "Night Owl"
+  "Nimble", "Haggler", "Glass Cannon", "Second Wind", "Night Owl",
+  "Cartographer"
 };
 
 static const char *perk_desc[PERK_COUNT] =
@@ -63,7 +64,8 @@ static const char *perk_desc[PERK_COUNT] =
   "10% off at the DND store, +10% at the trading post",
   "+4 weapon class, but -10% max HP",
   "once per dungeon level, a deadly blow leaves you at 1 HP",
-  "+2 to all stats at night in town"
+  "+2 to all stats at night in town",
+  "the stairs of every level you enter go on your map"
 };
 
 /* Night Owl when there is no day/night (the weather feature is off). */
@@ -204,6 +206,10 @@ static void grant(int p)
       else
         owl();
       break;
+    case PERK_MAPPER:   /* the level you are on counts as entered */
+      wild_perks_new_level(level);
+      draws(0, MAXX, 0, MAXY);
+      break;
     default:
       break;
   }
@@ -277,7 +283,32 @@ void wild_perks_turn(void)
   owl();
 }
 
-void wild_perks_new_level(int lev) { (void) lev; }
+/* Cartographer: arriving on a dungeon or volcano level marks its ways up and
+ * down on the map, as if seen. Only cells the player has not seen yet are
+ * touched, so nothing already known changes; the caller of newcavelevel()
+ * redraws the whole screen right after this. */
+static int is_way(int obj)
+{
+  return obj == OSTAIRSUP || obj == OSTAIRSDOWN || obj == OVOLUP || obj == OVOLDOWN;
+}
+
+void wild_perks_new_level(int lev)
+{
+  int x, y, n = 0;
+  if (!wild_perk(PERK_MAPPER) || lev <= 0) return;
+  for (y = 0; y < MAXY; y++)
+    for (x = 0; x < MAXX; x++)
+      if (is_way((unsigned char) item[x][y]) && know[x][y] == OUNKNOWN)
+      {
+        know[x][y] = item[x][y];
+        n++;
+      }
+  if (n > 0)
+  {
+    Print("\nYou sense the way through this level.");
+    wild_event(US_EV_WILD_PERK, PERK_MAPPER, n, 0);
+  }
+}
 void wild_perks_leaving_level(int lev) { (void) lev; }
 void wild_perks_make_level(int lev) { (void) lev; }
 

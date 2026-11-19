@@ -22,7 +22,8 @@
 #define PERK_CANNON   7
 #define PERK_WIND     8
 #define PERK_OWL      9
-#define PERK_COUNT    10
+#define PERK_MAPPER  10
+#define PERK_COUNT    11
 
 /* Non-zero when the character has perk `p` (and the feature is on). */
 int  wild_perk(int p);
