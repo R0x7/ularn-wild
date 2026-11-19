@@ -283,7 +283,7 @@ int wild_debug(void)
 {
   int t, a, x, y;
   t = get_prompt_input("\nWild debug: (o)bject here, (m)onster next to you, (g)old, (x)p level, "
-                       "(t)urns, (h)eal, (d)amage, (f)lags? ", "omgxthdf\033", 1);
+                       "(t)urns, (h)eal, (d)amage, (f)lags, (w)izard off? ", "omgxthdfw\033", 1);
   switch (t)
   {
     case 'o':
@@ -338,6 +338,12 @@ int wild_debug(void)
              (long) c[WILD_FLAGS], (long) c[WILD_HAT], (long) c[WILD_PERKS], (long) c[WILD_EGG],
              (long) c[WILD_PET_MON], (long) c[WILD_COINS], (long) c[WILD_COIN_PRICE],
              (long) c[WILD_GLITCH], (long) c[WILD_DUCK], (long) c[WILD_WEATHER]);
+      return ACTION_NULL;
+    case 'w':
+      /* play on as a normal character: a wizard sees every new level
+       * whole, which hides anything that maps part of one (Cartographer) */
+      wizard = 0;
+      Print("\nYou are no longer a wizard.");
       return ACTION_NULL;
     default:
       (void) x; (void) y;

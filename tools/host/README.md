@@ -15,6 +15,7 @@ tools/host/annihilation.sh          # regression: a scroll of annihilation's vic
 tools/host/pet_growth.sh            # regression: a pet grows after 5 kills of its own, and a save keeps that
 tools/host/pet_panel.sh             # regression: the pet status the side panel shows, with you and left behind
 tools/host/wild_monsters.sh         # regression: a genocided species is never replaced by a Wild monster
+tools/host/cartographer.sh          # regression: the Cartographer perk puts a new level's stairs on the map
 ```
 
 `play.sh --help` lists the options. The essentials:
@@ -25,7 +26,8 @@ tools/host/wild_monsters.sh         # regression: a genocided species is never r
     monster by id next to you, **(g)** +1000 gold, **(x)** gain a level,
     **(t)** run N `wild_turn()` ticks without moving, **(h)** heal,
     **(d)** take N damage (a blow through `losehp()`, so it can kill),
-    **(f)** print the Wild attribute values.
+    **(f)** print the Wild attribute values, **(w)** stop being a wizard
+    (a wizard sees every new level whole; the menu is gone after this).
   * `+` is upstream's create item (places it next to you), `_` max XP,
     `` ` `` debug mode.
 * `--seed N` makes the run reproducible (`ULARN_SEED`).

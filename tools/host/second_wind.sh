@@ -2,14 +2,14 @@
 # Regression: the Second Wind perk saves the character once per dungeon level
 # for the whole game. It used to remember only the level of its latest use,
 # so using it on another level armed it again on the first one.
-# Takes every perk (ten level-ups), then takes a deadly blow (wizard debug
+# Takes every perk (eleven level-ups), then takes a deadly blow (wizard debug
 # menu, "(d)amage") on level 1, on level 2 and back on level 1: the first two
 # must be survived, the third must kill. Exit code != 0 on failure.
 set -e
 cd "$(dirname "$0")"
 sh build.sh >/dev/null
 out=$(./play.sh --seed 5 --wizard --class f --quiet \
-  '{10:=x}' '.' '{10:a}' \
+  '{11:=x}' '.' '{11:a}' \
   '=o79\n0\ng' '=d9999\n' '=h' \
   '=o13\n0\nd' '=d9999\n' '=h' \
   '=o7\n0\nu' '=d9999\n') || true

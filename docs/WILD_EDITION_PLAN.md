@@ -686,7 +686,8 @@ the save) and confirm it is still there.
   > 0: roll 3 distinct perks the player doesn't have, show
   *"LEVEL UP! Choose a perk: (a) Magnet Hands  (b) Thick Skin  (c) Lucky"*
   with one-line descriptions via `Print`, then `get_prompt_input(..., "abc", 1)`.
-  Store as bits in `c[WILD_PERKS]`. Max 10 perks, pick list exhausted →
+  Store as bits in `c[WILD_PERKS]`. Max 10 perks (11 since Cartographer
+  was added later), pick list exhausted →
   "+5 max HP instead".
 * Perks (implement each where it bites; every edit guarded by
   `wild_perk(PERK_X)`):
@@ -710,6 +711,8 @@ the save) and confirm it is still there.
   10. **Night Owl** — +2 to all stats while on the surface at night (needs
       the Weather agent's `c[WILDF_WEATHER]` night flag; if absent, "+1 INT
       permanently" as fallback). Keep this one last and optional.
+  11. **Cartographer** (added later) — entering a dungeon or volcano level
+      marks its stairs and volcanic tubes on the map (`wild_new_level`).
 * Side panel / HUD: `inv_text`-style list isn't needed; show perks in the
   `\` (list spells/items) screen via a small `wild_show_perks()` appended to
   `show.c`'s known-items page, and in `GameState` as `wildFlags`? No —

@@ -13,9 +13,11 @@ cd "$(dirname "$0")"
 sh build.sh >/dev/null
 fail() { echo "$out"; echo "FAIL: $1"; exit 1; }
 
-# a tough character (12 levels: the eyes bite), an egg, 300 turns to hatch it
+# a tough character (12 levels: the eyes bite), an egg, 300 turns to hatch it.
+# The seed picks which pet hatches; a weak one can die to the eyes before the
+# player is back (seed 9 did once a twelfth level-up became an eleventh perk)
 start="{12:=x} . {12:a}"
-out=$(./play.sh --seed 9 --wizard --class f $start '.' \
+out=$(./play.sh --seed 1 --wizard --class f $start '.' \
   '=o111\n0\nt' '=t300\n' '.' \
   '=m12\n' '=m12\n' '=m12\n' 'h' 'h' 'h' '=o79\n0\ng' '.' \
   'j' '.' '.') || true

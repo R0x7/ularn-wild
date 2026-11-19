@@ -8,7 +8,7 @@ random perks you don't have yet.
   press `a`, `b` or `c`. Escape puts the choice off for about 10 turns (it
   comes back on its own; picks are never lost, and a saved game with a pick
   pending asks again after your first move). Several level-ups at once ask
-  one after the other. Once you have all ten, each level-up gives +5 max HP.
+  one after the other. Once you have all eleven, each level-up gives +5 max HP.
 * **Perks:** Magnet Hands (gold next to you slides over to you), Thick Skin
   (+2 AC), Vampiric (heal 1 HP per kill, 2 below a quarter of your HP),
   Bookworm (a quarter of your casts cost no spell point), Lucky (monsters
@@ -17,7 +17,9 @@ random perks you don't have yet.
   -10% max HP when taken), Second Wind (a deadly blow leaves you at 1 HP, once on
   each dungeon level for the whole game: coming back to a level does not
   recharge it), Night Owl (+2 to all stats while in town at night;
-  +1 INT for good when the Weather feature is off).
+  +1 INT for good when the Weather feature is off), Cartographer (the stairs
+  and volcanic tubes of each dungeon or volcano level you enter are marked on
+  your map, including the level you are on when you take it).
 * **See them:** the side panel's PERKS section, and the end of the `\`
   (known spells / scrolls / potions) list.
 * **Disable:** Settings → Wild features → "Choose a perk on every level-up"

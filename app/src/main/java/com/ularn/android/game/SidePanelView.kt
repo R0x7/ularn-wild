@@ -179,10 +179,11 @@ class SidePanelView(context: Context, private val stateOf: () -> GameState?) : V
 
     companion object {
         /** Perk names by bit index; mirrors perk_name[] in compat/wild_perks.c
-         *  (bit i of [GameState.perkBits] = perk i). Bits 10..15 aren't perks. */
+         *  (bit i of [GameState.perkBits] = perk i). Bits 11..15 aren't perks. */
         private val PERK_NAMES = listOf(
             "Magnet Hands", "Thick Skin", "Vampiric", "Bookworm", "Lucky",
             "Nimble", "Haggler", "Glass Cannon", "Second Wind", "Night Owl",
+            "Cartographer",
         )
     }
 
