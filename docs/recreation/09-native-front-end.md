@@ -347,7 +347,7 @@ A **status refresh** writes:
 * Two preformatted lines reproducing the classic bottom lines:
   * Line 1, in order: the text "Spells:"; current spell points right-aligned in 3; "("; maximum spell points right-aligned in 3 followed by ")" when the maximum exceeds 99, otherwise right-aligned in 2 followed by ")" and a space; " AC: "; armour class left-aligned in 3; "  WC: "; weapon class left-aligned in 3; "  Level"; the experience level (right-aligned in 3 when above 99, otherwise a space then the number left-aligned in 2); " Exp: "; experience left-aligned in 9; a space; the 19-character level title. Example: `Spells:  5(12)  AC: 3    WC: 4    Level 1  Exp: 0           novice explorer  `.
   * Line 2, in order: "HP: "; the text "current (maximum)" right-aligned in 11; then " STR=", " INT=", " WIS=", " CON=", " DEX=", " CHA=" each followed by the value left-aligned in 2 (strength includes the temporary bonus); " LV:"; the two-character level name, or " ?" when the level is unknown to the player; "  Gold: "; gold left-aligned in 8. Example: `HP:     12 (12) STR=18 INT=10 WIS=10 CON=12 DEX=14 CHA=8  LV: H  Gold: 0       `.
-  * (The app's own HUD uses the numeric fields; the two lines exist for a classic-style display.)
+  * Nothing in the app reads these two lines (its HUD is built from the numeric fields; only the desktop test harness prints them), so a rebuild may omit them; they are the classic status display should one be wanted.
 
 Side effects on game state, inherited from upstream and therefore behaviour:
 
@@ -438,7 +438,7 @@ The core's direction numbers are 1 south, 2 east, 3 north, 4 west, 5 north-east,
 
 **Magic effect frame count (effect).** Returns 8 for the sparkle and 6 for every other effect.
 
-**Magic effect frame (x, y, effect, frame).** Nothing happens if the frame number is beyond the effect's frame count, is negative or is 8 or more; if the player is blind; or if (x, y) is off the map. Otherwise:
+**Magic effect frame (x, y, effect, frame).** Nothing happens if the frame number is greater than the effect's frame count, is negative or is 8 or more (a frame number exactly equal to the count is not rejected, but the core only ever passes 0 .. count − 1); if the player is blind; or if (x, y) is off the map. Otherwise:
 
 * For an **overlay** effect (only the sparkle): the square's tile is recomputed by the normal decision procedure and the frame tile is put in the square's *overlay*.
 * For every other effect: the frame tile *replaces* the square's tile and the overlay is cleared.
@@ -591,7 +591,7 @@ These exist only for the app's statistics (Part 10) and danger cues; they piggy-
 
 ### 6.1 Run identity
 
-Two otherwise unused slots at the end of the base game's character-attribute array (the two immediately before the first Wild attribute) hold a run id and a kill count. They are part of the attribute array and therefore saved in save files and checkpoints (Part 03), so a restored game keeps both.
+Two otherwise unused slots at the end of the base game's character-attribute array hold a run id and a kill count: the last base attribute (the one immediately before the first Wild attribute) is the run id, and the one before it is the kill count. They are part of the attribute array and therefore saved in save files and checkpoints (Part 03), so a restored game keeps both and nothing is counted twice. The core's "greedy cheater" check on restore looks only at the ability scores, so these values never trip it. All attribute values are the core's long integers, published truncated to 32 bits.
 
 At every command prompt: if the run-id slot is zero or negative it is set to a fresh random value — 30 random bits from the system's secure random source (not the game's generator, so seeded runs are unaffected) with the lowest bit forced to 1, hence a positive odd number below 2^30. The run id and the kill count are then copied into the block. Until the first command prompt the published run id is 0 ("no character yet").
 
@@ -651,8 +651,8 @@ The app decides what the button does in this priority order: (1) a kind from "ta
 |---|---|---|---|---|---|
 | None | 0 | Nothing; unknown; wall; visible pit, teleporter, arrow trap, dart trap, trap door, sphere of annihilation; both elevators; all four hidden traps; a closed door | — | — | — |
 | Inspect | 1 | Statue, mirror, dead fountain, open door | Last word of the name, capitalised ("Statue", "Mirror", "Fountain", "Door"); always disabled | none | — |
-| Take | 2 | Any other item: potions, scrolls, books, cookies, drugs, weapons, armour, rings, gems, chests' siblings, Wild items, and a vending machine or coin ATM when its Wild feature is off | "Pick up" | `.` then `t` | Any set containing both `t` and `i` |
-| Gold | 3 | The four gold-pile objects | "Gold" | `.` (walking on gold already collects it; this is a harmless wait) | — |
+| Take | 2 | Every object id not listed in another row: potions, scrolls, books, cookies, drugs, weapons, armour, rings, gems, the special items, the urn, all other Wild items, and a vending machine or coin ATM when its Wild feature is off | "Pick up" | `.` then `t` | Any set containing both `t` and `i` |
+| Gold | 3 | The four gold-pile objects | "Gold" | `.` (the game's look at the square picks the gold up by itself; nothing to answer) | — |
 | Stairs up | 4 | Staircase up | "Stairs ▲" | `.` then `u` | `s u d i` + escape |
 | Stairs down | 5 | Staircase down | "Stairs ▼" | `.` then `d` | `s u d i` + escape |
 | Shaft down | 6 | Volcanic shaft (surface) | "Climb ▼" | `.` then `c` | `c i` + escape |

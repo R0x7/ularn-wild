@@ -153,7 +153,7 @@ There is no separate "fizzle" beyond these three messages; individual spells add
 
 ### 5.1 Confusion check
 
-Every aimed helper starts by checking the confusion timer. If the character is confused the game prints ` You can't aim your magic!` (one leading space), beeps, and the spell does nothing more. The spells that use the check are exactly those built on the three aimed helpers and the three direct routines: mle, sle, ssp, web, pha, bal, cld, ply, dry, lit, drl, fgr, tel, mkw, sum, and the pulverization scroll. The sphere of annihilation asks for a direction without this check. Wild Edition hook: a worn hat can clear confusion just before the check; see Part 12.
+Every aimed helper starts by checking the confusion timer. If the character is confused the game prints ` You can't aim your magic!` (one leading space), beeps, and the spell does nothing more. The check is made by the adjacent strike helper, the projectile helper and the polymorph, teleport-away and make-wall routines, so it applies to mle, sle, ssp, web, pha, bal, cld, ply, dry, lit, drl, fgr, tel, mkw, sum and the pulverization scroll. For pha, fgr and sum it is reached only after the spell's own success roll has passed. The sphere of annihilation asks for a direction without this check. Wild Edition hook: a worn hat can clear confusion just before the check; see Part 12.
 
 ### 5.2 Direction prompt
 
@@ -454,7 +454,7 @@ In wizard mode only, the game first prints `Number: ` and reads a number; if one
 
 Otherwise the game asks Part 04's "random monster for a dungeon level" routine for a monster suited to (current level + 1), adds 8 to the returned monster id, and creates that monster. Creation (Part 04) places it on one of the eight cells around the player, starting from a random direction and trying each in turn, on the first cell that is on the map, is not a wall, a closed door or the level 1 exit, and holds no monster; if none qualifies nothing appears. There is no message and no animation.
 
-Consequences of the "+8": the result is always 8 places later in the monster table than a normal wandering monster for the next level. The 1-in-10 "lemming instead" rule of the random routine yields a jaculi (id 9). On deep levels the sum reaches beyond the red dragon: in this build ids 57 to 60 are the four Wild Edition monsters and 61 to 64 are demon lords I to IV, so the spell can create those (in the unmodified base game the same arithmetic gives demon lords I to VII and the demon prince). If the random routine has stepped past genocided species all the way to the first demon lord, the sum is the God of Hellfire's id, which creation accepts.
+Consequences of the "+8": the result is always 8 places later in the monster table than a normal wandering monster for the next level. The random routine's "lemming instead" rule (9% of the time on levels 0 to 15) therefore yields a jaculi (id 9). On deep levels the sum reaches beyond the red dragon: in this build ids 57 to 60 are the four Wild Edition monsters and 61 to 64 are demon lords I to IV, so the spell can create those (in the unmodified base game the same arithmetic gives demon lords I to VII and the demon prince). If the random routine has stepped past genocided species all the way to the first demon lord, the sum is the God of Hellfire's id, which creation accepts.
 
 ### 12 pha: phantasmal forces
 
@@ -624,7 +624,7 @@ The current level is rebuilt as a fresh random maze and everything that was on i
 8. Unless in wizard mode, the known-spell counter for alter reality drops by one.
 9. If the player's cell now holds an object (including a wall) or a monster, the player is moved to the nearest cell that has neither (Part 02's repositioning: smallest squared distance, first found scanning columns west to east and rows north to south).
 
-Stairs, shafts, buildings, altars, fountains and so on are objects and are scattered like everything else; this works on any level including the home level. Sphere tiles are wiped but the sphere records survive (section 9.7).
+Stairs, shafts, buildings, altars, fountains and so on are objects and are scattered like everything else; this works on any level including the home level. The picks in step 5 can reach the east column and the bottom row, which are solid wall after step 1 except for the reopened level 1 exit, so on level 1 an object or a monster can end up on the exit cell. Sphere tiles are wiped but the sphere records survive (section 9.7).
 
 ### 38 per: permanence
 
@@ -666,7 +666,7 @@ The only way a sphere comes into existence is the sph spell (section 7, spell 33
 2. Run the placement step (9.4) in "just created" mode, which does not move the sphere but applies every arrival rule to the cell it starts on.
 3. Sleep 500 ms so the player sees the sphere before it first moves.
 
-Because the starting cell is clipped into the legal area (9.4 step 3), a sphere cast at the outer wall of a dungeon level from a cell next to that wall is placed on the caster's own cell.
+Because the starting cell is clipped into the legal area (9.4 step 3), a sphere cast straight at the outer wall of a dungeon level from a cell next to that wall is placed on the caster's own cell, where rule d of 9.4 kills a caster who has no talisman.
 
 ### 9.3 When spheres move
 
@@ -850,7 +850,7 @@ Every string printed by the spell and sphere code, grouped by where it comes fro
 3. Failure depends only on INT and a flat 1 in 23; the experience requirement is "id no greater than 3 x clev + 2".
 4. The dexterity spell raises DEX by 3 when cast and by 3 again when it expires.
 5. The descriptions of dex and str say +2; the real boost is 3.
-6. Sleep and web are multiples of the character's melee "full hit" and so do 10000 damage with the lance of death, even to demons that are not immune (none are, for those two spells all demons are immune; the rule matters for ordinary monsters).
+6. Sleep and web do not disable the monster; their damage is a multiple of the character's melee "full hit", and so is 10000 while the lance of death is wielded.
 7. A killed monster absorbs only its remaining hit points from a projectile; a surviving one stops it.
 8. A reflected projectile keeps its original animation orientation when a demon returns it but flips when a mirror does.
 9. Statues crumble to projectiles only at difficulty 3 or less (29 in 60), but always yield to vaporize rock at difficulty 3 or less and 31 times in 60 above that.

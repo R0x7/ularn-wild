@@ -106,8 +106,9 @@ Summary of what each level is and has. "Generator" and "pre-made" are explained 
 
 ### 2.2 What is stored for every square
 
-Five things are stored per square and belong to the level (they are kept when the player
-leaves and are written to the save file):
+Five grids are stored per level and belong to it (they are kept when the player leaves and
+are written to the save file). The monster grid carries the stolen items with it, so the
+table has six rows; "the five stored fields" elsewhere in this part means these:
 
 | Field | Size | Meaning |
 |---|---|---|
@@ -572,8 +573,8 @@ same map is nearly empty of monsters.
 
 * Walls are one square thick, except diagonal walls, which are drawn two squares thick
   (pairs of `##` stepping one column per row) so that they look solid.
-* Corridors are one square wide. Most maps have a long straight corridor along row 1 or row
-  15 (often both) with side corridors feeding rooms; halls and rooms are 3 to 6 squares
+* Corridors are one square wide. Nearly every map has a long, almost unbroken corridor along
+  row 1 and another along row 15, with side corridors feeding rooms; halls and rooms are 3 to 6 squares
   across.
 * Rooms are closed with single doors at their mouths; a few vault entrances use two doors
   side by side. Some rooms have no door, only a gap.
@@ -583,8 +584,8 @@ same map is nearly empty of monsters.
 * Object squares sit at dead ends, in small closets behind a door, and inside the vaults,
   usually with one or more monster squares beside them.
 * The two special squares are placed deep inside the layout, far from (33, 15) by walking
-  distance: in about half the maps they are side by side or within two squares of each
-  other in one vault (stacked in a one-wide cell, or as "`~`, monster, `!`" in a row); in
+  distance: in roughly a third of the maps they are side by side or within two squares of
+  each other in one vault (stacked in a one-wide cell, or as "`~`, monster, `!`" in a row); in
   the others they are in separate vaults at opposite ends of the map. They usually have
   several monster squares within two squares, but a few maps leave them unguarded apart
   from the fixed guardian that comes with the special square itself.
@@ -592,11 +593,11 @@ same map is nearly empty of monsters.
 **The designs.** There are about eleven distinct designs; eight of the maps are reworked
 copies of earlier ones (maps 13 to 20 in file order repeat maps 1 and 6 to 12 with 4 to 10
 percent of the squares changed: a door moved, a wall opened, the special squares relocated),
-and map 5 is map 4 with its rows shuffled. The designs are:
+and map 5 is map 4 with its rows reordered and a few squares edited. The designs are:
 
 * An "office block": three horizontal bands separated by full-width walls with doors; a
   band of door-linked rooms on top, a band of nested rooms in the middle (including a small
-  rectangular spiral and a long sealed gallery), and a row of identical six-wide cells with
+  rectangular spiral and a long sealed gallery), and a row of identical five-wide cells with
   doors along the bottom corridor; the vault is a small walled block on the right.
 * A rectangular spiral: concentric one-wide corridors wound inward from the outer ring,
   each ring entered through a single door at a corner, ending in a strip of tiny cells
@@ -607,16 +608,16 @@ and map 5 is map 4 with its rows shuffled. The designs are:
   core, a hall of regularly spaced one-square pillars to one side and rectangular rooms to
   the other.
 * A warren of small irregular rooms joined by many doors.
-* Nested rectangular rings of corridor around a central block of rooms.
+* Nested rectangular rings of corridor wrapped around blocks of rooms.
 * A slanted hall: a mostly open map crossed by a few long double-thick diagonal walls
   forming large V shapes (this is the map with the fewest walls).
 * A colonnade: a comb of one-square pillars on one side and an octagonal vault in the
   middle with a door at the bottom.
 * Big rectangular blocks with wide streets between them.
 * A winding layout of long bent corridors and pocket rooms.
-* A cell block: a comb of one-wide dead-end corridors along the top and a row of seven
+* A cell block: a comb of one-wide dead-end corridors along the top and a row of six
   identical cells (5 wide, 4 high inside) along the bottom, each entered from the corridor
-  above.
+  above through a door or a one-square gap.
 * (The unused 21st map is a dense comb maze of long one-wide corridors.)
 
 An illustrative fragment in the same style (drawn for this document, not taken from the
@@ -879,8 +880,8 @@ Quirks that follow from these rules and should be kept:
 ### 11.4 Drop gold around the player
 
 Given an amount: if it is more than 250 create a hundreds pile, otherwise a plain pile, next
-to the player's square with the rules of 11.3. Used for monster gold drops and one object
-interaction (Parts 04 and 06).
+to the player's square with the rules of 11.3. Used for monster gold drops (Part 04) and for
+the gold that spills out of an opened chest (Part 06).
 
 ### 11.5 Potion and scroll kinds
 
