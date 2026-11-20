@@ -44,9 +44,10 @@ version specified here is Ularn 1.6.3a, which calls itself "The Addiction of Ula
 - **Character.** One of eight classes, with six abilities, hit points, spell points,
   armour class, weapon class, 26 inventory slots and about thirty timed effects. Up to
   100 experience levels.
-- **Content.** 61 ordinary monsters plus seven demon lords, a demon prince and Lucifer;
-  about 100 kinds of object (weapons, armour, rings, artifacts, 35 potions, 28 scrolls,
-  books, chests, gems, drugs, traps, altars, thrones, fountains, statues, mirrors); 39
+- **Content.** 56 ordinary monsters, seven demon lords, a demon prince and Lucifer
+  (the Wild Edition adds four more monsters); 101 kinds of object in the base game
+  and 17 Wild ones (weapons, armour, rings, artifacts, 35 potion kinds, 28 scroll
+  kinds, books, chests, gems, drugs, traps, altars, thrones, fountains, statues, mirrors); 39
   spells cast by three-letter codes; spheres of annihilation.
 - **Town.** A store, a bank (with a branch on dungeon level 8), a trading post, a
   college, a tax office, your home, and a drug dealer's pad in the dungeon. Winners owe
@@ -352,12 +353,14 @@ A recreation cannot be compared with the original line by line, so correctness h
 come from checks that follow from the specification.
 
 1. **Table checks.** Unit tests that count and total every data table: 70 monster rows
-   including the four Wild ones, the object count, 39 spells, 35 potions and 28
-   scrolls with their weight tables, 99 store rows, 8 classes, 100 titles per class,
-   the experience table, 21 maps of 17 by 67. A wrong table is the commonest error and
+   (a placeholder row, 56 ordinary monsters, 4 Wild ones, 7 demon lords, the demon
+   prince and Lucifer), 118 object rows (101 base, 17 Wild), 121 attributes, 39
+   spells, 35 potion kinds and 28 scroll kinds with their weight tables, 99 store
+   rows (93 base, 6 Wild), 8 classes, the level titles and the experience table, 21
+   maps of 17 by 67. A wrong table is the commonest error and
    the cheapest to catch.
 2. **Scenario scripts.** Key scripts run through the harness with a fixed seed and a
-   debug menu that can place any object or monster (Part 15 lists the menu and twelve
+   debug menu that can place any object or monster (Part 15 lists the menu and nine
    scenarios with their expected outcomes: new game to save and restore, the Second
    Wind perk, treasure maps, annihilation kills, pet growth, the pet and bounty panels,
    Wild monster exclusion, the Cartographer perk). Add one scenario for every "done
