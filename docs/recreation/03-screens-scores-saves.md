@@ -87,7 +87,7 @@ Examples of complete lines:
 - `d)   a magic scroll of enchant armor`
 - `e)   a ring of protection -2`
 
-### 2.2 The three object groups
+### 2.2 The four object groups
 
 | Group | Objects | What follows the name |
 |---|---|---|
@@ -513,10 +513,10 @@ Consequences worth knowing:
 
 - A player's stored score is replaced by a **lower** score if the new game was played at a higher
   difficulty.
-- A user's existing record is replaced only by that user's better (or harder) game; a different
-  user displaces the bottom record without having to beat it on the visitor board (any score that
-  beats it or any higher difficulty than its difficulty is enough), but must strictly beat it on
-  the winner board.
+- A user's existing record is replaced only by that user's own better (or harder) game. A user
+  with no record competes for the bottom-ranked record: on the visitor board it is overwritten if
+  the new score is strictly higher than its score or the new difficulty is strictly higher than
+  its difficulty; on the winner board the new score must be strictly higher than its score.
 - Quitting never creates an entry (section 7.3).
 
 ### 4.7 Start-up maintenance modes
@@ -719,13 +719,13 @@ originates; the rules for those events are in the parts named.
 | 15 | `erased by a wayward finger` | yes | Finger of death backfire (Part 07) |
 | 16 | `fell through a trap door to HELL` | no | Trap door on a bottom level (Part 06) |
 | 17 | `fell through a trap door` | yes | Trap door fall damage (Part 06) |
-| 18 | `drank some poisonous water` | yes | Fountain (Part 06) |
-| 19 | `fried by an electric shock` | yes | Throne/altar-type shock (Part 06) |
+| 18 | `drank some poisonous water` | yes | Drinking from or washing at a fountain (Part 06) |
+| 19 | `fried by an electric shock` | yes | A trapped closed door that fails to open (Part 06) |
 | 20 | `slipped in a volcano shaft` | yes | Volcano shaft fall (Part 06) |
 | 21 | `killed by a stupid act of frustration` | yes | Never raised in this build |
 | 22 | `attacked by a revolting demon` | yes | Summon-demon spell turning on the caster (Part 07) |
 | 23 | `hit by his own magic` | yes | Own spell damage (Part 07); also the Wild debug "damage" test |
-| 24 | `demolished by an unseen attacker` | yes | A monster kill when no attacker is recorded (section 6.2) |
+| 24 | `demolished by an unseen attacker` | yes | A monster kill when no attacker is recorded, typically because the player is blind (section 6.2) |
 | 25 | `fell into the dreadful sleep` | yes | Drinking from a fountain (Part 06) |
 | 26 | `killed by an exploding chest` | yes | Chest trap (Part 06) |
 | 27 | `died of internal complications` | no | Internal consistency failures: level checksum mismatch, sphere allocation failure |
@@ -758,12 +758,13 @@ Level names are two characters each: index 0 is a space and `H`; indexes 1 to 9 
 the digit; 10 to 15 are `10` to `15`; 16 to 20 are `V1` to `V5`. Because single-digit names carry
 a leading space, the text reads `on  3` (two spaces) but `on 12` and `on V2`.
 
-**Which monster is named.** When hit points run out the game passes on the id of the monster most
-recently involved in combat (Part 04 maintains this; it is set when a monster attacks the player
-and when the player attacks a monster, and is "none" when the player is blind while attacking). If
-the reason is "monster" but that id is "none", the reason is changed to 24, the unseen attacker.
-Non-monster deaths that go through the hit-point routine also pass that id along, but it is only
-displayed for reason 0.
+**Which monster is named.** When hit points run out the game passes on the id of the monster
+most recently involved in combat. Part 04 maintains it: each time a monster attacks the player, is
+attacked by the player or is the target of a spell, the id is set to that monster, or to "none"
+if the player is blind at that moment. If the reason is "monster" but the id is "none", the
+reason is changed to 24, the unseen attacker; so a blinded player killed in melee is
+`demolished by an unseen attacker`. Non-monster deaths that go through the hit-point routine also
+pass that id along, but it is only displayed (and only meaningful on the board) for reason 0.
 
 ---
 
@@ -834,9 +835,10 @@ internal "do not score this" marker; it is not stored in the file.
 2. Clear the text screen and print `Tidying up...`.
 3. Free memory, shut the display down and exit the process with status 0.
 
-No final score page, no scoreboard update, no scoreboard display. A quick quit leaves neither a
-save file nor a checkpoint, so the character is gone, and it never appears on the scoreboard. A
-failed save also deletes the checkpoint and exits, so that character is lost too.
+No final score page, no scoreboard update, no scoreboard display. A quick quit writes no save and
+deletes the checkpoint, and the save file the game was restored from was already deleted at load,
+so the character is gone, and it never appears on the scoreboard. A failed save also deletes the
+checkpoint and exits, so that character is lost too.
 
 ### 7.4 Every other ending (death and winning)
 
@@ -985,7 +987,7 @@ separate write operations, and the reader must divide them identically.
 | 9 | Wall-clock time the game was started | long | 8 | 1 |
 | 10 | Game time in turns | long | 8 | 1 |
 | 11 | Outstanding taxes | long | 8 | 1 |
-| 12 | The whole character attribute array (Part 02): 121 entries, including the Wild Edition entries at indexes 101 to 120 and the app's run id and kill count at indexes 99 and 98 | 121 longs | 968 | 1 |
+| 12 | The whole character attribute array (Part 02): 121 entries, including the Wild Edition entries at indexes 101 to 120 and the app's run id at index 100 and its kill count at index 99 (two otherwise unused entries) | 121 longs | 968 | 1 |
 | 13 | Inventory object ids, slots a to z | 26 bytes | 26 | 1 |
 | 14 | Inventory arguments, slots a to z | 26 shorts | 52 | 1 |
 | 15 | Potion-kind known flags | 35 ints | 140 | 1 |
