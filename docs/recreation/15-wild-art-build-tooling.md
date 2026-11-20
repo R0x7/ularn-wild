@@ -13,7 +13,7 @@ Nothing in this part uses random numbers from the game. The game's helpers, for 
 - "Floor" means #426b6b, a dull teal. It is the opaque background colour of almost every tile in the base sheet (323 of the 368 base tiles have it in their top-left pixel, and the plain floor/grass tile 191 is a solid square of it). Wild object and monster tiles paint it into every pixel that is not part of the sprite, so they sit seamlessly on the floor.
 - "Ground shadow" means #2f4c4c, a darker teal used for a 1-pixel-high horizontal bar under most objects (and a 1-pixel column to the right of the two cabinet tiles).
 - "Transparent" means alpha 0. Only the cassette (383), the three coin/arrow icons (389–391) and all overlays (392–415) have transparent pixels.
-- Style of the whole sheet, to be matched: chunky sprites, 1-pixel black outlines, 3 to 4 shades per material, slightly desaturated colours, no anti-aliasing, light from the upper left (highlights on the left/top, shade on the right/bottom). Objects should leave a 2 to 3 pixel margin.
+- Style of the whole sheet, to be matched: chunky sprites, 1-pixel black outlines, 3 to 4 shades per material, slightly desaturated colours, no anti-aliasing, light from the upper left (highlights on the left/top, shade on the right/bottom). Objects should leave a 2 to 3 pixel margin. The plan's style guide tells authors to imitate base tiles 0–63 (monsters) and 64–162 (objects), dumping them as text with the tool of section 4.
 
 ## 2. The text tile format
 
@@ -26,7 +26,7 @@ Every Wild tile is authored as a plain text file, one file per tile, in the fold
 - **Pixel rows:** every other line is a pixel row. There must be exactly 32 pixel rows, each exactly 32 characters long (the line's trailing newline is removed first; nothing else is trimmed). Each character must be `.` or a character defined in the palette.
 - **Consequences of the parsing rules** (quirks an equivalent tool should keep or consciously drop): a pixel row can never begin with `#`, so `#` is unusable as a palette character; whitespace cannot be a palette character; palette characters are case-sensitive (most tiles use a lower-case letter for the dark shade and the upper-case letter for the light shade of the same material); a palette entry may be declared and never used (tiles 383, 385 and 399 each declare one unused colour); files with Windows line endings fail the 32-character check.
 
-The 48 files each begin with one to four comment lines: a title line naming the tile and the feature that owns it, sometimes a one-line description, and the palette. The hat tiles and glitch tiles carry the note "generated shapes, hand-tuned palette" or "generated from fixed-seed shapes, hand-picked palette": they were produced by a throw-away generator script that is not in the repository, then committed as text like the rest.
+The 48 files each begin with two to five comment lines: a title line naming the tile and the feature that owns it, sometimes a one-line description, and the palette. The hat tiles and glitch tiles carry the note "generated shapes, hand-tuned palette" or "generated from fixed-seed shapes, hand-picked palette": they were produced by a throw-away generator script that is not in the repository, then committed as text like the rest.
 
 ## 3. The sheet-building tool
 
@@ -485,7 +485,7 @@ A fat crescent open to the upper right: a top horn at the upper middle, a thick 
 - **Top horn:** black x 13–14 on row 5; row 6 black x 11–12, dark tip x 13–14, black x 15; row 7 black x 9–10, mid x 11–12, dark tip x 13, black x 14.
 - **Left body** (each row: black, fill, black): row 8 fill x 9–12; rows 9–10 x 8–12; row 11 x 7–12; row 12 x 7–11; rows 13–16 x 6–12; row 17 x 6–13; row 18 x 6–14. The inner (right) black edge is at x 13 on rows 8–16 except row 12 (x 12), then x 14 on row 17 and x 15 on row 18.
 - **Bottom and lower horn:** row 19: black x 6, fill x 7–15, black x 16–17, and the horn tip black at (24, 19). Row 20: black x 6, fill x 7–17, black x 18–23, dark tip (24, 20), black (25, 20). Rows 21–22: black x 7, fill x 8–23, black x 24. Row 23: black x 8, fill x 9–22, black x 23. Row 24: black x 9–10, fill x 11–20, black x 21–22. Row 25: black x 11–12, fill x 13–18, black x 19–20. Row 26: black x 13–18.
-- **Shading:** rows 8–12 are all mid. From row 13 down the left part of each row is bright and the right part mid; the bright part is 2 pixels wide on row 13 and grows by about one pixel per row to 7 wide on rows 20–24.
+- **Shading:** rows 8–12 are all mid. From row 13 down the left part of each row is bright and the right part mid; the bright part is 2 pixels wide on row 13, 3 on rows 14–15, 4 on row 16, 5 on row 17, 6 on rows 18–19, 7 on rows 20–23, 6 on row 24 and 5 on row 25 (on row 25 only the last fill pixel is mid).
 - **Craters:** two, each a crater-colour pixel followed by a dark-tip pixel: at x 9–10 on row 15 and x 12–13 on row 21.
 
 ### 408–415 — glitch corruption overlays (Glitch)
@@ -607,4 +607,443 @@ Nothing else is declared: no services, receivers, content providers, file-provid
 
 The long configuration-change list matters to the design: the game runs in a forked child process tied to the activity's process (Part 09), and the views hold the live state, so the activity must survive rotation, folding, split-screen resizing, keyboard attachment, dark-mode switches and font-size changes without being recreated.
 
-<!-- PART15-CONTINUES -->
+## 12. The build (Gradle)
+
+### Versions and project shape
+
+| Item | Value |
+|---|---|
+| Gradle (wrapper) | 8.14.3, binary distribution; wrapper network timeout 10,000 ms; distribution URL validation on |
+| Android Gradle plugin | 8.7.3 |
+| Kotlin Android plugin | 2.0.21 |
+| Plugin repositories | Google, Maven Central, Gradle plugin portal |
+| Dependency repositories | Google and Maven Central only; project-level repositories are forbidden (the "fail on project repos" mode) |
+| Root project name | "Ularn" |
+| Modules | one: `app` |
+| Gradle properties | JVM arguments "max heap 1536 MB, file encoding UTF-8"; AndroidX flag on; non-transitive R classes on; Kotlin code style "official" |
+| Java / Kotlin target | source and target compatibility Java 17; Kotlin JVM target 17 |
+| Dependencies | none at run time (framework widgets and the Kotlin standard library only; no AndroidX or third-party library is used even though the AndroidX flag is set). Test only: JUnit 4.13.2 |
+| NDK version | not pinned; the Android Gradle plugin's default NDK is used and installed on first build (exact version unverified) |
+
+### Android configuration
+
+| Item | Value |
+|---|---|
+| Code namespace | `com.ularn.android` |
+| Application id | `com.ularn.android.wild` (so the Wild Edition installs beside the base app, with its own saves and icon; the base app's id is presumably `com.ularn.android`, unverified because the base repository is not part of this one) |
+| Compile SDK | 35 |
+| Minimum SDK | 24 (Android 7.0) |
+| Target SDK | 35 |
+| Version name | "3.0-wild (Ularn 1.6.3a)" |
+| Version code | 100 + the CI run number, when the environment variable `GITHUB_RUN_NUMBER` is set and parses as an integer; otherwise 100. Every CI build therefore has a higher version code than the last, so Android treats each new APK as an update |
+| ABIs | arm64-v8a, armeabi-v7a and x86_64 by default |
+| ABI-limiting property | the Gradle project property `ularn.abis`, a comma-separated list (entries trimmed, empty entries dropped), replaces the default list. It exists because the native build is the slow part: a local build can compile for one ABI (for example x86_64 for an emulator) instead of three |
+| Native build | CMake, version 3.22.1, build script `src/main/cpp/CMakeLists.txt`, with one extra argument: no C++ standard library at all (the Android STL setting "none"), since the native code is pure C |
+
+### Signing
+
+- If the environment variable `ULARN_KEYSTORE` names a file that exists, a signing configuration called "sideload" is created: key store = that file; store password and key password both = the environment variable `ULARN_KEYSTORE_PASSWORD`; key alias = the environment variable `ULARN_KEY_ALIAS`, defaulting to "ularn".
+- Both build types, debug and release, are signed with "sideload" when it exists and with the standard debug key otherwise.
+- Purpose: CI signs every build with one fixed key so each new APK installs over the previous one. Android rejects an update signed with a different key, and uninstalling to get round that would delete the player's saved games.
+
+### Build types and minification
+
+- **Debug:** no code shrinking. This is the variant CI builds and publishes.
+- **Release:** code shrinking and optimisation on, using the platform's optimising default rules plus one project rule: keep the class `com.ularn.android.NativeBridge` and all its members, because the native library looks its entry points up by name. (Release is defined but nothing builds it automatically.)
+
+### Asset packaging
+
+- Everything under `app/src/main/assets/` is packaged into the APK unchanged: the tile sheet at the assets root, and the three game data files in an `ularn/` sub-folder.
+- At the start of every game session the app copies the three data files (`Uhelp`, `Umaps`, `Ufortune`) out of the APK into the game's working directory, a folder named `ularn163` inside the app's private files directory, overwriting any previous copies, and writes the game's options file into the per-slot home directory (Parts 09 and 10). The game is compiled to look for its data files in the current directory (its library directory is "."), and the spawner makes the working directory current before starting the game.
+- The tile sheet is read straight from the APK by the game view and by the card renderer.
+
+## 13. The native build (CMake)
+
+The CMake project is named `ularn` and enables the C language only. It defines two targets.
+
+### Target 1: static library `ularn_game` (the game)
+
+**Upstream Ularn 1.6.3a sources compiled (23 files):** the main loop (`ularn.c`), game globals and option handling (`ularn_game.c`), startup questions (`ularn_ask.c`), stores, spheres, spells, the text screens (`show.c`), scrolls, scores, save utilities, save game, potions, player, object interaction, monsters, the item table (`itm.c`), help, the bundled option parser (`getopt.c`), fortunes, dungeon objects, dungeon, diagnostics (`diag.c`) and actions.
+
+**Upstream files present in the source folder but NOT compiled:**
+
+| File | What it is | Why it is left out |
+|---|---|---|
+| `ularn_wintty.c` | terminal (curses) front end | replaced by the Android front end |
+| `ularn_winx11.c` | X11 front end | replaced |
+| `ularn_win.c` | Windows front end | replaced |
+| `Ularn_winami.c` | Amiga front end | replaced |
+| `ularn_main.c`, `test.c` | tiny stand-alone test programs for a front end | not part of the game |
+| `ularn_orig.c`, `ularn_integ.c` | older or alternative copies of the main module | superseded by `ularn.c` |
+| `bill.c` | the "junk mail after winning" letters | upstream itself has the call commented out; never built, so the win ending sends no mail |
+| `comment_templates.c` | comment boilerplate | not code |
+
+**Android-side sources compiled into the same library (15 files):** the Android front end that implements the game's display/input interface (`ularn_winandroid.c`), the minimap and side-panel state publisher (`ularn_android_panel.c`), the context-action publisher (`android_context.c`), and the Wild Edition: the hub (`wild.c`) plus one file per feature (radio, cards, vending, hats, coin, glitch, fishing, pets, perks, weather, bounty).
+
+**Include directories:** the `compat` folder and the upstream folder.
+
+**Compiler options for this library, and why each is there:**
+
+| Option | Why |
+|---|---|
+| Hidden symbol visibility (`-fvisibility=hidden`) | The game's global variables include names that are also C library functions (for example `dirname` and `index`). If they were exported from the shared library, the dynamic linker could bind the game's own references to the C library's symbols instead of the game's. Hidden visibility keeps every game symbol private; only the JNI entry points are exported (the JNI export macro marks them default-visibility explicitly). |
+| Signed plain `char` (`-fsigned-char`) | The game assumes `char` is signed, as on x86 and 68k; for example its direction tables store -1 in chars. On ARM `char` is unsigned by default, which made every move with a negative component compute a huge positive offset and be rejected as "off the map". This flag is essential on both ARM ABIs. |
+| C dialect GNU C99 (`-std=gnu99`) | The upstream code is old-style C (implicit int, K&R-style definitions in places, GNU extensions); a later default dialect turns several of its habits into errors. |
+| All warnings off (`-w`), plus explicit "do not warn / do not treat as error" switches for implicit function declarations, int conversions, incompatible pointer types, missing return types, format security, and "no warnings as errors" in general | Upstream is compiled unmodified and trips all of these; newer Clang versions make several of them hard errors by default, so each is turned back into a non-error individually. |
+| Forced include of the shim header (`-include .../compat/android_shim.h`) | Prepends a small header to every source file of this library without editing upstream. It does three things, below. |
+
+**What the forced include does:**
+
+1. **Swaps the configuration header.** It first includes an Android configuration header which defines upstream's own include-guard macro for `config.h`, so that when a game file later includes upstream's `config.h` (which would select the terminal build and a system library directory) that file's body is skipped entirely. In its place the Android configuration defines: the platform is Unix-like (POSIX file handling, the home directory from the environment); the active front end is the Android one; and the data-file directory is "." (the working directory).
+2. **Renames `main`.** A macro renames the game's `main` function to `ularn_main`, so the game can be linked into a shared library and called as an ordinary function by the spawner.
+3. **Redirects `exit`.** After including the standard library header (so the real declaration is seen first), a macro redirects every call of `exit` to a function `ularn_exit`, which flushes all standard I/O streams and then terminates the process immediately with the low-level `_exit`. The game runs in a process forked from the app without exec; calling the real `exit` there would run the parent's at-exit handlers and C++ static destructors (the Android runtime's) inside the child.
+
+### Target 2: shared library `ularn` (what the app loads)
+
+- Sources: the spawner (`spawn.c`: creates the shared-memory display state and the two pipes, forks, and calls `ularn_main` in the child; Part 09) and the JNI bridge (`ularn_jni.c`). These two are compiled **without** the forced include, so in them `main` and `exit` mean the real things, and they provide `ularn_exit`.
+- Links the static game library in.
+- Compile option: hidden visibility.
+- Link options, and why: "no undefined symbols" (`--no-undefined`), so a missing function is a build error rather than a crash at load time on the device; and symbolic binding (`-Bsymbolic`), which makes every reference from inside the library to one of its own global symbols bind inside the library at link time. Together with hidden visibility this guarantees the game's globals can never be interposed by same-named symbols elsewhere in the process.
+
+The app loads the library by the name "ularn" (file `libularn.so`), one copy per ABI.
+
+## 14. Continuous integration
+
+Three workflows live in `.github/workflows/`.
+
+### 14.1 "Build APK" (`build.yml`)
+
+**Triggers:** every push to any branch, every pull request, and manual dispatch. **Permissions:** repository contents write (to publish releases). **Runner:** the latest Ubuntu image.
+
+Steps:
+
+1. Check out the repository.
+2. Install Java 17 (Temurin distribution).
+3. **Signing key from secrets.** If the repository secret `ULARN_KEYSTORE_B64` is non-empty, decode it from base64 into a key-store file in the runner's temporary directory and export that path as `ULARN_KEYSTORE` for the following steps. Otherwise emit the warning "ULARN_KEYSTORE_B64 secret not set; using a random debug key (updates won't install over older builds)".
+4. **Build debug APK**, with `ULARN_KEYSTORE_PASSWORD` taken from the secret of the same name: accept the Android SDK licences (failure ignored), make the Gradle wrapper executable, run the debug assemble task without the Gradle daemon, and copy the resulting debug APK to a file named `ularn.apk` in the workspace root. The runner image already has the Android SDK; Gradle installs the NDK and CMake it needs on first use. The key alias variable is not set, so the alias is "ularn".
+5. Upload `ularn.apk` as a workflow artifact named `ularn-debug-apk`.
+6. **Publish Wild Edition prerelease**, only when the event is not a pull request and the ref is the `main` branch:
+   - copy `ularn.apk` to `ularn-wild.apk`;
+   - force-move the tag `wild-latest` to this build's commit and force-push it (the release action only sets the target commit when it first creates a tag, so without this the tag would stay on the first commit it was made from);
+   - if GitHub refuses that push, emit the notice "Could not move the wild-latest tag; recreating the prerelease at <first 7 characters of the commit>." and delete the `wild-latest` release together with its tag, so the next step recreates both at this commit;
+   - then create or update the release: tag `wild-latest`; title "Ularn Wild Edition (experimental, build <run number>)"; target this commit; marked prerelease; not marked "latest"; attached file `ularn-wild.apk`; body text saying it is experimental, installs beside the normal Ularn app as "Ularn Wild" with its own saves, pointing at the plan and feature documents, giving the always-newest link `https://github.com/<owner>/<repo>/releases/download/wild-latest/ularn-wild.apk`, and the commit id.
+7. **Publish release** (the base app's channel), only when the event is not a pull request, the ref is `main`, and the repository's name is not `ularn-wild`: create a release tagged `build-<run number>`, titled "Ularn build <run number>", targeting this commit, marked latest, with `ularn.apk` attached and a body explaining how to install on a phone ("open this page in the phone's browser and tap ularn.apk; Android will ask once to allow installs from your browser"), the always-newest link `https://github.com/<owner>/<repo>/releases/latest/download/ularn.apk`, and the commit id.
+
+What gets published, by repository:
+
+| Repository | On every push to `main` |
+|---|---|
+| `ularn-wild` (this one) | one rolling prerelease, tag `wild-latest`, APK `ularn-wild.apk`, replaced each time |
+| `android-ularn` (the base game) | a new numbered release each time, tag `build-<run number>`, APK `ularn.apk`, marked latest (so the "latest" download link always serves the newest build) |
+
+Pushes to other branches and pull requests only build and upload the artifact. Note that in this repository's copy of the file only step 7 carries a repository-name check; the Wild prerelease steps are conditioned on the branch alone. (What the base repository's copy of the file contains is unverified.)
+
+### 14.2 "Merge upstream main" (`upstream-sync.yml`)
+
+This workflow exists only in the Wild repository. It keeps the Wild Edition equal to "the base app's `main` plus the Wild features" by merging the base repository's `main` into this repository's `main`.
+
+**Triggers:** a schedule at minute 17 of every hour; a repository-dispatch event of type `upstream-main` (so the base repository can poke it); manual dispatch. **Constants:** upstream URL `https://github.com/R0x7/android-ularn`; fallback branch name `auto/upstream-main`. **Permissions:** contents, actions, pull requests and issues, all write. **Concurrency:** one run at a time in the group `upstream-sync`; a newer run waits rather than cancelling the one in progress. **Guard:** the job runs only when the repository is named `ularn-wild`. **Runner:** Ubuntu 24.04.
+
+Steps:
+
+1. Check out `main` with full history.
+2. **Merge.** Set the commit identity to the GitHub Actions bot. Fetch upstream's `main` and remember its commit id.
+   - If that commit is already an ancestor of the local head: print "android-ularn's main is already merged." Result "nothing"; the run ends successfully with nothing further to do.
+   - Otherwise attempt a merge (a real merge commit, never a cherry-pick or rebase) with the message "Merge android-ularn main into ularn-wild (auto)". Success: result "merged".
+   - If the merge conflicts: abort it. Result "conflict".
+3. **Push main** (only when merged; a failure here does not fail the run by itself).
+4. **Build and publish the Wild Edition** (only when merged and pushed): start the "Build APK" workflow and the "Sync web port" workflow on `main` explicitly, because a push made with the Actions token does not trigger other workflows.
+5. **Ask for a hand merge** (when the result is "conflict", or when it was "merged" but the push was refused). The reason text is either "android-ularn main does not merge cleanly into ularn-wild" or "GitHub refused the automatic push to main (most likely android-ularn changed a workflow file, which Actions may not push)". Emit a warning "<reason>; asking for a hand merge." Then:
+   1. Force-push upstream's commit to the branch `auto/upstream-main` in this repository (a branch at upstream's commit, so that resolving conflicts in GitHub's web editor commits to it and not to `main`).
+   2. If that push worked: if a pull request from that branch into `main` is already open, print "Pull request #<n> is already open; it now brings <short commit>." and finish successfully; otherwise open one titled "Merge android-ularn main into ularn-wild", whose body gives the reason, the by-hand commands (check out and pull `main`, add the upstream remote once, fetch it, merge its `main`, push), the alternative of resolving in the pull request, the reminder "Keep QoL changes from android-ularn and Wild features from here; see AGENTS.md", and a link to the workflow run. If the pull request is created, finish successfully.
+   3. If the branch push was refused too (usually because upstream changed a workflow file) or the pull request could not be created: look for an open issue with the same title; if there is one print "Issue #<n> is already open.", otherwise open one with the same title and body. Then emit the error "android-ularn main (<short commit>) is not merged into ularn-wild; merge it by hand (see the issue)." and **fail the run**, so it shows red in the Actions list until `main` has been merged by hand.
+
+### 14.3 "Sync web port" (`web-sync.yml`)
+
+A browser version of the game (the same C core compiled to WebAssembly with a shared leaderboard, per the README) lives on a separate branch, `ularn-web`, which is "`main` plus a `web/` folder and these workflows". Its contents are outside this specification; `main` contains no `web/` folder.
+
+**Triggers:** every push to `main`; manual dispatch (the upstream-merge workflow starts it this way). **Permissions:** contents write. **Concurrency:** group `web-pages`, no cancellation. **Runner:** Ubuntu 24.04, inside the Emscripten SDK container image version 3.1.6 (chosen so no package installation is needed), with a 20-minute time limit.
+
+Steps:
+
+1. Check out the `ularn-web` branch with full history.
+2. Merge `main` into it with the message "Merge main into ularn-web (auto)". On conflict: abort, emit the error "main does not merge cleanly into ularn-web; merge it by hand." and fail.
+3. Push the web branch (failure tolerated). If it failed, warn: "Could not push ularn-web (probably a workflow file changed on main). The site is still published from the merged code; merge main into ularn-web by hand to catch the branch up."
+4. Build by running the web branch's build script.
+5. Publish to the `gh-pages` branch by running the web branch's publish script with the message "main <short commit> merged into ularn-web". The site is served by GitHub Pages at `https://r0x7.github.io/ularn-wild/`.
+
+## 15. Project process: two repositories
+
+The repository's agent rules file (`AGENTS.md`, also included by `CLAUDE.md`) sets two standing rules. They are process, not behaviour, but a recreation that wants the same maintenance model should keep them.
+
+**Rule 1: a frozen backup branch.** A branch named `original-backup` preserves the game as it was before any agent changes. It may be read (for example to diff against `main`) but must never be committed to, merged into, rebased, reset, pushed, force-pushed, renamed, deleted or targeted by a pull request, locally or on the server. If a task seems to need a change there, stop and ask the repository owner.
+
+**Rule 2: quality-of-life changes go in the base repository, then are merged into the Wild one.**
+
+- There are two apps in two repositories. `main` of the base repository (`R0x7/android-ularn`) builds the base game, which is meant to stay "the original Ularn plus quality-of-life changes only". `main` of the Wild repository (`R0x7/ularn-wild`) builds the Wild Edition, which is "the base repository's `main` plus the Wild features". Both apps should have every quality-of-life change.
+- Quality-of-life changes (controls, layout, prompts, settings, accessibility, build and CI fixes) are made on the base repository's `main`, never first in the Wild repository.
+- Wild-only features go in the Wild repository and never in the base one.
+- The Wild repository takes the base `main` in by **merging, never by cherry-picking**. A merge records what has come over, so the next merge brings only new changes and conflicts are not resolved twice. By hand: add the base repository as a remote once, then fetch it, merge its `main`, and push.
+- The hourly workflow of section 14.2 does this automatically, and falls back to a pull request (or an issue) when the merge conflicts or changes a workflow file.
+- Files shared by both apps (the rules file itself, the build workflow, the base text of the README) are edited in the base repository so the merge stays clean; the build workflow checks the repository name to decide what to publish in each.
+- If a quality-of-life fix was first made in the Wild repository by mistake, make it in the base repository too, then merge the base `main` into the Wild repository again.
+- History note from the rules file: until November 2026 the Wild Edition was a branch (`ularn-wild`) of the base repository; that branch is no longer updated.
+
+The Wild plan document adds per-feature working rules that explain the shape of the code: every Wild feature has a bit in a feature mask and must change nothing when its bit is off; every feature owns its own C file, tile range and one short document under `docs/wild/`; and its "definition of done" is that the host syntax check, the tile sheet build and a one-ABI debug build all pass and the smoke test still succeeds.
+
+## 16. The host test harness
+
+`tools/host/` plays the real game on a Linux desktop with no Android SDK and no device: the same upstream core, the same Android front end and Wild code, and the same spawner as the app, linked into a small command-line driver that types keys and prints what the app would have displayed. It was built for the Wild Edition work but serves any change to the C side.
+
+### 16.1 Syntax check (`check.sh`)
+
+Syntax-checks, with the host C compiler, every source file the Android build compiles. The list of files is extracted from the CMake script itself (everything in the static library's source list), so it can never drift. Each file is checked with: syntax only, signed char, GNU C99, the forced shim include, the same include directories, and all warnings on except a fixed list (unused things, pointer sign, parentheses, format security, implicit function declarations, int conversion, incompatible pointer types, return type, misleading indentation, char subscripts, missing braces).
+
+- A file with errors is reported as "== <file>" followed by the compiler's messages, and the script will exit non-zero.
+- A file that passes with warnings prints them only if it is in the `compat` folder, as "== <file> (warnings)" (upstream is compiled with warnings off in the real build, so its warnings are noise).
+- Finally the spawner and the JNI bridge are syntax-checked with the Java headers on the include path (found either in the system's default Java location or next to the `javac` on the path).
+- On success it prints "check.sh: OK".
+
+### 16.2 Build (`build.sh`)
+
+Builds the driver executable `tools/host/out/ularn_host` (the `out` folder is ignored by version control):
+
+1. Compile every file of the CMake static-library list with the host compiler: light optimisation, debug info, signed char, GNU C99, warnings off, the forced shim include and the same include directories. (So in the game `main` is `ularn_main` and `exit` is `ularn_exit`, exactly as on Android.)
+2. Link those objects with the spawner and the driver source, both compiled without the shim, and the maths library.
+3. Delete the object files and print "built out/ularn_host".
+
+### 16.3 The driver (`host_main.c`)
+
+Invocation: `ularn_host <workdir> [--quiet] [--timeout <ms>] -- [game arguments]`. With no work directory it prints a usage line and exits with status 2; an unexpected extra argument also exits 2.
+
+**Start-up.** The driver builds the game's argument list ("ularn" followed by everything after `--`, at most 31 entries), ignores broken-pipe signals, and calls the same spawn function the app uses. That forks the game: the child changes into the work directory (which must contain the three data files), sends its standard output and error to a file `ularn.log` there, and runs the game; the parent keeps the key pipe, the notification pipe and the shared display-state block. No environment list is passed, so the game inherits the driver's environment: `HOME` (where the options file, the save file and the checkpoint live; the scoreboard is kept in the working directory), `USER` and `LOGNAME` (the player's login name, used in file names), `ULARN_WILD` (the decimal feature mask for a new character; absent or empty means all features) and `ULARN_SEED` (if set and non-empty, the random generator is seeded with this unsigned number instead of the clock, making the run reproducible). The driver prints "# game started pid=<n>", waits for the game to become idle and prints the state.
+
+**Waiting for idle.** After start-up and after every single key, the driver waits until the game is waiting for input and has been quiet for a moment: it polls the notification pipe every 20 ms (draining it), watches the shared state's change counter, and returns once the input mode is anything other than "busy" and the counter has not changed for 60 ms. If that does not happen within the timeout (default 4000 ms) it prints "TIMEOUT: game still busy (input_mode=<mode>)" and carries on. If the game process has ended it prints "GAME EXITED code=<n>" or "GAME KILLED signal=<n>" and stops reading steps.
+
+**Steps.** The driver reads standard input one line at a time; each line is one step.
+
+- A line starting with `#` is a comment: echoed, nothing sent.
+- The three driver commands (next list) print something and send nothing.
+- Any other line is echoed as ">> <line>" and then sent key by key, waiting for idle after each key so that a prompt appearing in the middle of a sequence receives the next key. Then the state is printed once.
+- Characters are sent as themselves, with these escapes: backslash-n sends carriage return (Enter), backslash-e sends Escape (27), backslash-s a space, backslash-t a tab, two backslashes one backslash, backslash-x and two hex digits that byte; a backslash before any other character sends that character.
+- At end of input, if the game is still alive, the driver closes the key pipe (a hang-up, on which the game exits), waits for it and prints "# game ended (input closed)". The driver's own exit status is 0.
+
+**Driver commands.**
+
+| Command | Output |
+|---|---|
+| `!map` | The level as the minimap classifies it: 17 lines of 67 characters, each prefixed "MAP: ". `@` is the player; `M` a cell holding a visible monster; otherwise by class: space unknown, `.` floor, `#` wall, `+` door, `o` item, `$` gold, `<` stairs or elevator up, `>` stairs or elevator down, `V` volcanic shaft, `E` dungeon entrance, `B` building, `F` fountain, `A` altar, `T` throne, `^` known trap, `~` other feature (statue, mirror). |
+| `!inv` | The inventory as the side panel sees it: one line "INV: <letter>) <text>" per non-empty slot of the 26. |
+| `!tiles` | The tile ids of the 9 x 5 block of cells centred on the player (4 cells either side, 2 above and below): five lines "TILES:" followed by nine right-aligned numbers, with `-` for cells outside the map. |
+
+**State print-out** (after each step). In order:
+
+1. A header "[mode=<MODE> display=<MAP or TEXT>]", where MODE is BUSY, COMMAND, PROMPT, DIR, NUMBER or PASSWORD (the kind of input the game is waiting for); in PROMPT mode the header also shows answers="<the keys the prompt accepts>".
+2. If a full-screen text page is showing: each of its non-blank lines (of 25) as "TEXT: <line>", trailing spaces removed. This is printed in quiet mode too.
+3. The message window (5 lines): each non-blank line as "MSG: <line>". In quiet mode these are printed only when at least one line differs from the previous print-out.
+4. Unless quiet: "STATUS: <status line 1> | <status line 2>", then one line starting "POS:" with: player cell "(x,y)", "level=<level name>" (the name is space-padded, so it reads "level= H" in town and "level= 1" on dungeon level 1), "hp=<current>/<max>", "gold=", "plevel=" (character level), "time=" (game turn), "wild=0x<feature mask in hex>", "hat=<published hat tile>", "glitch=<turns left>", "weather=0x<packed hour and state>", "coin=<LarnCoin price>", "pet=(x,y)" (-1,-1 when the pet is not on this level), "ctx=<context-action kind>/<object>"; then, only if a pet exists, " petinfo=<species id>:<hp>/<max hp>:stage<n>:kills<n>:next<kills needed to grow>:at[<name of the level the pet waits on, empty if it is with the player>]"; then, only if a bounty is posted, " bounty=<monster id>:<reward>g:claimed<0 or 1>:downat<turn the poster comes down, 0 once claimed>"; and finally " tile=<tile id on the player's cell>".
+5. Every event the game has emitted since the last print-out, as "EVENT: <NAME>(a,b,c)". Names and arguments: KILL (monster id, x, y); LEVEL_UP (new character level); NEW_LEVEL (dungeon level index, 0 = town); TAKE (object id, argument); PLAYER_HIT (damage); GOLD (amount); SPELL (spell id); DIED; WON; WILD_RADIO (track unlocked); WILD_CARD (monster id, holo flag); WILD_VENDING (0 buy, 1 kick, 2 topple, 3 roomba ate; then object); WILD_HAT (hat object id, or 0 when taken off); WILD_COIN (0 tick, 1 news, 2 rug pull, 3 auditor); WILD_GLITCH (1 start, 0 end); WILD_FISHING (0 cast, 1 catch, 2 kraken, 3 treasure map with its x and y); WILD_PET (0 hatch, 1 attack, 2 died, 3 follow, 4 grew; for "grew" the third argument is the new stage); WILD_PERK (perk index, then a perk-specific value); WILD_WEATHER (new weather state, hour). An event type the driver does not know prints as "EV".
+6. If the game has ended: "END: state=<1 died, 2 won, 3 quit> score=<n> reason="<text>"".
+
+### 16.4 The play script (`play.sh`)
+
+Despite its extension this is a Python 3 program. It prepares a sandbox, runs the driver once with a list of steps, and prints the result. Usage: `play.sh [options] STEP [STEP ...]` or `play.sh [options] -f <script file>`.
+
+| Option | Meaning |
+|---|---|
+| `--seed N` | reproducible run: sets `ULARN_SEED` |
+| `--wild MASK` | sets `ULARN_WILD`, the decimal feature mask for the new character. Default 4095 (all twelve bits). 0 is the vanilla game |
+| `--class L` | character class by letter a to h: a Ogre, b Wizard, c Klingon, d Elf, e Rogue, f Adventurer, g Dwarf, h Rambo. Default a |
+| `--quiet` | passed to the driver: print only changed messages, text pages and events |
+| `--keep` | do not delete the temporary directory afterwards; its path is printed |
+| `--home DIR` | use this directory as `HOME` instead of a fresh temporary one, so one run can save and a later run can restore |
+| `--wizard` | start as a wizard: an extra first step is sent, the wizard-mode key `-` followed by the password "fizban" and Enter |
+| `--timeout MS` | per-key idle timeout passed to the driver. Default 4000 |
+| `-f FILE` | read the steps from a file, one per line, skipping blank lines and lines starting with `#`. Replaces any steps given as arguments |
+| `-- ARGS` | everything after it is passed to the game as arguments (for example `-r` to restore from a checkpoint) |
+| `-h`, `--help` | print the usage text |
+
+Feature mask bits, for `--wild`: radio 1, cards 2, vending 4, hats 8, coin 16, glitch 32, fishing 64, pets 128, perks 256, weather 512, photo 1024 (app-side only), bounty 2048.
+
+**Step notation.** A step is one driver line (section 16.3). The script adds one notation of its own, expanded before the driver sees it: `{N:keys}` repeats `keys` N times (no nesting). Examples: `{300:.}` rests 300 turns; `{11:=x}` uses the debug menu's "gain a level" eleven times.
+
+**What it does:**
+
+1. Builds the driver first if the executable does not exist.
+2. Creates a temporary directory with a `work` sub-folder, copies the three data files into it from the app's assets, and creates the home directory (a `home` sub-folder unless `--home` was given).
+3. Writes the game's options file `ularn.opt` into the home directory (always, even into a reused home), a single line: the option keyword followed by name "Tester", the chosen class, gender male, no welcome screen, no delays ("nonap"), no beep, and the enhanced interface off.
+4. Runs the driver with `HOME` set to the home directory, `USER` and `LOGNAME` set to "player" (so the save file is `ularn_player.sav` and the checkpoint `ularn_player.ckp` in the home directory), the mask and seed variables, and all steps on standard input.
+5. Prints a header line "# HOME=<dir> workdir=<dir> wild=<mask> seed=<seed>", then everything the driver printed; then, if the game's log file is not empty, "# ularn.log:" and its last 3000 characters.
+6. Deletes the temporary directory unless `--keep` was given or the game crashed, in which case it prints "# kept <dir>".
+7. Exit status 1 if the driver's output contains "GAME KILLED" (the game died on a signal), else 0.
+
+**The wizard debug menu** is what makes short scripts possible. In wizard mode only, the key `=` asks: "Wild debug: (o)bject here, (m)onster next to you, (g)old, (x)p level, (t)urns, (h)eal, (d)amage, (f)lags, (w)izard off? ".
+
+| Key | Effect |
+|---|---|
+| `o` | asks " Item: " and " Arg: " (two numbers, each ended with Enter); places that object with that argument on the player's own cell and marks it known; prints "Placed <object name> under you." and uses a turn, after which the game makes its usual offer for the thing underfoot (take it, read it, go down, enter, and so on). An id outside 1..117 prints "No such object." |
+| `m` | asks " Monster: "; creates that monster next to the player; prints "Created <monster name>." (the name of the species asked for) and uses a turn. An id outside 1..69 prints "No such monster." |
+| `g` | adds 1000 gold; prints "+1000 gold." |
+| `x` | raises the character one level; prints "Level raised." |
+| `t` | asks " Turns: "; advances the game clock and runs the Wild per-turn hook that many times without moving anything else; prints "<n> turns passed (wild_turn only)." |
+| `h` | sets hit points and spell points to their maxima; prints "Healed." |
+| `d` | asks " Damage: "; prints "You take <n> damage." and deals it as a real blow through the normal damage routine, so it can kill (and can trigger the Second Wind perk) |
+| `f` | prints one line with the Wild attribute values (flags, hat, perks, egg, pet, coins, price, glitch, duck, weather) |
+| `w` | turns wizard mode off for the rest of the game; prints "You are no longer a wizard." (a wizard sees every new level fully mapped, which hides map-revealing features) |
+
+Other wizard keys from the base game used by the scripts: `+` create an item next to the player, `_` become "the Creator" (maximum experience, every spell known), the backquote for debug mode.
+
+### 16.5 The id-listing tool (`ids.py`)
+
+Prints the numeric ids scripts need, by reading the three enumerations straight out of the upstream headers: object ids (from the item header), monster ids (from the monster header) and character-attribute indices (from the player header). For each it prints a title line ("# objects (itm.h)", "# monsters (monster.h)", "# attributes (player.h)") and then one line per entry, "<index right-aligned in 4> <enumerator name>", the index being the position in the enumeration starting at 0. An optional argument is a case-insensitive substring filter on the name. It strips block comments before splitting the enumeration on commas, so it relies on the enumerations having no explicit values.
+
+### 16.6 The verification routine
+
+The plan document's "Verifying your work (no device needed)" section prescribes this routine for any change, in this order:
+
+1. **The C compiles for the host:** run the syntax check (16.1).
+2. **The host harness plays the game:** drive the changed behaviour with the play script (16.4), using wizard mode and the debug menu, a seed for reproducibility, a feature mask to prove nothing changes with the feature off, and a kept home directory to test save and restore. A crash keeps the temporary directory and prints the game's log.
+3. **The APK compiles:** one debug build limited to the x86_64 ABI with the property of section 12 (about 1 to 3 minutes when warm), and the Kotlin unit tests (section 18). The SDK location comes from the untracked local properties file. Gradle builds are to be run sparingly: once when the code is done, once more after a fix.
+4. **Tiles:** the sheet builder must pass, then dump the new tile to look at it.
+5. **Regression:** the smoke test (17.1) must still pass.
+
+### 16.7 Ids used by the scripts
+
+Ids the regression scripts rely on: objects 7 stairs up, 13 stairs down, 55 scroll (argument 21 = annihilation), 79 dungeon entrance, 102 can of Fizz, 111 mysterious egg, 115 message in a bottle; monsters 4 jackal, 5 kobold, 12 floating eye, 56 red dragon, 60 roomba.
+
+## 17. The regression scripts (acceptance tests)
+
+Each is a shell script that rebuilds the driver, runs the play script one or more times and greps the output; it prints "<name>: OK" on success, and on failure prints the captured output, a line "FAIL: <reason>" and exits non-zero. They double as precise acceptance tests for a recreation; the behaviours they assert belong to Parts 03, 05 and 12. Seeds are tied to this implementation's random sequence: a recreation with a different generator must pick its own seeds, and several failure messages say exactly that ("pick another seed", "adjust the steps").
+
+### 17.1 `smoke.sh` — new game, walk, dungeon, save, restore
+
+- **Run 1** (seed 42, wizard, class Adventurer, quiet, a fresh home kept for run 2). Steps: walk west, south, north, east (`hjkl`); debug menu +1000 gold; place the dungeon entrance (object 79) underfoot and answer `g` to go in; `!map`; place stairs down (object 13) and answer `d` to descend; rest 20 turns; open the inventory and dismiss it with space; save with `S`.
+- **Expect:** a NEW_LEVEL event for level 1 and one for level 2; the save file `ularn_player.sav` exists in the home directory.
+- **Run 2** (same home, no seed, not a wizard): rest one turn, `!map`. **Expect:** the position line shows level 2 (the saved game was restored automatically at start-up).
+- **Run 3** (seed 7, feature mask 0, quiet): rest 10 turns and open the inventory. **Expect:** no crash (the vanilla game must run).
+
+### 17.2 `second_wind.sh` — Second Wind works once per dungeon level, for the whole game
+
+- **Scenario** (seed 5, wizard, Adventurer, quiet): gain eleven levels; rest one turn; answer `a` eleven times (taking the first perk offered each time, which with eleven level-ups takes every perk); enter the dungeon (level 1); take 9999 damage; heal; go down to level 2; take 9999 damage; heal; place stairs up (object 7) and go back up to level 1; take 9999 damage.
+- **Expect:** level 2 was reached; level 1 was entered exactly twice; the Second Wind event, WILD_PERK(8,1,...), occurred exactly twice (once on level 1, once on level 2); and a DIED event occurred (the second deadly blow on level 1 kills, because the perk remembers every level it has been used on, not just the latest).
+
+### 17.3 `cartographer.sh` — the Cartographer perk maps a new level's stairs
+
+- **Scenario A** (seed 5, wizard, Adventurer, quiet): gain eleven levels, rest, take all eleven perks; place the dungeon entrance underfoot and answer `i` to stay; leave wizard mode with the debug menu's `w`; step east, step back west onto the entrance, answer `g` to go in; `!map`.
+- **Expect A:** level 1 reached; the event for taking Cartographer, WILD_PERK(10,0,...); a Cartographer event with a positive second argument, WILD_PERK(10,n,...) with n at least 1 (it marked something); and a `>` (stairs down) somewhere in the map dump immediately on arrival.
+- **Scenario B:** the same with feature mask 3839 (everything except perks) and no perk picking. **Expect B:** level 1 reached and no `>` in the map dump (a non-wizard sees only what is next to them).
+
+### 17.4 `treasure_map.sh` — bottles are treasure maps below ground only
+
+Each "bottle" step places a message in a bottle (object 115) underfoot and answers `r` to read it. Seed 11, wizard, Adventurer, quiet.
+
+- **Run 1,** in town: 30 bottles. **Expect:** the text "slips from your fingers" (a bottle was read) and never "map of this very level" (above ground a bottle is always a fortune).
+- **Run 2:** enter dungeon level 1, `!map`: count the `$` characters (gold piles) in the dump.
+- **Run 3:** enter level 1, read 30 bottles, `!map`. **Expect:** level 1 reached; the number of treasure-map events WILD_FISHING(3,x,y) is between 2 and 18 inclusive (about 7 of 30 expected); the text "map of this very level"; a line matching "An X marks a spot to the <direction>. You mark it"; never "spot to the here" (the stash is never under the player); and the number of gold piles on the map grew by exactly the number of maps (each map puts one pile of gold on the level and marks it on the player's map).
+
+### 17.5 `annihilation.sh` — a scroll of annihilation's victims count as kills
+
+- **Run 1** (seed 3, wizard, quiet, class Ogre): create a jackal next to the player; place a scroll of annihilation underfoot and read it; rest one turn. **Expect:** "WANTED, one jackal" (with this seed the town crier's first poster wants a jackal); "You read a scroll of annihilation"; a KILL event for monster 4; a WILD_CARD event for monster 4 (a species' first kill always drops its card); "That jackal was WANTED"; and, the next turn in town, "counts out your bounty: 125 gold".
+- **Run 2** (same options): place a can of Fizz underfoot and answer `i` (leave it); create a roomba; answer `i` again; step north-east off the can; rest three turns while the roomba comes and eats it; `!tiles`; place and read a scroll of annihilation; `!tiles`. **Expect:** the event WILD_VENDING(3,102,...) (the roomba ate the can); a KILL event for monster 60; the text "coughs up its contents"; the two tile dumps differ; and in the second dump exactly two of the cells are not grass (tile 191): the player and the can, dropped back next to where the roomba stood.
+
+### 17.6 `bounty_panel.sh` — the bounty poster published for the side panel
+
+- **Run 1** (seed 3, wizard, not quiet, so position lines are printed): the same four steps as run 1 of 17.5. **Expect**, on the position lines: first "bounty=4:125g:claimed0:downat25xx" (the jackal poster, reward 125 gold, unclaimed, coming down at a turn between 2500 and 2599, that is about 2,500 turns after it went up); the text "That jackal was WANTED"; then "bounty=4:125g:claimed1:downat0" (claimed; no expiry); the text "counts out your bounty: 125 gold"; and on the last position line "bounty=5:125g:claimed0:downat25xx" (after the payout the next poster, a kobold, is published at once).
+- **Run 2** (seed 3, mask 2047 = everything except the bounty board; three rests) and **Run 3** (mask 0). **Expect:** no "bounty=" on any position line.
+
+### 17.7 `pet_growth.sh` — a pet grows after 5 kills of its own, and a save keeps that
+
+A "fight" is two steps: create a kobold next to the player, then rest 8 turns (the player never attacks, so every kill is the pet's). Seed 9, wizard, Adventurer, quiet.
+
+- **Run 1:** place an egg underfoot and answer `t` to take it; run 300 Wild ticks from the debug menu (a carried egg hatches after 300); rest one turn; four fights; open the known-spells-and-items page with backslash and dismiss it. **Expect:** the hatch event WILD_PET(0,...); exactly four KILL events for monster 5; no "has grown" text; and on the page a line of the form "A baby <species>: <hp> of <max> hit points, 4 kills (it grows at 5)." Remember that maximum.
+- **Run 2** (with a kept home): the same but eight fights, then the page, then save. **Expect:** exactly eight kobold kills; exactly one growth event WILD_PET(4,<species>,1) (stage 1); the text "has grown! It is a young "; the page line "A young <species>: <hp> of <max> hit points, 8 kills (it grows at 15)."; the new maximum is exactly 8 more than the baby's; the save file exists.
+- **Run 3** (restore from that home): rest two turns and open the page. **Expect:** never "is gone"; the same "A young ... of <same max> hit points, 8 kills (it grows at 15)." line.
+- **Run 4** (mask 0): open the page. **Expect:** no "Your pet" text.
+
+### 17.8 `pet_panel.sh` — the pet status published for the side panel
+
+- **Scenario** (seed 1, wizard, Adventurer, not quiet): gain twelve levels and take the perks (a tough character); take an egg and run 300 ticks to hatch it; create three floating eyes (monster 12, to keep the pet busy); walk three steps west; place the dungeon entrance and go in; rest; step south (one step south of the arrival point on level 1 is the way back out); rest twice.
+- **Expect:** the first three position lines have no "petinfo="; the hatch event; a position line in town (level "H") with "petinfo=<species>:<n>/<n>:stage0:kills0:next5:at[]" (a new pet is a baby at full hit points, no kills, growing at 5, with the player); the text "sad whine" (the pet was left behind); a position line on level 1 with "pet=(-1,-1)" and "petinfo=...:at[H]" (waiting on level H); no level-1 position line with an empty "at[]"; a NEW_LEVEL(0 event (back in town); the last position line back on level H with "at[]" again; and every published pet has hit points between 1 and its maximum.
+- **Then** (seed 9, mask 0, two rests): no "petinfo=" anywhere.
+
+### 17.9 `wild_monsters.sh` — a genocided species is never replaced by a Wild monster
+
+The four Wild monsters sit in the monster table between the red dragon and the demon lords, and the base game's rule for a genocided species is "step to the next species in the table". Without care, asking for a genocided red dragon would yield a null pointer, even with every Wild feature off.
+
+- **Scenario,** run twice: once with mask 0 and seed 3, once with mask 3839 (all features except perks, so no perk prompt interrupts) and seed 1. Class Wizard, wizard mode, quiet. Steps: `_` (become the Creator, knowing every spell); cast genocide (`c` then the spell code `gen`) and answer its prompt with 56 and Enter (the red dragon); create monster 56 with the debug menu; press the comma key twice (it shows the known-spells page; this only lets the output accumulate).
+- **Expect:** "There will be no more red dragons"; "Created red dragon" (the menu reports the species asked for); none of "null pointer", "fountain kraken", "tax auditor", "roomba" anywhere in the output, in any letter case; no text beginning "The red dragon " (the genocided species did not turn up); and "type I demon lord" does appear, as in the base game.
+
+## 18. Kotlin unit tests
+
+The app module also has JVM unit tests (JUnit 4, run with the Gradle debug unit-test task; they need no device). They are developer tooling, not shipped. There are 96 tests in 13 files, covering the pure-arithmetic halves of app features that were deliberately written free of Android classes: difficulty-argument mapping (3 tests), song parsing and note tables (8), the synthesiser and mixer (8), radio track selection (5), the card album and monster facts, including that every card's tile matches the game's monster tile list (11), bounty and pet status text for the side panel (5 and 4), the danger tracker (4), glitch arithmetic, including that glitch tiles always fall in 408–415 (8), text reflow (8), weather arithmetic, including that the tint never darkens a channel by more than 40% and that stars are sparse and in range (9), Polaroid layout (7) and the run statistics book (16). Parts 10, 11 and 13 describe the behaviour they pin down.
+
+## 19. Other developer-facing files
+
+| File | Content |
+|---|---|
+| `.gitignore` | ignores Gradle caches and build output folders (root and app), the native build cache folders, the local SDK-path properties file, IDE folders and module files, capture folders, the Kotlin compiler cache, the agent settings folder, the host harness output folder `tools/host/out/`, and a locally built APK named `ularn-wild-local.apk` |
+| `README.md` | user-facing description, install links, build instructions (Android Studio, or the debug assemble / install tasks with the SDK location set), feature list |
+| `HISTORY.md` | lineage of Larn and Ularn versions and the copyright and licence position: shared free and non-commercially only |
+| `LICENSE` | the GNU General Public License version 2 text (carried because the 1.6 sources are released under it) |
+| `docs/WILD_EDITION_PLAN.md` | the design brief and working rules for the Wild features |
+| `docs/wild/*.md` | one short page per Wild feature plus an index (12 files) |
+| `gradlew`, `gradlew.bat`, `gradle/wrapper/gradle-wrapper.jar` | the standard Gradle wrapper scripts and bootstrap jar |
+| `tools/tiles/base_sheet.png` | the untouched original tile sheet (developer input to the sheet builder; not shipped) |
+
+## 20. Consolidated asset inventory for the whole app
+
+These are **all** the non-code assets in the repository. The app ships **no audio files, no font files, no images other than the one tile sheet, no bitmap icons, no layouts, no animations, no databases and no localisation files.** All sound is synthesised at run time (Part 13), all text is drawn with the platform's built-in monospace and default typefaces, trading cards and Polaroid photos are drawn in code from the tile sheet, and all screens are built in code.
+
+### Shipped inside the APK
+
+| Asset | Path in the project | Format and size | Content | Described in |
+|---|---|---|---|---|
+| Tile sheet | `app/src/main/assets/ularn_tiles.png` | PNG, 8-bit RGBA with real transparency, 512 x 896 pixels (16 columns x 28 rows of 32 x 32 tiles = 448 cells), 191,674 bytes | cells 0–367 the original Ularn 1.6.3 graphics; 368–415 the 48 Wild tiles; 416–447 placeholders | Part 14 (0–367), this part (368–447) |
+| Help text | `app/src/main/assets/ularn/Uhelp` | ASCII text, 277 lines, 11,998 bytes | the in-game help pages | Part 01 |
+| Maze maps | `app/src/main/assets/ularn/Umaps` | ASCII text, 377 lines, 24,296 bytes | the pre-made level layouts | Part 05 |
+| Fortunes | `app/src/main/assets/ularn/Ufortune` | ASCII text, 39 lines, 1,504 bytes | fortune-cookie messages (also used by bottles) | Part 01 |
+| Icon foreground | `app/src/main/res/drawable/ic_launcher_foreground.xml` | Android vector drawable, 108 x 108 viewport, 3 paths | amber "@" and five floor dots | section 9 |
+| Icon background | `app/src/main/res/drawable/ic_launcher_background.xml` | Android shape drawable | solid #16161A rectangle | section 9 |
+| Adaptive icon | `app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml` | adaptive-icon definition | background + foreground + monochrome layers | section 9 |
+| Legacy icon | `app/src/main/res/mipmap/ic_launcher.xml` | layer-list drawable | background then foreground | section 9 |
+| Theme | `app/src/main/res/values/themes.xml` and `values-v28/themes.xml` | resource values | one theme in two API variants | section 10 |
+| Strings | `app/src/main/res/values/strings.xml` | resource values | the app name "Ularn Wild" | section 10 |
+| Native library | built, not stored: `libularn.so` for each of three ABIs | shared library | the game and its JNI bridge | section 13 |
+
+### Developer-only (in the repository, not in the APK)
+
+| Asset | Path | Format and size | Content |
+|---|---|---|---|
+| Base tile sheet | `tools/tiles/base_sheet.png` | PNG, RGBA, 512 x 736 pixels (16 x 23 tiles = 368), 173,294 bytes | the original sheet, input to the builder; identical to the top 23 rows of the shipped sheet |
+| Wild tile sources | `tools/tiles/src/` | 48 text files, ids 368 to 415, each 34 to 37 lines | the authored tiles in the text format of section 2 |
+
+### Checklist of assets a recreation must create
+
+1. The base sheet art, 368 tiles (Part 14).
+2. The 48 Wild tiles (section 6); 45 if the three unused LarnCoin icons are dropped.
+3. The combined sheet, built by the rule in section 3 (optionally with 32 spare cells).
+4. The three text data files (Parts 01 and 05).
+5. The launcher icon: one vector foreground, one flat background, the adaptive and legacy wrappers.
+6. One theme (two API variants) and one string.
+
+## 21. Quirks and unverified points
+
+Quirks worth knowing:
+
+- The cassette (383) is the only Wild object tile with a transparent background; every other object and monster tile paints the floor colour.
+- The five floor-hat tiles use a solid black wedge as their shadow; every other object uses the 1-pixel teal bar; the egg, kraken and all transparent tiles have none.
+- Tiles 389–391 are shipped and never drawn. Tiles 416–447 are visible magenta placeholders that are never drawn either.
+- Three tiles declare a palette colour they do not use (383, 385, 399).
+- The fishing rod's handle touches the bottom edge of its cell, and the kraken touches the left, right and nearly the top and bottom edges, against the style guide's "2 to 3 pixel margin".
+- CI publishes the **debug** variant, signed with the fixed "sideload" key when the secrets exist; the release variant with minification is configured but never built by CI.
+- The play script documents its exit status as covering "GAME KILLED or a signal in the log" but only the first is actually checked.
+- The driver's header comment says an empty step "waits and dumps state"; in fact an empty line sends nothing and prints the state immediately.
+- The driver has no name for a bounty event type (there is none in the shared-state definitions either; the bounty feature reports through messages and the published poster fields).
+
+Unverified:
+
+- The exact NDK version (not pinned in the build files).
+- The contents of the base repository `android-ularn` (its application id, app name, and its copy of the build workflow), which this repository only refers to.
+- The contents of the `ularn-web` branch (`web/` folder, its build and publish scripts), which is not part of `main`.
+- The generator scripts that produced the hat and glitch tile shapes ("generated shapes" in their headers); only their committed text output exists.
+- The meaning of each key typed at the game's own prompts in the regression scripts (for example `g` to enter the dungeon, `d` to descend, `t` to take, `r` to read, `i` to ignore) was inferred from the scripts' comments and outcomes; the prompts themselves are specified in Parts 01 and 06.
