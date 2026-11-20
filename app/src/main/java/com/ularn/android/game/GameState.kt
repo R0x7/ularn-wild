@@ -44,6 +44,7 @@ class GameState(private val shared: ByteBuffer, layout: IntArray) {
         const val KILL_COUNTS = 70; const val KILL_COUNTS_N = 71
         const val EV_SEQ = 72; const val EV = 73; const val EVENTS_N = 74
         const val PET_INFO = 75; const val PET_LEVEL = 76
+        const val BOUNTY_INFO = 77
     }
 
     private val off = layout
@@ -126,6 +127,12 @@ class GameState(private val shared: ByteBuffer, layout: IntArray) {
         fun info(n: Int) = buf.getInt(off[F.PET_INFO] + 4 * n)
         if (info(0) <= 0) return null
         return PetStatus(info(0), info(1), info(2), info(3), info(4), info(5), cString(off[F.PET_LEVEL], 8).trim())
+    }
+    /** The town crier's WANTED poster (shared_state.h: bounty_info), or null without one. */
+    val bounty: BountyStatus? get() {
+        fun info(n: Int) = buf.getInt(off[F.BOUNTY_INFO] + 4 * n)
+        if (info(0) <= 0) return null
+        return BountyStatus(info(0), info(1), info(2) != 0, info(3))
     }
     val killCountSlots get() = off[F.KILL_COUNTS_N]
     /** Monsters of species [monst] this character has killed (saved with the game). */

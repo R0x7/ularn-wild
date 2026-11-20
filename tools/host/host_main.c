@@ -149,6 +149,9 @@ static void dump(void)
     if (S->pet_info[0])
       printf(" petinfo=%d:%d/%d:stage%d:kills%d:next%d:at[%s]", S->pet_info[0], S->pet_info[1], S->pet_info[2],
              S->pet_info[3], S->pet_info[4], S->pet_info[5], S->pet_level);
+    if (S->bounty_info[0])
+      printf(" bounty=%d:%dg:claimed%d:downat%d", S->bounty_info[0], S->bounty_info[1],
+             S->bounty_info[2], S->bounty_info[3]);
     printf(" tile=%d\n", S->tiles[S->player_y][S->player_x]);
   }
   for (i = last_ev_seq; i < S->ev_seq; i++)

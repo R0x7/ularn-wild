@@ -243,6 +243,7 @@ void wild_paint(void)
   s->coin_price = (int32_t) c[WILD_COIN_PRICE];
   s->pet_x = -1;
   s->pet_y = -1;
+  memset(s->bounty_info, 0, sizeof s->bounty_info);
   for (i = 0; i < MONST_COUNT && i < US_KILL_COUNTS; i++)
     s->kill_counts[i] = kill_counts[i];
   EACH(paint, ())

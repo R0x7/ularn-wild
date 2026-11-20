@@ -141,6 +141,19 @@ class SidePanelView(context: Context, private val stateOf: () -> GameState?) : V
             pet.whereabouts?.let { ui.color = accent; y = text(canvas, it, x0, y, w, ui) }
         }
 
+        // --- the town bounty board (Wild Edition; compat/wild_bounty.c)
+        s.bounty?.let { b ->
+            y += dp(8f)
+            y = header(canvas, "BOUNTY", x0, y, w)
+            bold.textSize = dp(13f); bold.color = Color.WHITE
+            y = text(canvas, b.title, x0, y, w, bold)
+            ui.textSize = dp(13f)
+            ui.color = accent
+            y = text(canvas, b.reward, x0, y, w, ui)
+            ui.color = if (b.claimed) Color.rgb(120, 220, 120) else dim
+            y = text(canvas, b.outlook(s.gameTime), x0, y, w, ui)
+        }
+
         // --- level overview
         y += dp(8f)
         y = header(canvas, "MAP", x0, y, w)

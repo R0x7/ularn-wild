@@ -35,6 +35,29 @@
 /* Turns an unclaimed poster stays up before the crier replaces it. */
 #define BOUNTY_EXPIRE 2500
 
+extern UlarnShared *ularn_shared;
+
+/* The side panel's BOUNTY section (shared_state.h: bounty_info). Runs on
+ * every map repaint (wild_paint() clears the fields first, so with the
+ * feature off nothing is shown) and whenever the poster changes, since the
+ * map is not always repainted after a turn. */
+static void bounty_publish(void)
+{
+  UlarnShared *s = ularn_shared;
+  int m = wild_extra[WX_BOUNTY_MON];
+  if (s == NULL) return;
+  memset(s->bounty_info, 0, sizeof s->bounty_info);
+  if (m <= 0 || m >= MONST_COUNT) return;
+  s->bounty_info[0] = m;
+  s->bounty_info[1] = wild_extra[WX_BOUNTY_GOLD];
+  s->bounty_info[2] = wild_extra[WX_BOUNTY_CLAIMED] ? 1 : 0;
+  /* taken down at the first town visit after this turn (the app counts
+   * down with game_time); a genocided species' poster at the next one */
+  if (!wild_extra[WX_BOUNTY_CLAIMED])
+    s->bounty_info[3] = (monster[m].flags & FL_GENOCIDED) != 0 ? 0 :
+                        wild_extra[WX_BOUNTY_POSTED] + BOUNTY_EXPIRE;
+}
+
 /* Has this stay in town been dealt with yet? (reset on every level change) */
 static int town_handled;
 
@@ -115,6 +138,7 @@ void wild_bounty_turn(void)
   if (level != 0 || town_handled) return;
   town_handled = 1;
   town_visit();
+  bounty_publish();
 }
 
 void wild_bounty_new_level(int lev) { (void) lev; town_handled = 0; }
@@ -129,6 +153,7 @@ void wild_bounty_kill(int monst, int x, int y)
   Printf("\nThat %s was WANTED! Collect %d gold from the town crier.",
          monster[monst].name, wild_extra[WX_BOUNTY_GOLD]);
   if (level == 0) town_handled = 0;   /* killed in town: pay out next turn */
+  bounty_publish();
 }
 
 void wild_bounty_level_up(int newlevel) { (void) newlevel; }
@@ -140,7 +165,7 @@ int  wild_bounty_read(int slot) { (void) slot; return 0; }
 int  wild_bounty_eat(int slot) { (void) slot; return 0; }
 int  wild_bounty_dodge(void) { return 0; }
 void wild_bounty_player_hit(int dmg) { (void) dmg; }
-void wild_bounty_paint(void) {}
+void wild_bounty_paint(void) { bounty_publish(); }
 
 const char *wild_bounty_text(void)
 {

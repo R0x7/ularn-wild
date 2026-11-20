@@ -179,6 +179,14 @@ typedef struct UlarnShared
 #define US_PET_INFO 6
   int32_t pet_info[US_PET_INFO];
   char    pet_level[8];
+  /* The town bounty board for the side panel (wild_bounty.c:
+   * wild_bounty_paint()): [0] wanted species, 0 = no poster (the rest is 0
+   * then); [1] reward in gold; [2] 1 = killed, collect it in town; [3] the
+   * turn (game_time) after which an unanswered poster is taken down at the
+   * next town visit; 0 = claimed, or taken down at the next town visit
+   * whatever the turn (the species was genocided). */
+#define US_BOUNTY_INFO 4
+  int32_t bounty_info[US_BOUNTY_INFO];
   int32_t kill_counts[US_KILL_COUNTS];
   /* Event ring: ev[seq & (US_EVENTS-1)] = {type, a, b, c}; the app keeps the
    * last seq it consumed and reads forward. US_EV_* types below. */
