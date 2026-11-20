@@ -184,7 +184,7 @@ Palette: floor; ground shadow; black; yellow #f0c830, shaded yellow #c09018, hig
 
 The duck faces right: round head upper right, beak pointing right, body below with a raised tail at the left.
 
-- **Head:** black outline row 5 x 16–21; row 6 x 15 and x 22; row 7 x 14 and x 23; rows 8–13 x 13 and x 24. Fill yellow, with highlight pixels at x 17–18 on row 7 and x 16 on row 8. Eye: black at x 20–21 on row 9 and x 20 on row 10, white glint at (21, 10).
+- **Head:** black outline row 5 x 16–21; row 6 x 15 and x 22; row 7 x 14 and x 23; rows 8–13 x 13 on the left, and x 24 on the right for rows 8–10 only (below that the beak joins the head). Fill yellow, with highlight pixels at x 17–18 on row 7 and x 16 on row 8. Eye: black at x 20–21 on row 9 and x 20 on row 10, white glint at (21, 10).
 - **Beak:** row 10 black x 24–27 (top edge); rows 11–12 orange x 24–27 with black at x 28; row 13 dark orange x 24–27 with black at x 28; row 14 black x 23–27 (bottom edge, continuing the neck line).
 - **Tail:** row 13 black x 5–8; row 14 black x 4, yellow x 5–8, black x 9.
 - **Neck join:** row 14 black x 11–14, yellow x 15–22.
@@ -243,7 +243,7 @@ Palette: floor; black; foil bright #f4f8fa, mid #c4ccd2, shaded #8c949c, dark cr
 Palette: floor; black; shell highlight #fff6d8, shell #e8dcb0, shell shade #c4b48a, shell dark #8c8060; speckle purple #8a5a9a, speckle dark purple #5c3a6c; glow inner mint #9ad8c0, glow outer teal #5f9488. No ground shadow.
 
 - **Shell outline (black):** row 5 x 13–17; then pairs of edge pixels: row 6 x 12 and 18; row 7 x 11 and 19; row 8 x 10 and 20; row 9 x 9 and 21; row 10 x 8–9 and 21–22; rows 11–12 x 8 and 22; rows 13–16 x 7 and 23; rows 17–19 x 6 and 24; rows 20–22 x 7 and 23; row 23 x 7–8 and 22–23; row 24 x 8 and 22; row 25 x 9 and 21; row 26 x 9–10 and 20–21; row 27 x 11–12 and 18–19; row 28 x 13–17. (An egg 19 wide at its widest, narrower at the top.)
-- **Shell shading:** light from the upper left. The highlight colour fills the upper-left region: 5 pixels wide on rows 6–9, shrinking by about one pixel per row from row 10 to a single pixel at (7, 17). The plain shell colour fills the middle. Shell shade enters from the right at row 13 and grows to cover the lower right; shell dark starts at the right edge on row 17 and by rows 23–27 covers the right half of the bottom.
+- **Shell shading:** light from the upper left. The highlight colour fills the upper-left region: 5 pixels wide on rows 6–9 (starting just inside the left outline), about 4 wide on rows 10–13, 3 on row 14, 2 on row 15 and a single pixel on rows 16 and 17, ending at (7, 17). The plain shell colour fills the middle. Shell shade enters from the right at row 13 and grows to cover the lower right; shell dark starts at the right edge on row 17 and by rows 23–27 covers the right half of the bottom.
 - **Speckles:** nine light purple pixels at (17, 9), (12, 10), (15, 13), (19, 13), (11, 15), (14, 18), (10, 20), (11, 20), (22, 21); five dark purple pixels at (20, 18), (21, 21), (16, 22), (19, 24), (13, 25).
 - **Glow halo:** two concentric 1-pixel rings hugging the outline: mint directly outside the black, teal outside the mint. The halo spans x 5–26 and rows 3–30 (row 3 and row 30 are just teal at x 14–16; rows 4 and 29 are teal, mint x 14–16, teal). The mint ring is missing where the outline bulges (rows 10, 13, 17–19 and 23), where the teal touches the black directly.
 
@@ -251,7 +251,7 @@ Palette: floor; black; shell highlight #fff6d8, shell #e8dcb0, shell shade #c4b4
 
 Palette: floor; ground shadow; black; rod brown #8a5a2c, rod highlight #b88050; cork #c8a070, cork highlight #e0c090; reel metal #9a9aa8, reel dark #55556a; white #f0f0f0; line pale grey #c8d0d0; bobber red #c42020.
 
-- **Rod:** a straight 45-degree diagonal from the tip, a black pixel at (26, 3), down and left to the reel. On each row from 4 to 20 the rod moves one pixel left: its left black outline is at x = 29 - row (x 25 on row 4, x 9 on row 20... precisely x 25, 24, 23, 22, 21, 20, 19, 18, 17, 17, 16, 15, 14, 13, 12, 11, 10 for rows 4 to 20), followed by 1 to 4 pixels of brown with the highlight colour running down the centre, then a black right outline (from row 7 down; on rows 5–6 the fishing line touches the rod instead).
+- **Rod:** a straight 45-degree diagonal from the tip, a black pixel at (26, 3), down and left to the reel. On each row from 4 to 20 the rod moves one pixel left: its left black outline is at x 25, 24, 23, 22, 21, 20, 19, 18, 17, 17, 16, 15, 14, 13, 12, 11, 10 for rows 4 to 20 (one pixel left per row, with one repeat at rows 12–13), followed by 1 to 4 pixels of brown with the highlight colour running down the centre, then a black right outline (from row 7 down; on rows 5–6 the fishing line touches the rod instead).
 - **Line:** a vertical pale grey line at x 27 from row 5 to row 16, hanging straight down from the tip.
 - **Bobber:** red at (27, 17) and x 26–28 on row 18; white x 25–29 on row 19, x 26–28 on row 20, (27, 21). Below it a hook in line colour: x 26–27 on row 22 and (26, 23).
 - **Reel:** a block just above the handle: row 21 metal x 10–12; row 22 metal x 9–11, dark x 12–13; row 23 metal x 9–10, a white glint at (11, 23), dark x 12–13; row 24 metal x 9, dark x 10–13; row 25 dark x 10–12; black outline at x 14 on rows 21–24, x 13 on row 25 and x 10–12 on row 26.
@@ -333,7 +333,7 @@ The largest Wild sprite: it fills the cell from x 1 to x 31.
 - **Lower face:** rows 15–17, x 15–21 dark purple (a shadowed mouth area) between purple cheeks.
 - **Tentacles:** six, all purple with black outlines.
   - Two outer arms rise at the far left and right and curl: each has a rounded top at rows 15–17 (left arm x 1–7, right arm x 25–31, black outline around purple), a "sucker" section on rows 18–19 where purple and black alternate pixel by pixel (left: black x 1, purple x 2, black x 3, purple x 4, black x 5; mirrored on the right at x 27–31), then sweeps inward on rows 20–22 to join the body, ending in a black-outlined base on row 23 (x 4–7 and x 25–28). One light-purple highlight pixel on each: (4, 21), (6, 22) on the left; (28, 21), (26, 22) on the right.
-  - Four inner tentacles hang straight down into the water on rows 18–23: 3-pixel-wide purple columns at x 8–10, x 12–14, x 18–20 and x 22–24 (the outer two merge with the outer arms above row 21), separated by black, the middle two ending on row 23 with one light-purple pixel each at (12, 23) and (20, 23).
+  - Four inner tentacles hang down from the face, separated by black. The outer pair are 3-pixel purple columns at x 8–10 and x 22–24 on rows 18–19; from row 20 they merge into the in-sweeping outer arms. The middle pair are 2 pixels wide on rows 18–19 (x 13–14 and x 18–19) and 3 wide on rows 20–22 (x 12–14 and x 18–20), each ending on row 23 as two pixels, one of them light purple: light at (12, 23) with purple at (13, 23), and purple at (19, 23) with light at (20, 23). Between the middle pair, at x 16 on rows 19–22, a single column of floor shows through.
 - **Water pool:** an ellipse below: row 24 light water x 9–22 with sparkles at x 11 and x 21; row 25 light water x 5–26 with sparkles at x 9 and x 23; row 26 mid water x 4–27 with a sparkle at x 16; row 27 mid water x 3–28; row 28 mid water x 4–27; row 29 dark water x 5–26; row 30 dark water x 9–22. The pool has no black outline.
 
 ### 386 — tax auditor (LarnCoin)
@@ -349,7 +349,7 @@ A man standing facing the viewer, x 5–26, rows 1–28.
 - **Shirt and tie:** a white V at the chest (row 12 x 13–18; row 13 x 13–14 and 17–18; row 14 x 14 and x 17), with the tie in the centre: red at x 15–16 on rows 13–17, dark red at x 15–16 on row 18 and (15, 19).
 - **Pencil hand (viewer's left):** a vertical pencil at x 6: pale yellow on row 18, gold on rows 19–23, a shoe-black point at (6, 24); the hand is skin at x 7–8 on rows 22–23 (skin shade at (8, 23)).
 - **Clipboard (viewer's right):** black-outlined board from x 17 to x 25, rows 15–25. Board edge: clipboard brown column at x 18 (rows 16–24) and bottom row 24 (x 18–24); dark brown at x 19 and x 23–24 on row 16. Metal clip: x 20–22 on rows 15–16, with one dark pixel at (21, 16). Paper: x 19–23, rows 17–23, with paper shade down x 24; three lines of "writing" on rows 18, 20 and 22 (x 20–23, the last one x 20–22). The holding hand is skin at x 24–25 on rows 19–20 (shade at (25, 20)), which pushes the outline out to x 26 on those rows.
-- **Legs and shoes:** from row 24 the jacket hem is suit dark; two legs each 3 pixels wide (dark, grey, dark): left leg x 12–14 on rows 24–27, right leg x 17–19 on rows 26–27, black between and around. Shoes on row 28: black x 10, shoe black x 11, highlight x 12, shoe black x 13–14, black x 15–16, shoe black x 17, highlight x 18, shoe black x 19–20, black x 21.
+- **Legs and shoes:** row 23 is the jacket hem, suit dark across x 9–16; two legs each 3 pixels wide (dark, grey, dark): left leg x 12–14 on rows 24–27, right leg x 17–19 on rows 26–27, black between and around. Shoes on row 28: black x 10, shoe black x 11, highlight x 12, shoe black x 13–14, black x 15–16, shoe black x 17, highlight x 18, shoe black x 19–20, black x 21.
 - **Shadow:** two rows forming an ellipse: row 29 x 9–23, row 30 x 11–21.
 
 ### 387 — roomba (Vending)
@@ -363,5 +363,248 @@ A low robot-vacuum disc seen from the front and slightly above, x 2–29, rows 1
 - **Front rim:** row 21 body grey x 6–25 with underside colour at x 3–5 and x 26–28; row 22 body grey x 9–22 with underside x 3–8 and x 23–28; underside also at (3, 20) and (28, 20).
 - **Underside:** rows 23–25 underside colour, with two black wheels at x 7–9 and x 23–25 on rows 23–24, and four bristle pixels on row 25 at x 12, 14, 18 and 20.
 - **Shadow:** row 28, x 3–29 (with a row of floor between the body and the shadow).
+
+### 388 — LarnCoin ATM (LarnCoin)
+
+Palette: floor; ground shadow; black; casing grey #6c7480, casing highlight #9aa2ac, casing shadow #464c56; key grey-white #d8d8d8; sign yellow #f8d860, sign dark yellow #d0a020, logo brown #7c5410; screen dark green #123a1c, screen mid green #2a6a3a, bright green #40d060; red #d04040.
+
+- **Cabinet outline (black):** a rectangle x 6–24, rows 3–28 (full square corners), plus a black divider on row 8, x 6–24, under the sign.
+- **Shadow:** a column at x 25 from row 6 to row 28, and a bar on row 29 from x 7 to x 26.
+- **Sign** (x 7–23): rows 4–6 sign yellow, row 7 sign dark yellow. In its centre a small coin logo in logo brown with a dark-yellow middle: row 4 brown x 14–16; row 5 brown x 13–14, dark yellow x 15–16, brown x 17; row 6 brown x 13–15, dark yellow x 16, brown x 17; row 7 brown x 14–16.
+- **Casing** (rows 9–27): x 7 casing highlight, x 23 casing shadow, x 8–22 casing grey except as follows.
+- **Screen:** black frame x 9–21 on rows 10 and 16 and at x 9 and x 21 on rows 11–15. Inside (x 10–20, rows 11–15) dark green with a jagged bright-green price line rising to the right: bright at x 10–11 on row 15; x 12–13 and x 15–16 on row 14; x 14 on row 13; x 17–18 on row 12; x 19–20 on row 11. Two mid-green pixels at (10, 11) and (10, 13).
+- **Keypad:** three rows of keys on rows 18, 20 and 22: key-white pixels at x 10, 12 and 14, and one coloured key at x 16: red on row 18, sign dark yellow on row 20, bright green on row 22.
+- **Card slot:** black x 18–21 on row 18, with a casing-highlight lip x 18–21 on row 19.
+- **Cash slot:** casing shadow x 11–19 on row 24; row 25 black x 10–12, bright green x 13–17 (a banknote), black x 18–20; row 26 dark green x 13–17 (the note's lower edge).
+
+### 389 — coin icon (LarnCoin; shipped, unused)
+
+Palette: black; rim brown #8c5c10; dark brown #5c3a08; dark gold #c89020; gold #e8b830; pale gold #f8e090. Transparent outside the coin.
+
+- **Disc:** a circle 24 pixels across, x 4–27, rows 4–27, drawn as an octagon-like pixel circle: black row 4 and row 27 at x 11–20; the outline is 1 pixel thick on the straight runs (x 4 and x 27 on rows 11–20) and 2 pixels on the diagonals.
+- **Rings:** just inside the black, a 1 to 2 pixel ring of rim brown; inside that gold. The upper-left and centre of the face is pale gold (the lit face); the gold remains as a band around it.
+- **Bevel:** a second, thinner rim-brown arc runs 2 to 3 pixels inside the outer rim from about the 2 o'clock position clockwise round to 7 o'clock (x 23 on rows 12–19, curving along the bottom at row 23, x 12–19); the band between this arc and the outer rim is dark gold, so the lower right edge reads as a shaded bevel. The bottom rows 24–25 inside the rim are dark gold.
+- **Emblem:** an embossed capital L with a crossbar (it reads like a struck-through L). Stem: x 12–14, rows 9–20, with dark brown at x 12 (the shadow side) and rim brown at x 13–14. Crossbar: row 13 rim brown x 10–17, row 14 dark brown x 10–17. Foot: rows 19–20 rim brown x 13–20, with a dark-brown shadow line on row 21, x 13–20.
+
+### 390 — up arrow (LarnCoin; shipped, unused)
+
+Palette: black; green #38b048; dark green #1c6c28; light green #80e090. Transparent background.
+
+- **Head:** apex black at x 15–16 on row 3. Rows 4–15 form a triangle that widens one pixel per side per row: on row r the black edge pixels are at x = 18 - r and x = 13 + r (x 14 and 17 on row 4; x 3 and 28 on row 15). Inside, the first pixel after the left edge is light green, the last before the right edge is dark green, the rest green (row 4 is just light, dark).
+- **Underside of the head:** row 16: black x 4–10, light x 11, green x 12–19, dark x 20, black x 21–27.
+- **Shaft:** rows 17–26: black x 10, light x 11, green x 12–19, dark x 20, black x 21. Row 27: black x 10, dark green x 11–20, black x 21. Row 28: black x 11–20.
+
+### 391 — down arrow (LarnCoin; shipped, unused)
+
+Palette: black; red #c43030; dark red #7c1a1a; light red #f08070. Transparent background.
+
+Exactly tile 390 mirrored top to bottom (row r of 390 becomes row 31 - r), recoloured green to red, dark green to dark red, light green to light red. So: row 3 black x 11–20; row 4 black x 10, dark red x 11–20, black x 21; rows 5–14 the shaft (black, light, red x 12–19, dark, black); row 15 the shoulder (black x 4–10 and x 21–27 around the shaft colours); row 16 the widest row (black x 3, light x 4, red x 5–26, dark x 27, black x 28); rows 17–27 narrowing one pixel per side per row to light, dark at x 15–16 on row 27; row 28 black x 15–16. The light edge stays on the left and the dark on the right.
+
+### 392–396 — hat overlays, worn (Hats)
+
+All five are transparent except for a miniature of the hat in the top rows of the cell, horizontally centred around x 15, in the same palettes as the floor versions (373–377) but without stars on the wizard hat. Each has a black outline including a black bottom row (the brim line that sits across the character's head). None has a shadow.
+
+**392 cone** (rows 0–8): row 0 black x 14–15. Row 1: black x 13, light orange x 14, dark orange x 15, black x 16. Row 2: black x 13, light x 14, mid x 15, dark x 16, black x 17. Row 3 (white stripe): black x 12, white x 13–15, stripe shade x 16–17, black x 18. Row 4: black x 12, light x 13–14, mid x 15, dark x 16–17, black x 18. Row 5 (white stripe): black x 11, white x 12–16, shade x 17–18, black x 19. Row 6: black x 10–11, light x 12–13, mid x 14–16, dark x 17–19, black x 20–21. Row 7 (base plate): black x 9, mid orange x 10–13, dark x 14–17, darkest x 18–21, black x 22. Row 8: black x 10–21.
+
+**393 propeller beanie** (rows 0–7): row 0 black x 10–14 and x 16–19. Row 1: black x 9, red x 10–14, black x 15, blue x 16–19, black x 20. Row 2: black x 10–11, dark red x 12–14, silver x 15, dark silver x 16, dark blue x 17–18, black x 19. Row 3: black x 11–12, red x 13, yellow x 14, white x 15, button shade x 16, dark green x 17, black x 18–19. Row 4: black x 10, red x 11–12, yellow x 13–14, blue x 15–16, green x 17, dark green x 18–19, black x 20. Row 5: black x 9, red x 10–12, yellow x 13–14, blue x 15–17, green x 18, dark green x 19–20, black x 21. Row 6 (rim, dark shades): black x 9, dark red x 10–12, dark yellow x 13–14, dark blue x 15–17, dark green x 18–20, black x 21. Row 7: black x 10–20.
+
+**394 wizard hat** (rows 0–9): row 0 black x 16–17. Row 1: black x 15, light blue x 16, navy x 17, black x 18. Row 2: black x 14, light x 15, mid blue x 16, navy x 17, black x 18. Row 3: black x 13, light x 14, mid x 15–16, navy x 17, black x 18. Row 4: black x 12, light x 13–14, mid x 15, navy x 16–17, black x 18. Row 5 (band): black x 11, yellow x 12–15, dark yellow x 16–17, black x 18. Row 6: black x 9–10, light x 11–12, mid x 13–15, navy x 16–18, black x 19–20. Row 7: black x 8, light x 9–12, mid x 13–16, navy x 17–20, black x 21. Row 8: black x 7, mid x 8–17, navy x 18–21, black x 22. Row 9: black x 8–21.
+
+**395 party hat** (rows 0–8): the pom-pom touches the top edge, so it has no outline above it. Row 0: black x 14, yellow x 15–16, black x 17. Row 1: black x 14, yellow x 15–16, dark yellow x 17, black x 18. Row 2: black x 14, yellow x 15, dark yellow x 16, black x 17. Row 3: black x 13, pink x 14, dark pink x 15, plum x 16, black x 17. Row 4: black x 13, pink x 14, dark pink x 15, blue x 16, black x 17. Row 5: black x 12, pink x 13–14, cyan x 15, blue x 16, plum x 17, black x 18. Row 6: black x 12, pink x 13, cyan x 14–15, plum x 16–17, black x 18. Row 7: black x 11, pink x 12, cyan x 13–14, dark pink x 15–16, plum x 17, blue x 18, black x 19. Row 8: black x 12–18.
+
+**396 tinfoil hat** (rows 0–7): row 0 black x 14–15. Row 1: black x 13, bright x 14, shaded x 15, black x 16–17. Row 2: black x 12, bright x 13–14, mid x 15, bright x 16, shaded x 17, black x 18. Row 3: black x 11, bright x 12–14, mid x 15–16, shaded x 17–18, black x 19. Row 4: black x 10, bright x 11–13, mid x 14, bright x 15, mid x 16, shaded x 17–18, bright x 19, black x 20. Row 5: black x 10, bright x 11, shaded x 12, bright x 13, mid x 14–16, bright x 17–18, shaded x 19–20, black x 21. Row 6 (rim): black x 9, mid x 10, dark crease x 11, mid x 12–13, crease x 14–15, shaded x 16–18, mid x 19, crease x 20, black x 21. Row 7: black x 10–20.
+
+### 397 — pet heart (Pets)
+
+Palette: black; highlight pink #ff9a9a; red #d02828; dark red #8a1010. Transparent except a 7 x 7 heart in the top-right corner of the cell, x 24–30, rows 1–7.
+
+Row 1: black x 25–26 and x 28–29. Row 2: black x 24, pink x 25–26, black x 27, red x 28–29, black x 30. Row 3: black x 24, pink x 25, red x 26–29, black x 30. Row 4: black x 24, red x 25–28, dark red x 29, black x 30. Row 5: black x 25, red x 26–27, dark red x 28, black x 29. Row 6: black x 26, dark red x 27, black x 28. Row 7: black x 27.
+
+### 398 — egg crack, frame 1 (Pets)
+
+Palette: black and the six shell and speckle colours of tile 378. Transparent outside the shell.
+
+An opaque copy of the egg of tile 378, at exactly the same position (same black outline, same shading, same speckles), without the glow halo and without the floor, plus a black zig-zag crack across its middle. Crack pixels (black, replacing shell pixels): (13, 13); (14, 14); (14, 15) and (20, 15); (9, 16), (13, 16), (15, 16), (19, 16), (21, 16); (8, 17), (10, 17), (12, 17), (16, 17), (18, 17), (22, 17); (11, 18), (17, 18), (23, 18); (19, 19); (20, 20). The effect is a sawtooth line running across rows 16–18 from the left outline to the right outline, with one branch climbing to (13, 13), one to (20, 15) and one dropping to (20, 20).
+
+### 399 — egg crack, frame 2 (Pets)
+
+Palette as 398 (the light speckle colour is declared and unused). Transparent except:
+
+- **Bottom half of the shell,** in place: rows 24–28 are identical to the egg's rows 24–28. Above them a jagged broken edge with four teeth: tooth tips are single black pixels on row 20 at x 8, 12, 16 and 20; on row 21 each tooth is black, shell, black (x 7–9, x 11–13, x 15–17, x 19–21, the shell pixel being shell colour for the first two, shell shade for the third and shell dark for the fourth) plus a black pixel at x 23; row 22: black x 7, shell x 8–9, black x 10, shell x 11, shade x 12–13, black x 14, shade x 15, dark speckle x 16, shade x 17, black x 18, shell dark x 19–21, black x 22–23; row 23: black x 7–8, shell x 9–10, shade x 11–16, dark x 17–21, black x 22–23.
+- **Two flying shell fragments:** upper left, a small wedge: black x 5–6 on row 3; black x 4, highlight x 5, shell x 6, black x 7 on row 4; black x 3, highlight x 4, shell x 5, shade x 6, black x 7 on row 5; black x 4–6 on row 6. Upper right: black x 26–27 on row 2; black x 25, shell x 26, shade x 27, black x 28 on row 3; black x 25, shade x 26–27, black x 28 on row 4; black x 26–27 on row 5.
+- **Four chips:** single shell-shade pixels at (10, 8), (22, 9), (25, 11) and (8, 12).
+
+The middle of the cell (rows 7–19 apart from the chips) is transparent so the newborn pet shows through.
+
+### 400 and 401 — rain, frames 1 and 2 (Atmosphere)
+
+Palette: streak dark blue #3c5c8c; streak mid blue #7896c4; drop head pale blue #c8dcf4. Transparent background; row 31 is empty in both.
+
+Each frame holds eight streaks. A streak is a 1-pixel-wide line 6 to 8 pixels tall that leans slightly right as it falls (it steps one pixel to the right once or twice along its length). Its colours from top to bottom: three to five dark-blue pixels, two mid-blue pixels, one pale pixel at the bottom.
+
+Streaks of tile 400, given as (x, y) of the top pixel and of the bottom pale pixel: (27, 0) to (28, 5); (3, 1) to (5, 7); (17, 4) to (19, 11); (9, 13) to (11, 20); (22, 16) to (24, 22); (2, 21) to (4, 27); (14, 23) to (16, 30); (27, 24) to (28, 29).
+
+Streaks of tile 401: (21, 0) to (23, 6); (7, 3) to (9, 10); (12, 9) to (13, 14); (28, 11) to (30, 17); (4, 15) to (6, 22); (18, 19) to (20, 25); (9, 25) to (10, 30); (25, 25) to (26, 30).
+
+The two frames place their streaks in the gaps of each other so that alternating them reads as motion.
+
+### 402 and 403 — snow, frames 1 and 2 (Atmosphere)
+
+Palette: white #f8f8f8; pale grey-blue #d0d8e0; grey #8c96a4. Transparent background.
+
+Two flake shapes. A big flake is 3 x 3: white centre, pale on the four edge-middles, grey on the four corners. A small flake is 2 pixels on one row: pale on the left, grey on the right.
+
+Tile 402: big flakes with top-left corners at (4, 3), (19, 8), (10, 18), (25, 22); small flakes with their left pixel at (14, 2), (28, 4), (3, 13), (24, 15), (7, 27), (17, 28).
+
+Tile 403: big flakes at (12, 5), (26, 11), (3, 21), (18, 24); small flakes at (22, 2), (3, 3), (9, 12), (16, 15), (29, 28), (11, 29).
+
+### 404 and 405 — night stars, frames 1 and 2 (Atmosphere)
+
+Palette: white #ffffff; warm white #e8e8d0; dim yellow #c8c090; dim blue-grey #5c6078. Transparent background.
+
+Each frame has one big star and eight single-pixel stars. The big star is a plus sign 5 pixels across: white centre, dim yellow on the four pixels next to it, dim blue-grey on the four tips.
+
+Tile 404: big star centred (8, 9); warm-white singles at (23, 4), (27, 18), (4, 24), (16, 27); dim singles at (12, 2), (18, 13), (2, 16), (29, 28).
+
+Tile 405: big star centred (22, 21); warm-white singles at (5, 6), (28, 7), (15, 11), (9, 26); dim singles at (20, 3), (30, 14), (12, 18), (2, 30).
+
+### 406 — sun (Atmosphere)
+
+Palette: black; ray orange #c86c10; gold shade #d8a020; gold #f0c838; pale highlight #fcf0a0. Transparent background.
+
+- **Disc:** a circle 18 pixels across, x 7–24, rows 7–24, with a black outline (top and bottom rows black at x 14–17; rows 8 and 23 black at x 11–14 and x 17–20; then two-pixel diagonal steps; x 7 and x 24 on rows 15–16).
+- **Disc shading:** diagonal, light from the upper left. Pale highlight fills an upper-left crescent (on row 8 only x 15–16; 5 pixels wide on rows 9–12 starting just inside the left outline; 4 on row 13; 3 on rows 14–15; 2 on row 16; none below). Gold shade fills a lower-right crescent (1 pixel on row 14, growing to 6 pixels wide on rows 19–22; on row 23 only x 15–16). Gold in between.
+- **Rays:** eight. The four straight rays are 2 pixels wide and 4 long, ray orange for the two pixels nearest the disc and gold for the two tips: up x 15–16, rows 3–6; down x 15–16, rows 25–28; left rows 15–16, x 3–6; right rows 15–16, x 25–28. The four diagonal rays are three 2-pixel horizontal dashes stepping diagonally, the outermost gold and the inner two orange: upper left x 5–6 (row 6), x 6–7 (row 7), x 7–8 (row 8); upper right x 25–26 (row 6), x 24–25 (row 7), x 23–24 (row 8); lower left x 7–8 (row 23), x 6–7 (row 24), x 5–6 (row 25); lower right x 23–24 (row 23), x 24–25 (row 24), x 25–26 (row 25).
+
+### 407 — moon (Atmosphere)
+
+Palette: black; bright #f0f0dc; mid #c8c8b0; dark tip #8c8c78; crater #6c6c5c. Transparent background.
+
+A fat crescent open to the upper right: a top horn at the upper middle, a thick body down the left and along the bottom, and a thin lower horn reaching out to the right.
+
+- **Top horn:** black x 13–14 on row 5; row 6 black x 11–12, dark tip x 13–14, black x 15; row 7 black x 9–10, mid x 11–12, dark tip x 13, black x 14.
+- **Left body** (each row: black, fill, black): row 8 fill x 9–12; rows 9–10 x 8–12; row 11 x 7–12; row 12 x 7–11; rows 13–16 x 6–12; row 17 x 6–13; row 18 x 6–14. The inner (right) black edge is at x 13 on rows 8–16 except row 12 (x 12), then x 14 on row 17 and x 15 on row 18.
+- **Bottom and lower horn:** row 19: black x 6, fill x 7–15, black x 16–17, and the horn tip black at (24, 19). Row 20: black x 6, fill x 7–17, black x 18–23, dark tip (24, 20), black (25, 20). Rows 21–22: black x 7, fill x 8–23, black x 24. Row 23: black x 8, fill x 9–22, black x 23. Row 24: black x 9–10, fill x 11–20, black x 21–22. Row 25: black x 11–12, fill x 13–18, black x 19–20. Row 26: black x 13–18.
+- **Shading:** rows 8–12 are all mid. From row 13 down the left part of each row is bright and the right part mid; the bright part is 2 pixels wide on row 13 and grows by about one pixel per row to 7 wide on rows 20–24.
+- **Craters:** two, each a crater-colour pixel followed by a dark-tip pixel: at x 9–10 on row 15 and x 12–13 on row 21.
+
+### 408–415 — glitch corruption overlays (Glitch)
+
+All eight have transparent backgrounds and share a harsh "broken display" palette: white #f0f0f0, magenta #e040d0, cyan #40e0e0, yellow #f0e050, black #000000, plus dark blue-black #202028 (tile 409), green #20c040 (412, 413) and red #e03030 (412). They are drawn semi-transparently over a few map cells at a time (section 8).
+
+**408 static noise.** 78 isolated pixels scattered over the whole cell with no structure: 25 cyan, 21 magenta, 18 white, 7 yellow, 7 black (about 7.6% coverage), mostly single pixels with five or six 2-pixel clumps and one cyan 2 x 2-ish clump near the top (x 6–7, rows 0–1). Any random scatter with that colour mix is equivalent.
+
+**409 broken scanlines.** Horizontal 1-pixel lines on every third row (rows 0, 3, 6, ..., 30); all other rows are empty. Each line is a broken run of segments: long solid magenta bars, strings of dark dashes of varying length with 1-pixel gaps, and two short cyan runs. Row by row: row 0 magenta x 1–23, dark x 24–27; row 3 dark x 6–8, 10, 12, cyan x 13–18, dark x 20–21; row 6 magenta x 0–16, dark x 17–26; row 9 dark x 5–8, 10, 12–16, 18–19; row 12 dark x 2–6, 8–12, 14, 19–21, 23–26, 28–30; row 15 dark x 8, 10–12, 14–24, 26; row 18 dark x 1, magenta x 3–21, dark x 22; row 21 dark x 10–12, cyan x 13–20, dark x 21–31; row 24 magenta x 4–29; row 27 dark x 7–16 and 19–20; row 30 dark x 9–10 and 12–14, magenta x 15–27.
+
+**410 inverted blocks.** Five solid rectangles, each with a 1-pixel black line of the same width directly underneath: magenta x 17–27 on row 4 (black row 5); magenta x 5–11 on rows 5–6 (black row 7); yellow x 0–5 on rows 21–23 (black row 24); magenta x 21–25 on rows 22–24 (black row 25); magenta x 7–10 on rows 26–28 (black row 29).
+
+**411 "MISSING" fragment.** Three elements:
+1. The word MISSING in a white pixel font, cut off after the N: glyphs 3 pixels wide and 5 tall with 1-pixel gaps, on rows 5–9 starting at x 6 (letters at x 6–8, 10–12, 14–16, 18–20, 22–24, 26–28), each with a black drop shadow offset one pixel right and one pixel down (so shadow pixels reach row 10 and x 29).
+2. The tail of the same word in magenta without shadow on rows 12–16, shifted to the left edge: a 1-pixel sliver of a cut-off letter at x 0, then S at x 2–4, I at x 6–8, N at x 10–12, G at x 14–16.
+3. A "missing texture" checkerboard in the bottom-left corner, clipped to a staircase: on row r (18 to 31) it covers x 0 to x = 3 + 2 x (r - 18), so 4 pixels wide on row 18 and 30 wide on row 31. The checker uses 4 x 4 squares aligned to the cell origin: the square containing pixel (x, y) is magenta when (x div 4) + (y div 4) is even and opaque black when odd.
+
+**412 RGB-split tear.** Two bands, each three consecutive rows: a red row, then a green row displaced 2 pixels to the right, then a cyan row displaced 2 pixels to the left, each broken by one to three 1-pixel gaps. Band 1: row 8 red x 4–6, 8, 10–12, 14–21; row 9 green x 6–13, 15–20, 22–23; row 10 cyan x 2–3, 5–19. Band 2: row 20 red x 4–7, 9–26, 28; row 21 green x 6–19, 21–24, 26, 28–30; row 22 cyan x 2–7, 9–19, 21–27.
+
+**413 dripping bytes.** Six vertical "drips" of tiny byte marks, at x = 1, 6, 11, 16, 21 and 26 (a 5-pixel pitch). A mark is two pixels on one row starting at the drip's x: either green, green or green, white; about a third of the marks are followed, after a 1-pixel gap, by one more green pixel. Marks sit on every other row: the drips at x 1 and x 6 use odd rows, the other four even rows. Extents: x 1 rows 15–25 (six marks); x 6 rows 7–19 (six marks, none on row 15); x 11 rows 12–22 (five marks, none on row 18); x 16 rows 10–16 (four marks, all green-white); x 21 rows 4–22 (ten marks); x 26 rows 2–10 (five marks).
+
+**414 missing-texture corner and "0x0".** Two elements:
+1. Top right: the same 4 x 4 magenta/black checkerboard rule as in tile 411, covering rows 0–13 from a ragged left edge to x 31. The left edge (first opaque x) per row from row 0 to row 13 is 17, 16, 17, 14, 16, 14, 13, 11, 12, 14, 10, 11, 11, 9, so the patch leans left as it goes down.
+2. Bottom left: the text "0x0" in yellow, 3 x 5 pixel glyphs at x 4–6, 8–10 and 12–14 on rows 22–26, with a black drop shadow offset one right and one down.
+
+**415 broken question mark.** A large "?" assembled from yellow blocks roughly 4 x 4 pixels each with nibbled edges: a top bar of three blocks on rows 4–7 (x 9–12, x 14–17, x 19–22); the right-hand stroke, one block at x 19–22 on rows 9–12; a middle bar of two blocks on rows 14–17 (x 14–17 and x 19–22); and the dot, one block at x 14–17 on rows 24–27 with a 1-pixel hole column at x 15 on rows 25–26. About 100 yellow pixels in all; several blocks miss one or two corner or edge pixels. Around it 23 stray single pixels: 14 cyan (for example (25, 1), (22, 2), (31, 5), (9, 9), (0, 31) and a pair at x 20–21 on row 30), 5 white ((20, 8), (11, 12), (13, 16), (21, 21), (13, 26)) and 4 magenta ((8, 4), (3, 22), (3, 23), (23, 28)).
+
+## 7. Spare ranges
+
+Ids 416 to 447 (sheet rows 26 and 27) are reserved and unused. The shipped sheet contains the builder's magenta placeholder in each of those 32 cells. No code refers to them. A recreation can ship them transparent or omit the two rows entirely (the app sizes its tile array from the sheet's height and treats an out-of-range id as "draw nothing").
+
+## 8. How the overlays register
+
+All tiles, overlays included, are drawn into the same destination rectangle as the map cell they belong to, scaled from 32 x 32 to the current cell size with nearest-neighbour sampling. An overlay therefore lines up pixel for pixel with the tile underneath. The per-cell drawing order in the game view (Part 11 owns the full renderer) is:
+
+1. The cell's own tile. On the player's cell this is the player sprite (base tiles 165–172 and 181–188, one per class and sex).
+2. **Hat overlay** (392–396), only on the player's cell, only when the game reports the player as visible to themselves (the "player cursor" flag, which is off while blind), and only when the published hat tile is greater than 0. The game publishes hat tile = 392 + (worn hat's object id - 106), or 0 when no hat is worn, so cone 106 gives 392, propeller 107 gives 393, wizard 108 gives 394, party 109 gives 395, tinfoil 110 gives 396. The base player sprites have their heads in the top rows of the cell (head tops on rows 0 to 2, mostly between x 9 and x 23), so the overlays, drawn in rows 0 to 9 and centred near x 15, cover the top of the head. No per-class offset is applied; on the few classes whose heads are off-centre the hat simply sits where it sits.
+3. The cell's effect overlay if one is set (spell animations from the base game, and the **egg-crack frames**). When an egg hatches, the newborn pet is first placed on a free cell next to the player; then, unless the player is blind, that cell's overlay is set to 398 for 250 ms and to 399 for another 250 ms, and then cleared. Frame 1's opaque egg covers the middle of the pet sprite; frame 2 leaves the pet visible above the broken lower shell.
+4. **Pet heart** (397) on the cell whose coordinates equal the published pet position (a position of -1 means no pet on this level). It marks the top-right corner of the pet's sprite.
+5. **Glitch overlay** (408–415): while the glitch counter is positive, each animation frame picks 3 to 6 distinct visible cells and a tile 408 + (hash mod 8) for each; the tile is drawn over the whole cell at alpha 200 of 255. (Selection, the 8 frames-per-second cadence, the row slicing and the hue rotation are in Part 13.)
+6. The red cursor frame (base tile 174) on the player's cell.
+
+After every cell has been drawn, a second pass draws the weather over the map when the player is on the surface level with the weather feature on:
+
+- **Stars** (404 or 405) on about one in four never-seen ("unknown") cells, at night only (hour 21 or later, or before 6), drawn once over the whole cell. The two tiles are alternate twinkle states.
+- **Rain** (400 or 401; storms use the same tiles) or **snow** (402 or 403) on a subset of floor-class cells (one in three; one in two in a storm; one in five with "reduce weather effects"). The tile is drawn twice: once offset inside the cell by the current drift, and once more one cell-height higher (and, for rain, one third of a cell to the left), so the pattern scrolls through the cell and wraps. The art is designed for that: streaks and flakes are spread evenly so the seam between the two copies is not noticeable. The two frames of each pair alternate every fourth animation frame.
+- The day/night tint is multiplied over everything afterwards.
+
+The photo-mode render repeats steps 1 to 4 and the weather pass, without the glitch overlay and the cursor.
+
+**Sun and moon** (406, 407) are not map overlays. When weather is active, the HUD's second line (the one with the level name) draws the moon at night and the sun by day into a square whose side is the HUD line height, 4 density-independent pixels after the end of the text, with the same nearest-neighbour scaling.
+
+## 9. The launcher icon
+
+The icon is entirely vector artwork; there are no bitmap icon files at any density.
+
+**Background** (`ic_launcher_background`): a plain rectangle shape filled with a single near-black colour, #16161A.
+
+**Foreground** (`ic_launcher_foreground`): a vector drawable 108 x 108 density-independent pixels with a 108 x 108 viewport. It shows an amber "@" sign (the roguelike player glyph) standing above a row of five dim floor dots. All coordinates below are in viewport units, origin top left.
+
+1. **Floor dots:** five filled circles of radius 1.6 on the line y = 73, centred at x = 34.6, 44.6, 54.6, 64.6 and 74.6 (10 units apart). Fill colour amber #FFBE3C at one-third opacity (alpha 0x55).
+2. **Outer ring and tail of the "@":** one open path, stroked 5 units wide in opaque amber #FFBE3C with round end caps and no fill:
+   - start at (67, 62), at the lower right;
+   - a circular arc of radius 17, the long way round, clockwise on screen (down through the bottom, up the left side and over the top), ending at (71, 49). Its centre works out at about (54.1, 50.9), so the ring is a circle open over roughly 47 degrees at its right side, between the 3 o'clock and half-past-4 positions;
+   - a straight line down to (71, 53);
+   - a half-circle of radius 4 curving under, through (67, 57), to (63, 53);
+   - a straight line up to (63, 45).
+   The last three segments form the hook that joins the ring to the right side of the bowl.
+3. **Inner bowl:** a full circle of radius 8 centred at (54, 49), stroked 5 units wide in the same amber, no fill, default (butt) caps.
+
+The whole glyph spans about x 34.5–73.5 and y 31–71, inside the adaptive-icon safe zone (the central circle of diameter 66), with the dots just below it.
+
+**Adaptive icon** (API 26 and later; resource `ic_launcher` in the `mipmap-anydpi-v26` folder): background layer = the background drawable; foreground layer = the foreground drawable; monochrome layer = the same foreground drawable (so themed icons on Android 13 and later show the "@" and dots as a silhouette).
+
+**Legacy fallback** (API 24 and 25; resource `ic_launcher` in the plain `mipmap` folder): a layer list that stacks the background drawable and then the foreground drawable, giving a square dark icon with the same glyph.
+
+The manifest uses this one `ic_launcher` resource for both the normal icon and the round icon. There is no separate round artwork.
+
+## 10. Themes, colours and strings
+
+There is one theme, one string, and no colour, dimension, layout, menu, font, raw or XML resource files. Every screen of the app is built in code (Part 10).
+
+**Theme `Theme.Ularn`** (base variant, used on API 24 to 27):
+
+| Attribute | Value |
+|---|---|
+| Parent | the platform's device-default theme, no action bar, fullscreen (`Theme.DeviceDefault.NoActionBar.Fullscreen`) |
+| Window background | black |
+| Accent colour | #FFBE3C (the same amber as the icon) |
+| Navigation bar colour | black |
+| Status bar colour | black |
+
+**API 28 and later variant** (`values-v28`): identical, plus the display-cutout mode set to "short edges", so the window extends into a notch or camera cut-out on the short edges of the screen.
+
+The only two colours defined in resources are therefore the amber accent #FFBE3C and the icon background #16161A; all other colours are constants in the code.
+
+**Strings:** a single string, the application name: "Ularn Wild". Every other piece of text is in code or produced by the game.
+
+## 11. The manifest
+
+| Item | Declaration |
+|---|---|
+| Package | not in the manifest; the code namespace is `com.ularn.android` and the application id is set by the build (section 12) |
+| Permission | vibrate |
+| Permission | write external storage, limited to API 28 and below (photo mode saving to the Pictures folder on Android 7 to 9; Android 10 and later needs none) |
+| Application: backup | allowed (`allowBackup` true). No backup-rules or data-extraction-rules file is declared, so the platform's default automatic backup applies to the whole app data |
+| Application: icon and round icon | both the `ic_launcher` mipmap |
+| Application: label | the "Ularn Wild" string |
+| Application: theme | `Theme.Ularn` |
+| Application: native libraries | `extractNativeLibs` false: the shared library stays uncompressed and page-aligned inside the APK and is loaded from there |
+| Activities | exactly one: the main activity (`MainActivity`) |
+| Main activity: exported | yes, with the standard launcher intent filter (action MAIN, category LAUNCHER) |
+| Main activity: launch mode | single task |
+| Main activity: configuration changes handled by the activity itself (no restart) | orientation, screen size, screen layout, smallest screen size, keyboard, keyboard hidden, navigation, UI mode, density, font scale |
+| Main activity: soft-input mode | "adjust nothing" combined with "state hidden": the window is never resized or panned for the on-screen keyboard, and the keyboard is hidden on entry |
+| Screen orientation | not declared. The activity follows the device by default and changes the requested orientation at run time from the settings (follow system, auto-rotate, lock portrait, lock landscape; Part 10) |
+
+Nothing else is declared: no services, receivers, content providers, file-provider, meta-data, feature requirements, queries, network permission or network-security configuration. The app never uses the network.
+
+The long configuration-change list matters to the design: the game runs in a forked child process tied to the activity's process (Part 09), and the views hold the live state, so the activity must survive rotation, folding, split-screen resizing, keyboard attachment, dark-mode switches and font-size changes without being recreated.
 
 <!-- PART15-CONTINUES -->

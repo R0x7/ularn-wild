@@ -329,7 +329,7 @@ Things that read the clock for other purposes: slow monsters move only when the 
 | Second and third hit flags | set together with the hit flag (the third also when the player attacks); nothing in this build reads them | — | third: by the loop |
 | View flag | skip one redraw of the player's surroundings | resting with a repeat count pending (never happens, 8.6) | the loop |
 | Repeat count | upstream's count for repeated commands; always 0 in this build (8.6) | — | almost every command zeroes it |
-| Random-monster timer | turns until the next wandering monster; starts at 80 | — | reset to 120 − 4 × level number when it fires |
+| Random-monster timer | turns until the next wandering monster; starts at 80; stored in the save file | — | reset to 120 − 4 × level number when it fires |
 
 ### 8.2 One iteration
 
@@ -460,7 +460,7 @@ A step in direction d works as follows and reports whether the player "moved fre
 4. If the target is outside the map: nothing happens, no turn is used.
 5. If the target is a wall and the player cannot walk through walls: nothing happens, no turn is used.
 6. If the enhanced interface is on and the target is a closed door: nothing happens, no turn is used. (With the enhanced interface off, the player steps onto the closed door and is asked about opening it by the object check, Part 06.)
-7. If the player is on level 1 and the target is column 33 of the bottom row (the dungeon exit): go to level 0 and stand on the dungeon entrance there (moving to the nearest free cell if needed), redraw everything. The turn is used; this does not count as moving freely.
+7. If the player is on level 1 and the target is column 33 of the bottom row (the dungeon exit): go to level 0, take the position of the dungeon entrance there and then move to the nearest empty cell (the entrance cell is occupied by the entrance itself, so the player always arrives beside it; "nearest" is the level-entry placement rule of Part 02), and redraw everything. The turn is used; this does not count as moving freely.
 8. Wild Edition hook: stepping into one's own pet swaps places with it, or is refused (see Part 12).
 9. If a monster is on the target cell: attack it (Part 04). The turn is used; the player does not move.
 10. Otherwise move: remember the old position as the "previous position" and set the new one.
@@ -538,7 +538,7 @@ Wear (W). After the prompt:
 | a body armour while armour is already worn | "⏎You are already wearing some armor." |
 | a body armour otherwise | worn; if it was the wielded item it is unwielded; "⏎You put on your NAME" + bonus + "." (armour names have no article: "leather armor") |
 | a shield while one is already worn | "⏎You are already wearing a shield." |
-| a shield while a two-handed sword is wielded | "⏎Your hands are busy with the two handed sword!" |
+| a shield while a two-handed sword is wielded | "⏎Your hands are busy with the two handed sword!" (the original performs this test without first checking that anything is wielded; with nothing wielded it must simply be false) |
 | a shield otherwise | worn; unwielded if it was wielded; "⏎You put on your shield" + bonus + "." |
 | anything else | Wild Edition hook (hats, see Part 12); otherwise "⏎You can't wear that!" and the prompt is asked again (this is the one wrong answer that does not end the command) |
 
@@ -563,7 +563,7 @@ Eat (e). Nothing while time is stopped. Otherwise the prompt, then:
 
 Drop (d). Nothing while time is stopped. Otherwise the prompt, then:
 
-- a letter: the item is dropped by the inventory drop routine (Part 02). In outline: an empty slot gives "⏎You don't have item X! "; if the player's cell already holds anything other than a pit, a beep and "⏎There's something here already."; nothing can be dropped on the dungeon exit cell (silently); otherwise the item is placed on the floor (or lost, if the cell is a pit: "⏎It disappears down the pit."), "⏎  You drop:" and the item's inventory line are printed, the item leaves the pack and is unwielded/unworn, its carried effects are withdrawn, and the drop flag is set so the game does not immediately offer to pick it up again.
+- a letter: the item is dropped by the inventory drop routine (Part 02). In outline: an empty slot gives "⏎You don't have item X! "; if the player's cell already holds anything other than a pit, a beep and "⏎There's something here already."; nothing can be dropped while standing at column 33 of the bottom row, the dungeon exit position (the command ends silently; this check comes after the two above and does not apply to gold); otherwise the item is placed on the floor (or lost, if the cell is a pit: "⏎It disappears down the pit."), "⏎  You drop:" and the item's inventory line are printed, the item leaves the pack and is unwielded/unworn, its carried effects are withdrawn, and the drop flag is set so the game does not immediately offer to pick it up again.
 - the period: drop gold.
   1. If the cell holds something other than a pit: "⏎There's something here already!" and stop.
   2. Print two line breaks and "How much gold do you drop? " and read a number whose default is all the gold carried. So an asterisk, an empty entry, and also Escape, drop everything.
@@ -608,7 +608,7 @@ Close door (C):
 1. While time is stopped: the same refusal message.
 2. Redraw the player's surroundings.
 3. Enhanced: ask the direction and echo it, set the drop flag, then: off-map or not a door gives the "no door there" messages as above; a closed door gives "⏎That door is already closed."; an open door becomes a closed door with its trap state cleared, "⏎The door closes.".
-4. Classic: if the player is not standing on an open door, "⏎There is no open door here.". Otherwise "⏎The door closes.", the cell becomes a closed door with its trap state cleared and is forgotten on the map display, and the drop flag is set so the player (now standing inside a closed door) is not at once asked to open it.
+4. Classic: if the player is not standing on an open door, "⏎There is no open door here.". Otherwise "⏎The door closes.", the cell becomes a closed door with its trap state cleared (its remembered appearance is reset to "nothing" until the next redraw of the player's surroundings), and the drop flag is set so the player (now standing inside a closed door) is not at once asked to open it.
 
 Monsters or items in the doorway do not prevent closing in the enhanced form.
 

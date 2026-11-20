@@ -143,8 +143,8 @@ floor and has no meaning.
   the right and up-right (light from the front left), typically 40-190 pixels. Flying or floating
   subjects (floating eye, quasit) instead have a black ellipse on the floor below them with a gap
   of floor in between. Rings, gems and gold have a 1-2 px black shadow hugging their lower-right
-  edge. Insubstantial creatures (wraith, poltergeist, invisible stalker, mimic, water lord has a
-  normal one) mostly have none.
+  edge. Insubstantial creatures (wraith, poltergeist, invisible stalker, mimic) have no cast
+  shadow, and neither do the rothe, the sphere of annihilation or any spell effect.
 - **Shading.** 2 to 4 flat shades per material, lit from the upper left, no gradients. Texture is
   done with single-pixel checker dithering (chain mail, the wraith, the mimic, fading spell
   clouds). No anti-aliasing against the floor except in the rotated bolt tiles.
@@ -216,8 +216,9 @@ a cell into one tile id with this procedure (run whenever a cell is revealed or 
 
 Each computed tile is stored in the shared display grid and the cell's overlay slot is cleared
 (set to "none"). Blindness: while blind the player tile is not shown (step 1 is skipped, so the
-player's own cell shows what is remembered there), the cursor is not drawn, newly seen cells are
-not revealed, and no spell effect tiles are written.
+player's own cell shows what is remembered there), the cursor is not drawn, monsters are not
+drawn, the single-cell reveal used by spells and bolts does nothing, and no spell effect tiles
+are written.
 
 The classic one-character map symbols still exist in the monster and object tables (they are
 listed in sections 7 and 9 for completeness) but the Android display never uses them for the map;
@@ -293,7 +294,7 @@ All tiles are opaque on floor #426b6b; "shadow" means the black cast shadow of s
 | 42 | 43 yellow mold | y | 2-26, 6-24 | Top-down oval patch of amber slime #de9c0d with a darker rim #b99018 and five dark brown holes #422100; black shadow below. |
 | 43 | 44 umber hulk | U | 0-31, 0-31 | Hulking beetle-ape filling the tile: red-brown and olive plates (#631800, #7a7d24, #b99018), a red-capped head with a single staring eye and mandibles, pale claws #9fcfac. |
 | 44 | 45 gnome king | k | 5-27, 9-29 | The gnome again, crowned: gold crown with blue gems, closed eyes, long white beard, royal-blue coat (#0000ff/#000084), gold belt and boots. Sits low in the tile. |
-| 45 | 46 mimic | M | 0-30, 0-31 | A shapeless rainbow blob: horizontal bands from red at the top through orange, yellow, green and cyan to blue at the bottom, breaking into loose single pixels around the edge. No shadow. |
+| 45 | 46 mimic | M | 0-30, 0-31 | A shapeless rainbow blob: horizontal bands from red at the top through orange, yellow, green and cyan to blue at the bottom, breaking into loose single pixels around the edge; black pixels are mixed into the blue at the base. No cast shadow. |
 | 46 | 47 water lord | w | 4-30, 1-28 | A robed figure made of water: cone-shaped body in blue #005ab5 and cyan #00b9c7 with pale #9fcfac streaks, one arm held out to the right. |
 | 47 | 48 bronze dragon | D | 0-30, 0-31 | The dragon pose (see tile 24) in bronze: body #631800, #846331, #b99018, #de9c0d with cream wing membranes on brown ribs. |
 
@@ -657,7 +658,11 @@ normally. Because each effect tile has the floor painted in, a bolt passing over
 monster momentarily hides it behind floor colour.
 
 What each looks like (all opaque on #426b6b, no shadow). The four orthogonal tiles of an effect
-are exact 90-degree rotations of one drawing; the four diagonal tiles are 45-degree rotations.
+are pixel-exact 90-degree rotations of the west tile (north = west turned a quarter clockwise,
+and so on), and the four diagonal tiles are likewise exact quarter-turns of the north-west tile.
+The rotations are about the pixel at (16,16), not the centre of the 32 x 32 square, so each
+quarter-turn copy sits one pixel off from where a plain rotation of the whole tile would put it.
+The north-west drawing is the west drawing turned 45 degrees.
 
 | Effect | Tiles | Size of the west-facing drawing | Depiction and colours |
 |---|---|---|---|
@@ -689,8 +694,8 @@ pluses to 13 x 13 stars with 1-px arms.
 | 1 | 241 | 42 | Six small stars, 3-5 px across. |
 | 2 | 242 | 80 | Six stars 5-7 px across plus two dots. |
 | 3 | 243 | 171 | Eight stars, the largest 13 px (pink upper right, green centre, cyan lower right), touching the tile edges. |
-| 4 | 244 | 179 | Peak: nine stars in new positions, four of them 13 px. |
-| 5 | 245 | 100 | Seven stars 5-7 px. |
+| 4 | 244 | 179 | Peak: eight stars in new positions, three of them 12-13 px (blue upper left, green right, pink lower left). |
+| 5 | 245 | 100 | Eight stars 3-7 px. |
 | 6 | 246 | 33 | Five small stars 3-5 px. |
 | 7 | 247 | 10 | Two 3 x 3 pluses (cyan upper centre, green lower left). |
 
@@ -745,12 +750,12 @@ Frame-by-frame appearance (everything opaque on #426b6b; none has a cast shadow)
 |---|---|---|---|---|---|---|
 | Sleep (white #ffffff letters "Z" in 2-px strokes, drifting up and to the right) | 256: one 7-px Z in the bottom-left corner | 272: one 8-px Z a little higher and further right | 288: two Zs, a small one bottom-left and a 9-px one mid-left | 304: two Zs, small at mid-left and a 10-px one upper-centre | 320: three Zs, small bottom-left, medium centre-left, a 13-px one cut off by the top-right corner | 336: two Zs, the medium one and the large one at the top right; the smallest is gone |
 | Web (1-px white lines) | 257: a 7 x 5 grey-white silk blob (#808080, #c0c0c0, #ffffff) at the centre | 273: a 16-px spider web, eight spokes and one ring | 289: a 23-px web with two rings | 305: a full-tile web: spokes to all edges with three concentric hexagonal rings | 321: the same web with the innermost ring gone | 337: only the two outer rings and spoke stubs remain; the centre is empty |
-| Phantasmal forces (a black-cloaked, hooded spectre rising; cloak #232323, #2b2727 with brown tints, hood rimmed in grey-lilac, lower edge fading out through a checker dither) | 258: a small 12 x 22 figure at the centre with a red eye slit | 274: larger, 19 px wide | 290: larger again, shoulders 24 px wide | 306: a bust filling the tile, thin red eye line | 322: the same with larger glowing red eyes | 338: the same with a broad red visor of eyes with yellow centres (the tile differs from 322 only around the eyes) |
+| Phantasmal forces (a black-cloaked, hooded spectre rising; cloak #232323, #2b2727 with brown tints, hood rimmed in grey-lilac, lower edge fading out through a checker dither) | 258: a small 12 x 22 figure at the centre with a red eye slit | 274: larger, 19 px wide | 290: larger again, shoulders 24 px wide | 306: a bust filling the tile, thin red eye line | 322: the same with larger glowing red eyes | 338: the same with a broad red visor of eyes with yellow centres (differs from 322 in only 30 pixels, all around the eyes) |
 | Cloud kill (the magic fire drawings recoloured green: dark green #031b03, #114b15 rims, lime #95bf15, #96d117, #8ee719, pale yellow cores #f0e074, #f1efbe) | 259: a 6-px lime spark | 275: an 18 x 15 green puff with a dark rim | 291: a 23-px cloud with a bright lime centre | 307: a billowing cloud filling the tile with a cream core and lime fringe | 323: a ring of loose pale-yellow and lime pixels with a clear centre | 339: sparse scattered lime and yellow pixels near the edges |
 | Vaporize rock | 260: a grey boulder filling the tile, veined with glowing white-orange cracks and a scorched brown rim | 276: an orange-tan dust burst (#a77327, #c38b2f, #c79737) with a pale grey rock stump at lower left | 292: a darker brown and maroon debris cloud (#572b07, #5b1300, #6f3707) with a grey stump | 308: thinning brown specks around a small grey remnant | 324: a few brown specks and a thin grey sliver | 340: a faint vertical brown-grey wisp and half a dozen specks |
 | Dehydrate (steam in four greys #707070, #909090, #b0b0b0, #d0d0d0) | 261: a small low puff, 14 x 11 | 277: a lumpy cloud 17 px across | 293: a mushroom cloud with a tapering stem, 20 x 24 | 309: the cap risen and flattened, stem thinner | 325: a few detached puffs higher up | 341: four tiny puffs, 42 pixels in all |
 | Drain life (blood drops: #800000, #c90b01, #ff0000 with yellow #ffff00 tips; only 37-50 pixels per frame) | 262: a little red "tree": a dark stem with a spray of yellow-tipped drops above it | 278: the spray opening into a V, no stem | 294: drops curling outward left and right | 310: two loose groups of drops beginning to fall | 326: short vertical streaks falling, yellow at their lower ends | 342: the streaks near the bottom edge |
-| Flood (an expanding water ring in four blues #0050a0, #0060c0, #0070e0, #0080ff with light grey #c0c0c0 glints) | 263: a 6-px blue blob | 279: a 12-px faceted disc | 295: an 18-px disc with a 3-px hole | 311: a 24-px ring, hole 8 px | 327: a 30-px ring, hole 14 px | 343: a ring touching the tile edges, 4-5 px thick |
+| Flood (an expanding water ring in four blues #0050a0, #0060c0, #0070e0, #0080ff with light grey #c0c0c0 glints) | 263: a 6-px blue blob | 279: a 12-px faceted disc | 295: an 18-px disc with a 3-px hole | 311: a 24-px ring, hole 8 px | 327: a 30-px ring about 8 px thick, hole 14 px (596 px of blue) | 343: the same 30-px outer size thinned to 4-5 px, hole about 21 px (456 px of blue) |
 | Finger of death (a skull) | 264: a dull dark-brown skull with a short spine (#2f1b07, #472b0b, #5f3b0f), 15 x 22 | 280: the skull lit to tan and gold (#8f5f1f, #c79737) | 296: bright gold with red eye sockets | 312: the skull swallowed by a cream-white glow (#f3f3f3, #fbf3cf, #f7dfbb) with orange-red eyes and a ragged brown fringe | 328: a white-cream blob with a grey centre, same outline | 344: the blob hollowed into a ring with floor showing through the middle |
 | Teleport away (a shimmering blue curtain in vertical stripes of the four flood blues, with a white-cyan flare) | 265: a 7 x 18 blue bar with a pale vertical glint | 281: a 13 x 22 panel with a lens-shaped flare | 297: a 23 x 28 panel with a four-pointed white star | 313: stripes covering almost the whole tile behind a large four-pointed star (only 102 floor pixels left) | 329: the curtain parting down the middle, star smaller | 345: two blue bands at the left and right edges and a small vertical flare in the bare centre |
 | Magic fire (dark red #4f0000, #83170b rims, orange #ff7b07, #ff9b1b, #ffb733, yellow-white cores #ffe35f, #fffb97, #ffffff) | 266: a 6-px orange spark | 282: an 18 x 15 fire burst | 298: a 23-px fireball, yellow at the centre | 314: a white-yellow explosion filling the tile, orange fringe | 330: a ring of loose pale-yellow and white pixels | 346: sparse scattered orange-yellow pixels |
@@ -772,10 +777,11 @@ cell's argument value and is the sum of:
 
 A neighbour that would be off the map counts as "not connected". Diagonal neighbours are ignored.
 The mask is recomputed by a routine that scans a rectangle of cells and rewrites the argument of
-every wall in it: over the whole map when a level is created or loaded into play, and over the
-cells around a change when walls are made, vaporised, annihilated or eaten by a sphere of
-annihilation (Parts 05 and 07). A newly made wall keeps whatever mask its argument last held until
-that rescan, which follows immediately.
+every wall in it: over the whole map when a level is first generated, and over the cells around a
+change when a spell or a sphere of annihilation makes or removes walls (Parts 05 and 07). A newly
+made wall is first displayed with whatever value its cell's argument held before (usually 0, the
+isolated-pillar shape); the rescan of the surrounding 3 x 3 block follows at once and every known
+wall in that block, the new one included, is then redisplayed with its correct shape.
 
 **The common drawing.** A grey brick wall filling the tile: brick courses 3 pixels tall separated
 by 1-px #111111 mortar lines every 4 pixels (8 courses per tile, mortar on rows 0, 4, 8, ... 28),
@@ -786,8 +792,10 @@ border, so adjoining walls join seamlessly.
 
 **The border.** On every side where the wall has **no** connecting neighbour the tile gets a
 4-pixel kerb of flat dressed stones: a 1-px dark line on the tile edge, then 3 x 3 px squares of
-flat #a2a2a2 separated by 1-px black lines (a row of eight squares per side), then a 1-px black
-line, with the brickwork inset inside it. Where two bordered sides meet, the corner is cut off at
+flat #a2a2a2 separated by 1-px black lines, then a 1-px black line, with the brickwork inset
+inside it. The stones repeat every 4 pixels and are phased so that they continue seamlessly into
+the neighbouring tile's kerb (an uncut side shows seven whole stones and a part stone at each
+end). Where two bordered sides meet, the corner is cut off at
 45 degrees: a small triangle of floor colour #426b6b (4, 3, 2 and 1 pixels on successive rows, 10
 pixels) shows at the tile's corner, with a black diagonal line behind it, so free-standing wall
 ends look rounded. Sides that do connect have no kerb; the bricks run to the edge.
@@ -830,8 +838,8 @@ single fixed drawings of a free-standing stone arch and do not vary with their s
 | 248-255 | Sparkle frames on black. |
 
 Tile 147 (golden urn) and tile 38 (invisible stalker) are reachable only in unusual circumstances
-(the urn object is not generated in normal play; the stalker needs see-invisible), but they are
-wired up.
+(the source marks the urn object "not implemented", and whether anything ever generates one is
+(unverified) here, see Part 06; the stalker needs see-invisible), but both are wired up.
 
 ## 17. What a renderer needs to know
 

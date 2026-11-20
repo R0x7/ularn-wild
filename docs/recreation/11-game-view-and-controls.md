@@ -33,10 +33,10 @@ The activity's root is a black frame with four full-size layers, bottom to top:
 
 The root is padded by the display-cutout insets, so nothing is laid out under a notch.
 
-Touches reach the controls overlay first. In play mode it claims a touch only if the finger
-went down on a control; any other touch falls through to the game view underneath for the
-whole gesture (including any further fingers that join it). In edit mode the overlay claims
-every touch.
+Touches reach the controls overlay first. In play mode it claims a finger only if that
+finger went down on a control; a finger that goes down anywhere else falls through to the
+game view underneath (details of mixing the two in section 11.6). In edit mode the overlay
+claims every touch.
 
 The game view draws only from the shared display state (Part 09). The fields it reads:
 
@@ -537,10 +537,10 @@ All examples use an 80-column source.
 
 | Case | Input | Width | Expected output |
 |---|---|---|---|
-| Rows that fit are kept | "    a short line", blank, "another" | 40 | identical three lines |
+| Rows that fit are kept | `    a short line` (four leading spaces), blank, `another` | 40 | identical three lines |
 | Nothing is wider than the target | a shop page: two long prose lines, a blank, two rows of "letter) item … price" pairs side by side, a far-right "You have 500000 gold pieces", and a prompt line | 30, 40, 46, 60 | every output line is at most the width long |
-| Paragraph joined and wrapped | "Welcome to the Ularn Trading Post.  We buy items that explorers no longer find" / "useful.  Since the condition of the items you bring in is not certain," | 40 | 4 lines; line 1 "Welcome to the Ularn Trading Post.  We", line 2 "buy items that explorers no longer find" |
-| Side-by-side lists become one aligned list | "a) an energy ring                1800   b) a ring of increase damage     1250" / "c) a ring of regeneration        2200   d) a ring of extra regeneration 10000" | 46 | "a) an energy ring                1800" / "b) a ring of increase damage     1250" / "c) a ring of regeneration        2200" / "d) a ring of extra regeneration 10000" |
+| Paragraph joined and wrapped | row 1 `Welcome to the Ularn Trading Post.  We buy items that explorers no longer find`, row 2 `useful.  Since the condition of the items you bring in is not certain,` (two spaces after each full stop) | 40 | 4 lines; line 1 `Welcome to the Ularn Trading Post.  We`, line 2 `buy items that explorers no longer find` |
+| Side-by-side lists become one aligned list | row 1 `a) an energy ring                1800   b) a ring of increase damage     1250`, row 2 `c) a ring of regeneration        2200   d) a ring of extra regeneration 10000` (left names start at column 0, left prices occupy columns 33–36, right entries start at column 40, right prices end at column 76) | 46 | four lines: `a) an energy ring                1800`, `b) a ring of increase damage     1250`, `c) a ring of regeneration        2200`, `d) a ring of extra regeneration 10000` (each 37 long, prices ending in the same column) |
 | Highlighted heading starts a new paragraph | an indented long prose line not ending a sentence, then "Charm Monster (chm) [Self] {Short}" whose first 13 cells are standout | 46 | the heading is the last output line, on its own |
 | Rule is cut to width | 63 dashes / "Score: 1" | 20 | 20 dashes / "Score: 1" |
 | Cursor follows the prompt | two blank rows, then "Your wish? [(d) deposit, (w) withdraw, (s) sell a stone, or escape] " with the cursor just after the trailing space | 40 | the cursor is on the line that ends "escape]", one column past that line's end |
@@ -579,28 +579,29 @@ display mode) changes or high-contrast mode is toggled.
 |---|---|
 | busy, command | none |
 | prompt | item buttons if it is an item prompt (10.2); otherwise one per accepted key: take the answers, keep printable ASCII (0x20–0x7E), Enter (13) and Esc (27), remove duplicates; if 1 to 14 keys remain, show them in the given order but with Enter and then Esc moved to the end; if more than 14 (for example a prompt accepting any letter) show none |
-| number | "All" (sends "*"), "0" … "9", "⌫" (sends byte 8), "Enter" (sends byte 13) |
+| number | "All" (sends an asterisk, `*`), "0" … "9", "⌫" (sends byte 8), "Enter" (sends byte 13) |
 | password / text | "⌨ Type" (shows or hides the soft keyboard; sends nothing), "Enter" (byte 13) |
 | direction | a single inert label "Swipe or press a direction" |
 
-Labels for prompt keys: Enter → "Enter"; Esc → "Esc"; space → "Space"; "*" → "All (*)";
-any other key → the character itself. Each button sends its one byte.
+Labels for prompt keys: Enter → "Enter"; Esc → "Esc"; space → "Space"; an asterisk →
+`All (*)`; any other key → the character itself. Each button sends its one byte.
 
 ### 10.2 Item prompts
 
 A prompt is an item prompt when its answers string is exactly one of: the 26 lower-case
-letters followed by "*" and Esc (eat/quaff/read/wear...); the letters, "*", "." and Esc
-(drop); the letters, "*", "-" and Esc (wield).
+letters followed by an asterisk and Esc (eat/quaff/read/wear...); the letters, an
+asterisk, a full stop and Esc (drop); the letters, an asterisk, a hyphen and Esc (wield).
 
 1. Search the message rows from the bottom up for the first containing
-   "What do you want to ". In that row, if a "[" follows and "* for all" follows the
-   "[", the text between them is the game's list of fitting slots.
+   "What do you want to ". In that row, if a `[` follows and the text `* for all` follows
+   the `[`, the text between them is the game's list of fitting slots (the game writes,
+   for example, `[ac * for all - for none]`).
 2. Slots = the lower-case letters in that list; if no list was found, every letter whose
    inventory text is non-empty. Only the 26 inventory slots count.
 3. Buttons, in order: for a drop prompt, if no list was found or the list contains ".",
    "Gold" (key "."); one button per slot labelled with the slot's inventory text as the
    game words it (or "item {letter}" if that is empty), key = the letter; for a wield
-   prompt "Nothing" (key "-"); "Show all" (key "*"); "Cancel" (sends Esc).
+   prompt "Nothing" (key "-"); "Show all" (key: an asterisk); "Cancel" (sends Esc).
 4. These are laid out as a grid (below). Every button except "Cancel" shows its key
    letter in front of the label.
 
@@ -730,13 +731,19 @@ pixels) and tap/long-press targets (in whole squares).
 
 ### 11.6 Interaction with the controls overlay
 
-A finger that goes down on a control never reaches the map. A finger that goes down
-elsewhere belongs to the game view for the whole gesture, so a pinch may end with a
-finger over a control without pressing it. Controls and map gestures can be used at the
-same time with different fingers only if the control was touched first (the overlay keeps
-handling later fingers of its own gesture; fingers landing off a control during that
-gesture do nothing). In landscape with "fit the map beside the controls" off, controls
-float over the map and simply shadow it for touches.
+What the source fixes: in play mode the overlay accepts a first finger only if it lands on
+a control and otherwise declines it, so it goes to the game view; once the overlay has a
+finger, it handles every further finger event it is given (pressing a control if one is
+under the new finger, otherwise ignoring it); a finger that goes down on a control never
+reaches the map. In landscape with "fit the map beside the controls" off, controls float
+over the map and simply shadow it for touches.
+
+How two simultaneous fingers are shared between the two layers is left to the platform's
+default per-finger touch dispatch and is not coded in the app (unverified; expected
+behaviour): with a finger already held on a control, a second finger anywhere is given to
+the overlay, so the map does not react; with a finger already on the map, a second
+finger landing on a control presses that control while the map gesture continues, and a
+second finger landing off the controls joins the map gesture (pinch).
 
 ---
 
@@ -751,8 +758,10 @@ Soft keyboard text: each committed character is sent as its code (newline → 13
 above 0x7F are sent as 0x7F). A delete request sends byte 8 once per character to delete
 (at least once).
 
-Key events (hardware keyboard, or key events from the soft keyboard), only while a game
-is running and the controls are not being edited:
+Key events (hardware keyboard, or key events from the soft keyboard) are translated as
+follows and sent only while a game is running. The focused game view handles them
+directly; keys that reach the activity instead are passed to the same translation unless
+the controls are being edited. (The Back and Menu keys belong to the shell, Part 10.)
 
 | Key | Sent |
 |---|---|
@@ -955,8 +964,8 @@ does.
 ### 16.2 Content
 
 Redrawn on every game change. Sizes are plain dp (not affected by text scale or high
-contrast). Colours: background #121317, a 1 dp line #2C2E36 down the left edge, text
-#DEDED8, dim #969696, accent #FFBE3C. Padding 12 dp; content starts 13 dp from the left;
+contrast). Colours: background #121317, a 1 dp line #2C2E36 down the left edge,
+text #DEDED8, dim #969696, accent #FFBE3C. Padding 12 dp; content starts 13 dp from the left;
 content width w = panel width − 25 dp. Regular rows are 19 dp tall; a text row that is
 too wide shrinks its font to fit, not below 9 dp.
 
@@ -1241,14 +1250,14 @@ Human-editable text converted to the bytes sent to the game. Processing is left 
 | backslash + b | 0x7F (labelled Backspace; note this is DEL, whereas the view's own ⌫ button and the keyboard send 0x08) |
 | backslash + backslash | a literal backslash |
 | backslash + ^ | a literal caret |
-| backslash + < | a literal "<" |
+| backslash + less-than sign | a literal less-than sign |
 | backslash + anything else, or a backslash at the very end | the backslash itself is sent literally; the following character is then processed normally |
 | ^ + a letter (either case) | control code 1..26 |
 | ^ + @, [, backslash, ], ^, _ | 0, 27, 28, 29, 30, 31 |
 | ^ + ? | 127 |
 | ^ + anything else, or ^ at the very end | a literal caret |
-| <name> (case-insensitive) | esc → 0x1B; ret, enter → 0x0D; spc, space → 0x20; tab → 0x09; del, bs → 0x7F |
-| < not forming a known name | a literal "<" |
+| a name between a less-than and a greater-than sign, e.g. `<esc>` (case-insensitive) | esc → 0x1B; ret, enter → 0x0D; spc, space → 0x20; tab → 0x09; del, bs → 0x7F |
+| a less-than sign not starting such a known name (no closing sign, or unknown name) | a literal less-than sign; the following characters are then processed normally |
 | any other printable ASCII character 0x20–0x7E | itself |
 | anything else (non-ASCII, control characters) | dropped |
 
@@ -1458,7 +1467,7 @@ Entered from the start panel's or in-game menu's "Edit controls" entry, or a con
 the edit action. On entry: the start panel and soft keyboard are hidden, a copy of the
 current layout is kept for Cancel, the toolbar appears, and a long toast shows: "Drag to
 move · corner handle to resize · tap a selected control to edit it". The game keeps
-running underneath but receives no touches or hardware keys.
+running underneath; no touch reaches the map or triggers a control while editing.
 
 - **Done**, the Back button, or an orientation change: save the layout for the
   orientation it was loaded for, and leave.
@@ -1553,11 +1562,15 @@ Sections (bold headers), top to bottom:
   single-line field; a live preview "Sends: {description}" or "Sends: (nothing)";
   quick-insert buttons "Esc", "Enter", "Space", "Ctrl", "Bksp" that insert, at the text
   cursor, backslash-e, backslash-n, backslash-s, "^" and backslash-b respectively; and
-  a two-line help text: "Type the keys the game should receive, in order. e.g.  q
-  (quaff)  ·  c\ea  ·  ^R" / "\e Esc   \n Enter   \s Space   \b Backspace   ^X Ctrl+X
-  \\ backslash".
-- D-pads only — **"Direction keys"**: note "NW  N  NE / W  centre  E / SW  S  SE. Same
-  notation as buttons. Leave the centre blank to disable it."; a 3 × 3 grid of centred
+  a two-line help text (shown here in code spans so that backslashes and spacing are
+  exact; items are separated by two spaces on the first line and three on the second, and
+  the last item starts with two backslashes). Line 1:
+  `Type the keys the game should receive, in order. e.g.  q  (quaff)  ·  c\ea  ·  ^R`
+  Line 2:
+  `\e Esc   \n Enter   \s Space   \b Backspace   ^X Ctrl+X   \\ backslash`
+- D-pads only — **"Direction keys"**: note `NW  N  NE / W  centre  E / SW  S  SE. Same
+  notation as buttons. Leave the centre blank to disable it.` (two spaces between the
+  compass names inside each group); a 3 × 3 grid of centred
   monospace fields (at least 72 dp wide) holding the nine keys; a button "Reset to y k u
   / h . l / b j n"; a checkbox "8-way (diagonals)"; note "Tip: the Run button makes the
   next move a run (H J K L...). Long-press Run to keep it on."
@@ -1698,7 +1711,7 @@ HUD: "HP {hp}/{max}", "Gold {n}", "Lv {n} {title}  ·  Exp {n}  ·  Home", "… 
 {name}", "STR", "INT", "WIS", "CON", "DEX", "CHA", "AC {n}", "WC {n}", "Sp {a}/{b}",
 "Ⓛ {price}", " ▲", " ▼", and the 17 effect names (section 1).
 
-Answer buttons: "Enter", "Esc", "Space", "All (*)", "All", "0"–"9", "⌫", "⌨ Type", "Swipe
+Answer buttons: "Enter", "Esc", "Space", `All (*)`, "All", "0"–"9", "⌫", "⌨ Type", "Swipe
 or press a direction", "Gold", "item {letter}", "Nothing", "Show all", "Cancel".
 
 Minimap / overview: "No map yet", "Level map", "Home — map", "Level {name} — map", "Tap
