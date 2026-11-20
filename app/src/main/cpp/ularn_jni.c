@@ -157,6 +157,7 @@ Java_com_ularn_android_NativeBridge_layout(JNIEnv *env, jclass cls)
         US_EVENTS,
         offsetof(UlarnShared, pet_info),
         offsetof(UlarnShared, pet_level),
+        offsetof(UlarnShared, bounty_info),
     };
     jintArray out;
     (void)cls;

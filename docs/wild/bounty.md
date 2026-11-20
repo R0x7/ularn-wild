@@ -12,6 +12,10 @@ depth (125 gold for a level-1 monster, 3,700 for the deepest kind).
 * **Stuck?** A poster nobody answers is taken down after about 2,500 turns (or
   at once if you genocided the species) and replaced with a fresh one.
 * **See it:** the end of the `\` (known spells / scrolls / potions) list.
+* **At a glance:** the side panel (wide screens) has a BOUNTY section while a
+  poster is up: the wanted monster, the reward, and how many turns are left
+  before an unanswered poster comes down (it is taken down on your first town
+  visit after that), or "Done! Collect it in town" once you have made the kill.
 * **Disable:** Settings → Wild features → "Town bounty board"
   (`WILDF_BOUNTY`). The choice is stored with each character when it is
   created.
