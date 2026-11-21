@@ -1135,7 +1135,6 @@ void endgame(void)
  */
 void died(DiedReasonType Reason, int Monster)
 {
-  wild_died(Reason == DIED_WINNER);   /* Wild Edition: tell the app */
   int win;
   int can_revive;
   long score;
@@ -1182,6 +1181,13 @@ void died(DiedReasonType Reason, int Monster)
       return;
     }
   }
+
+  /* Wild Edition: tell the app the game is over (game-over music, the
+   * photo of the final moment). Only now: a life preserver has had its
+   * chance to bring the character back, and saving or quitting also come
+   * through here without anyone dying. */
+  if (Reason != DIED_SUSPENDED && Reason != DIED_QUICK_QUIT)
+    wild_died(Reason == DIED_WINNER);
 
   /* remove checkpoint file if used */
   if (ckpflag)
