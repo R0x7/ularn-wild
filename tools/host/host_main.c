@@ -269,6 +269,13 @@ int main(int argc, char **argv)
     dump();
   }
 done:
+  /* the events of the last keys, when they ended the game (a save, a quit) */
+  for (i = last_ev_seq; i < S->ev_seq; i++)
+  {
+    int k = i & (US_EVENTS - 1);
+    printf("EVENT: %s(%d,%d,%d)\n", ev_name(S->ev[k][0]), S->ev[k][1], S->ev[k][2], S->ev[k][3]);
+  }
+  last_ev_seq = S->ev_seq;
   if (child_alive())
   {
     close(sp.input_fd);   /* hang-up: the game exits */
