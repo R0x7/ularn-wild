@@ -359,25 +359,6 @@ static void eat_fish(void)
   UpdateStatus();
 }
 
-/* Which way (x,y) lies from the player, in words. y grows southwards. */
-static const char *compass(int x, int y)
-{
-  static const char *const names[3][3] =
-  {
-    { "north-west", "north", "north-east" },
-    { "west",       "here",  "east"       },
-    { "south-west", "south", "south-east" }
-  };
-  int dx = x - playerx, dy = y - playery;
-  int ax = dx < 0 ? -dx : dx, ay = dy < 0 ? -dy : dy;
-  int col = 1, row = 1;
-
-  /* call it a straight line unless the other axis is at least half as long */
-  if (ax * 2 >= ay) col = dx < 0 ? 0 : (dx > 0 ? 2 : 1);
-  if (ay * 2 >= ax) row = dy < 0 ? 0 : (dy > 0 ? 2 : 1);
-  return names[row][col];
-}
-
 /* The note is a treasure map of the level the reader is standing on: a stash
  * of gold (more of it the deeper the level) appears on a random empty floor
  * cell, which the player now knows about, so it shows on the map. Nothing is
@@ -398,7 +379,7 @@ static int treasure_map(void)
   wild_event(US_EV_WILD_FISHING, 3, x, y);
 
   Print(" It is a map of this very level!");
-  Printf("\nAn X marks a spot to the %s. You mark it on your own map.", compass(x, y));
+  Printf("\nAn X marks a spot to the %s. You mark it on your own map.", wild_compass(x, y));
   return 1;
 }
 

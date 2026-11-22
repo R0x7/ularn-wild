@@ -767,7 +767,11 @@ and a day/night cycle, because why does the town never rain.
   movement handles the marching; just place them) — *"You hear the
   pitter-patter of a thousand tiny feet."* Storms: 1-in-200 a lightning bolt
   hits a random visible monster for 20 (uses `omnidirect`-style damage or
-  just `hitp[][] -= 20` and the kill path).
+  just `hitp[][] -= 20` and the kill path). *(Added later:)* rain or a
+  storm that clears in daylight with the player in town brings a rainbow:
+  a pot of gold (an ordinary gold pile, 25d+rnd(50d) for the deepest level
+  d visited) on a free cell, marked on the map, with a compass direction;
+  event `WILD_WEATHER(0, hour, 2)` plays the gold chime.
 * Kotlin `game/WeatherFx.kt` called from `GameView.drawMap()` when `dlevel
   == 0` (home level): a day/night tint (multiply the map by a colour that
   goes warm at dawn/dusk and deep blue at night, 40% max darkness so it

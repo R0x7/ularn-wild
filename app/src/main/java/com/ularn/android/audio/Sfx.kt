@@ -36,9 +36,9 @@ object Sfx {
     /**
      * The effect for a game event, or null for none. NEW_LEVEL is left to the
      * caller (up or down depends on the previous level); DIED / WON play a
-     * stinger on the music bus instead.
+     * stinger on the music bus instead. [c] is the event's third value.
      */
-    fun forEvent(type: Int, a: Int): SfxDef? = when (type) {
+    fun forEvent(type: Int, a: Int, c: Int = 0): SfxDef? = when (type) {
         GameEvents.KILL -> KILL
         GameEvents.LEVEL_UP -> LEVEL_UP
         GameEvents.TAKE -> TAKE
@@ -54,6 +54,7 @@ object Sfx {
         GameEvents.WILD_FISHING -> if (a == 3) GOLD else SPLASH   // a = 3 is a treasure map, read on dry land
         GameEvents.WILD_PET -> CHIRP
         GameEvents.WILD_PERK -> LEVEL_UP
+        GameEvents.WILD_WEATHER -> if (c == 2) GOLD else null   // c = 2 is a rainbow's pot of gold
         else -> null
     }
 }

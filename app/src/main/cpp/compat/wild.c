@@ -360,6 +360,25 @@ int wild_is_pet(int x, int y)
          x >= 0 && x < MAXX && y >= 0 && y < MAXY && mitem[x][y].mon == c[WILD_PET_MON];
 }
 
+/* Which way (x,y) lies from the player, in words. y grows southwards. */
+const char *wild_compass(int x, int y)
+{
+  static const char *const names[3][3] =
+  {
+    { "north-west", "north", "north-east" },
+    { "west",       "here",  "east"       },
+    { "south-west", "south", "south-east" }
+  };
+  int dx = x - playerx, dy = y - playery;
+  int ax = dx < 0 ? -dx : dx, ay = dy < 0 ? -dy : dy;
+  int col = 1, row = 1;
+
+  /* call it a straight line unless the other axis is at least half as long */
+  if (ax * 2 >= ay) col = dx < 0 ? 0 : (dx > 0 ? 2 : 1);
+  if (ay * 2 >= ax) row = dy < 0 ? 0 : (dy > 0 ? 2 : 1);
+  return names[row][col];
+}
+
 int wild_free_cell(int *x, int *y)
 {
   int tries;

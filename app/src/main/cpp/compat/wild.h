@@ -113,6 +113,8 @@ void wild_finditem(int itm);
 int  wild_is_pet(int x, int y);
 /* Random floor cell with nothing on it and no monster; 0 if none found. */
 int  wild_free_cell(int *x, int *y);
+/* Which way (x,y) lies from the player, in words ("north-east", or "here"). */
+const char *wild_compass(int x, int y);
 /* Kills of species `monst` by this character, including the one being
  * reported to wild_<feature>_kill() (the hub counts it first). */
 int  wild_kill_count(int monst);

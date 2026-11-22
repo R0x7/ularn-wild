@@ -150,7 +150,7 @@ class Radio(
                 lastLevel = e.a
                 if (prev < 0 || prev == e.a) null else if (e.a < prev) Sfx.STAIRS_UP else Sfx.STAIRS_DOWN
             }
-            else -> Sfx.forEvent(e.type, e.a)
+            else -> Sfx.forEvent(e.type, e.a, e.c)
         }
         when (e.type) {
             GameEvents.DIED -> { ended = TrackPicker.END_DIED; main.post { update() } }
