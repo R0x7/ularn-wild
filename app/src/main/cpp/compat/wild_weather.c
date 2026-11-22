@@ -19,7 +19,10 @@
  *     tick of the upstream rmst countdown, which runs right after
  *     wild_turn() in the main loop), and once in a while a migration of
  *     lemmings enters at the east edge and marches west across the map;
- *   - in a storm, lightning now and then strikes a monster near the player.
+ *   - in a storm, lightning now and then strikes a monster near the player;
+ *   - when rain or a storm clears in daylight, a rainbow comes out and a pot
+ *     of gold waits at its end: an ordinary pile of gold on a free cell,
+ *     marked on the player's map (nothing new is saved).
  * The app draws the rest (game/WeatherFx.kt): tint, rain, snow, stars, the
  * sun / moon in the HUD, lightning flashes.
  * =============================================================================
@@ -57,6 +60,8 @@ extern UlarnShared *ularn_shared;
 #define LIGHTNING_ODDS  200   /* 1 in 200 storm turns */
 #define LIGHTNING_DMG    20
 #define LIGHTNING_RANGE   7   /* "visible": this close to the player */
+#define RAINBOW_BASE     25   /* pot of gold: 25d + rnd(50d), d = deepest level */
+#define RAINBOW_RAND     50
 
 /* A new game starts at 08:00, so the first night is a few hundred turns away. */
 #define DAY_START_HOUR 8
@@ -102,6 +107,40 @@ static const char *describe(int state)
   }
 }
 
+/* ---- the rainbow ---- */
+
+/* How deep the character has been: 1 (never below the town) .. 12 (the
+ * volcano counts as the bottom), so a pot of gold keeps up with the game. */
+static int deepest_level(void)
+{
+  int i, deepest = 1;
+  for (i = 1; i <= DBOTTOM; i++)
+    if (beenhere[i]) deepest = i;
+  for (i = MAXLEVEL; i <= VBOTTOM; i++)
+    if (beenhere[i]) deepest = 12;
+  return deepest > 12 ? 12 : deepest;
+}
+
+/* Rain or a storm has just cleared over the town in daylight with the player
+ * there to see it: a pot of gold appears at the end of the rainbow. It is an
+ * ordinary pile of gold on a free cell, already on the player's map. Returns
+ * 0 (and nothing happens) if there is no free cell for it. */
+static int rainbow(int hour, int old)
+{
+  int x, y, d = deepest_level();
+  if (!wild_free_cell(&x, &y)) return 0;
+  item[x][y] = OGOLDPILE;
+  iarg[x][y] = (short) (RAINBOW_BASE * d + rnd(RAINBOW_RAND * d));
+  know[x][y] = OGOLDPILE;
+  show1cell(x, y);
+  wild_event(US_EV_WILD_WEATHER, WX_CLEAR, hour, 2);
+  Print(old == WX_STORM ? "\nThe storm passes, and a rainbow arches over the town!" :
+                         "\nThe rain stops, and a rainbow arches over the town!");
+  Printf("\nIts end touches the ground to the %s. Is that a pot of gold?",
+         wild_compass(x, y));
+  return 1;
+}
+
 /* ---- weather changes ---- */
 
 static void schedule_next(void)
@@ -135,6 +174,8 @@ static void change_weather(int hour)
     case WX_SNOW:  Print("\nSnow! In Larn!"); break;
     case WX_STORM: Print("\nThunder rolls over the mountains."); break;
     default:
+      if ((old == WX_RAIN || old == WX_STORM) && !is_night(hour) && rainbow(hour, old))
+        break;
       Print(old == WX_SNOW ? "\nThe snow stops and the sky clears." :
                              "\nThe clouds part. The sky clears.");
       break;

@@ -18,6 +18,7 @@ tools/host/bounty_panel.sh          # regression: the bounty poster the side pan
 tools/host/wild_monsters.sh         # regression: a genocided species is never replaced by a Wild monster
 tools/host/cartographer.sh          # regression: the Cartographer perk puts a new level's stairs on the map
 tools/host/died_event.sh            # regression: DIED reaches the app only when the game is over (not a revive, save or quit)
+tools/host/rainbow.sh               # regression: rain clearing over the town by day leaves a pot of gold on the map
 ```
 
 `play.sh --help` lists the options. The essentials:

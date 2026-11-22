@@ -20,6 +20,12 @@ The town above the dungeon has a clock and a sky.
   (they leave at the west edge, unless they find you first). In a storm,
   lightning occasionally strikes a monster near you for 20 damage (and the
   screen flashes).
+* **Rainbows:** when rain or a storm clears in daylight while you are in
+  town, a rainbow arches over it and the game says which way its end lies.
+  There is a pot of gold there, already marked on your map: 26-75 gold if
+  you have only been to dungeon level 1, more the deeper you have been
+  (about 300-900 once you have reached level 12 or the volcano). Rain that stops
+  at night, or while you are underground, leaves no rainbow.
 * **Settings:** "Reduce weather effects" keeps the tint and the HUD icon but
   stops the drifting rain and snow (thinner and still), the twinkling and
   the lightning flashes. "Weather and day/night on the surface" turns it all
