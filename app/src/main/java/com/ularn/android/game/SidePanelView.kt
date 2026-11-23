@@ -154,6 +154,18 @@ class SidePanelView(context: Context, private val stateOf: () -> GameState?) : V
             y = text(canvas, b.outlook(s.gameTime), x0, y, w, ui)
         }
 
+        // --- the town clock and sky (Wild Edition; compat/wild_weather.c)
+        s.sky?.let { sky ->
+            y += dp(8f)
+            y = header(canvas, "SKY", x0, y, w)
+            bold.textSize = dp(13f); bold.color = Color.WHITE
+            y = text(canvas, sky.title, x0, y, w, bold)
+            ui.textSize = dp(13f)
+            // night on the surface: twice the wandering monsters
+            ui.color = if (sky.isNight && sky.outside) accent else dim
+            y = text(canvas, sky.outlook, x0, y, w, ui)
+        }
+
         // --- level overview
         y += dp(8f)
         y = header(canvas, "MAP", x0, y, w)

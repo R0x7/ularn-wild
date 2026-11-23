@@ -26,6 +26,11 @@ The town above the dungeon has a clock and a sky.
   you have only been to dungeon level 1, more the deeper you have been
   (about 300-900 once you have reached level 12 or the volcano). Rain that stops
   at night, or while you are underground, leaves no rainbow.
+* **At a glance:** the side panel (wide screens) has a SKY section: the day
+  and time ("Day 2, 14:24"), the weather while you are in town (underground
+  you only find out when you climb back out), and how long until night falls
+  or dawn breaks ("Night falls in 335 turns", shown in gold while it is
+  night in town).
 * **Settings:** "Reduce weather effects" keeps the tint and the HUD icon but
   stops the drifting rain and snow (thinner and still), the twinkling and
   the lightning flashes. "Weather and day/night on the surface" turns it all
