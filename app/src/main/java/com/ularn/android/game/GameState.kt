@@ -1,5 +1,6 @@
 package com.ularn.android.game
 
+import com.ularn.android.Settings
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -134,6 +135,9 @@ class GameState(private val shared: ByteBuffer, layout: IntArray) {
         if (info(0) <= 0) return null
         return BountyStatus(info(0), info(1), info(2) != 0, info(3))
     }
+    /** The town clock and sky (compat/wild_weather.c), or null with the Weather feature off. */
+    val sky: SkyStatus? get() =
+        if (!wildOn(Settings.WILDF_WEATHER)) null else SkyStatus(gameTime, weatherState, dlevel == 0)
     val killCountSlots get() = off[F.KILL_COUNTS_N]
     /** Monsters of species [monst] this character has killed (saved with the game). */
     fun killCount(monst: Int): Int =
