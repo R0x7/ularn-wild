@@ -335,10 +335,11 @@ int wild_debug(void)
       UpdateStatus();
       return ACTION_NULL;
     case 'f':
-      Printf("\nwild flags 0x%lx hat %ld perks 0x%lx egg %ld pet %ld coins %ld price %ld glitch %ld duck %ld weather 0x%lx",
+      Printf("\nwild flags 0x%lx hat %ld perks 0x%lx egg %ld pet %ld coins %ld price %ld glitch %ld duck %ld weather 0x%lx hold %ld halfdam %ld",
              (long) c[WILD_FLAGS], (long) c[WILD_HAT], (long) c[WILD_PERKS], (long) c[WILD_EGG],
              (long) c[WILD_PET_MON], (long) c[WILD_COINS], (long) c[WILD_COIN_PRICE],
-             (long) c[WILD_GLITCH], (long) c[WILD_DUCK], (long) c[WILD_WEATHER]);
+             (long) c[WILD_GLITCH], (long) c[WILD_DUCK], (long) c[WILD_WEATHER],
+             (long) c[HOLDMONST], (long) c[HALFDAM]);
       return ACTION_NULL;
     case 'w':
       /* play on as a normal character: a wizard sees every new level
@@ -358,6 +359,21 @@ int wild_is_pet(int x, int y)
   return wild_on(WILDF_PETS) && wild_extra[WX_PET_LEVEL] == level + 1 &&
          c[WILD_PET_MON] != 0 && wild_extra[WX_PET_X] == x && wild_extra[WX_PET_Y] == y &&
          x >= 0 && x < MAXX && y >= 0 && y < MAXY && mitem[x][y].mon == c[WILD_PET_MON];
+}
+
+/* hitm() is written for the player's own blows and spells: it halves the
+ * damage under the half-damage curse and ends a hold monster spell (sets
+ * c[HOLDMONST] to 1, so the next regen() cancels it). Neither belongs to a
+ * blow the player didn't strike. SpellFlag = 1 keeps their weapon out too. */
+int wild_hit_monster(int x, int y, int amt)
+{
+  long hold = c[HOLDMONST], half = c[HALFDAM];
+  int r;
+  c[HALFDAM] = 0;
+  r = hitm(x, y, amt, 1);
+  c[HOLDMONST] = hold;
+  c[HALFDAM] = half;
+  return r;
 }
 
 /* Which way (x,y) lies from the player, in words. y grows southwards. */

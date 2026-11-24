@@ -304,7 +304,9 @@ static void lightning(int hour)
   }
   ifblind(px, py);
   Printf("\nA bolt of lightning strikes the %s!", lastmonst);
-  hitm(px, py, LIGHTNING_DMG, 1);
+  /* the sky's blow, not the player's: their half-damage curse doesn't
+   * soften it and it doesn't break their hold monster spell */
+  wild_hit_monster(px, py, LIGHTNING_DMG);
 }
 
 /* ---- hooks ---- */
