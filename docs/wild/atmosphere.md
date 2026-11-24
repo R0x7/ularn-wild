@@ -19,7 +19,8 @@ The town above the dungeon has a clock and a sky.
   feet": 8-12 lemmings enter at the east edge and march west across the map
   (they leave at the west edge, unless they find you first). In a storm,
   lightning occasionally strikes a monster near you for 20 damage (and the
-  screen flashes).
+  screen flashes). It is the sky's blow, not yours: it doesn't break your
+  hold monster spell, and a half-damage curse doesn't weaken it.
 * **Rainbows:** when rain or a storm clears in daylight while you are in
   town, a rainbow arches over it and the game says which way its end lies.
   There is a pot of gold there, already marked on your map: 26-75 gold if

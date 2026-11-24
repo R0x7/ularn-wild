@@ -425,7 +425,6 @@ static int pet_attack(void)
 {
   int px = wild_extra[WX_PET_X], py = wild_extra[WX_PET_Y];
   int k, i, x, y, dmg, m = pet_species();
-  long hold, half;
   for (k = rund(8), i = 0; i < 8; i++)
   {
     x = px + diroffx[1 + (k + i) % 8];
@@ -436,17 +435,10 @@ static int pet_attack(void)
     Printf("\nYour %s %s the %s!", pet_name(), m == EYE ? "glares at" : "bites", lastmonst);
     wild_event(US_EV_WILD_PET, PEV_ATTACK, mitem[x][y].mon, 0);
     dmg = rnd(monster[m].damage + 2 + PET_GROW_BITE * pet_stage());
-    /* hitm() is the player's own blow: keep their hold-monster spell and
-     * half-damage curse out of it. SpellFlag = 1 skips their weapon. */
-    hold = c[HOLDMONST];
-    half = c[HALFDAM];
-    c[HALFDAM] = 0;
     biting = 1;
     bite_killed = 0;
-    hitm(x, y, dmg, 1);
+    wild_hit_monster(x, y, dmg);   /* not the player's blow (wild.c) */
     biting = 0;
-    c[HOLDMONST] = hold;
-    c[HALFDAM] = half;
     /* hitm() may have done anything: only a pet that is still there grows */
     if (bite_killed && pet_verify()) pet_made_kill();
     return 1;
