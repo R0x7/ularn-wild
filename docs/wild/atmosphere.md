@@ -27,6 +27,12 @@ The town above the dungeon has a clock and a sky.
   you have only been to dungeon level 1, more the deeper you have been
   (about 300-900 once you have reached level 12 or the volcano). Rain that stops
   at night, or while you are underground, leaves no rainbow.
+* **Shooting stars:** on a clear night in town (not through rain, snow or
+  storm clouds, and not while you are blind) a shooting star now and then
+  streaks across the sky and falls to earth; the game says which way, and
+  the spot is marked on your map. A gem lies there: a diamond, ruby, emerald
+  or sapphire worth as much as one found on the deepest dungeon level you
+  have reached. On average a bit more than one clear night in two brings one.
 * **At a glance:** the side panel (wide screens) has a SKY section: the day
   and time ("Day 2, 14:24"), the weather while you are in town (underground
   you only find out when you climb back out), and how long until night falls

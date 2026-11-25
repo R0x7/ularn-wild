@@ -14,13 +14,13 @@ sh build.sh >/dev/null
 ticks=""; i=0
 while [ $i -lt 20 ]; do ticks="$ticks =t1000\\n"; i=$((i + 1)); done
 fail() { echo "$out"; echo "FAIL: $1"; exit 1; }
-piles() { echo "$1" | grep '^MAP:' | tr -cd '$' | wc -c; }   # $ = gold on the !map dump
+piles() { echo "$1" | grep '^MAP:' | tr -cd '$' | wc -c; }   # $ = gold on the !items dump (a lemming on a pile doesn't hide it)
 rainbows() { echo "$1" | grep -c "EVENT: WILD_WEATHER(0,[0-9]*,2)" || true; }
 MASK=3823   # 4095 without WILDF_PERKS (1<<8) and WILDF_COIN (1<<4)
 
 # in town
-before=$(./play.sh --seed 5 --wild $MASK --wizard --quiet '!map') || true
-out=$(./play.sh --seed 5 --wild $MASK --wizard --quiet $ticks '!map') || true
+before=$(./play.sh --seed 5 --wild $MASK --wizard --quiet '!items') || true
+out=$(./play.sh --seed 5 --wild $MASK --wizard --quiet $ticks '!items') || true
 n=$(rainbows "$out")
 [ "$n" -ge 1 ] || fail "no rainbow in 20000 turns in town"
 echo "$out" | grep -q "a rainbow arches over the town!" || fail "a rainbow without its message"

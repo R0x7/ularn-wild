@@ -206,12 +206,14 @@ int main(int argc, char **argv)
     size_t n = strlen(line);
     if (n && line[n - 1] == '\n') line[--n] = 0;
     if (line[0] == '#') { printf("%s\n", line); continue; }
-    if (strcmp(line, "!map") == 0)
+    if (strcmp(line, "!map") == 0 || strcmp(line, "!items") == 0)
     {
       /* The level as the minimap classes see it: # wall, . floor, + door,
        * o item, $ gold, < > stairs, V volcano, E entrance, B building,
-       * F fountain, A altar, T throne, ^ trap, ~ feature, M monster, @ you. */
-      int x, y;
+       * F fountain, A altar, T throne, ^ trap, ~ feature, M monster, @ you.
+       * "!items" leaves out monsters and you, so what lies under them shows
+       * (a test counting gold piles is not fooled by a lemming on one). */
+      int x, y, items = strcmp(line, "!items") == 0;
       static const char cls[16] = " .#+o$<>VEBFAT^~";
       for (y = 0; y < US_MAP_H; y++)
       {
@@ -219,7 +221,8 @@ int main(int argc, char **argv)
         for (x = 0; x < US_MAP_W; x++)
         {
           int c = S->mm_cat[y][x];
-          row[x] = (x == S->player_x && y == S->player_y) ? '@' : (c & US_MM_MONSTER) ? 'M' : cls[c & 15];
+          row[x] = items ? cls[c & 15] :
+                   (x == S->player_x && y == S->player_y) ? '@' : (c & US_MM_MONSTER) ? 'M' : cls[c & 15];
         }
         row[US_MAP_W] = 0;
         printf("MAP: %s\n", row);

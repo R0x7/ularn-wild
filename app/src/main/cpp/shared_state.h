@@ -215,7 +215,7 @@ typedef struct UlarnShared
 #define US_EV_WILD_FISHING  160  /* a = 0 cast, 1 catch (b = object), 2 kraken, 3 treasure map (b,c = x,y) */
 #define US_EV_WILD_PET      170  /* a = 0 hatch, 1 attack, 2 died, 3 follow, 4 grew (c = stage) */
 #define US_EV_WILD_PERK     180  /* a = perk index chosen */
-#define US_EV_WILD_WEATHER  190  /* a = new weather state, b = hour, c = 1 lightning, 2 rainbow (pot of gold) */
+#define US_EV_WILD_WEATHER  190  /* a = new weather state, b = hour, c = 1 lightning, 2 rainbow (pot of gold), 3 shooting star (a gem) */
 
 /* end_state */
 #define US_END_NONE 0

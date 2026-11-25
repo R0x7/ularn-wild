@@ -41,8 +41,9 @@ tools/host/lightning_hold.sh        # regression: storm lightning leaves the pla
 * `--home DIR` reuses a HOME so you can save (`S`) in one run and restore in
   the next (`play.sh --home DIR ...`; add `-- -r` for the checkpoint).
 * Steps: raw keys; `\n` enter, `\e` escape, `\s` space, `{N:keys}` repeats.
-  Driver commands: `!map` (level overview), `!inv` (inventory as the side
-  panel sees it), `!tiles` (tile ids around the player).
+  Driver commands: `!map` (level overview; `!items` is the same without
+  monsters and you, so what lies under them shows), `!inv` (inventory as the
+  side panel sees it), `!tiles` (tile ids around the player).
 
 Object and monster ids are the enum positions in `itm.h` / `monster.h`;
 `tools/host/ids.py` prints them.
