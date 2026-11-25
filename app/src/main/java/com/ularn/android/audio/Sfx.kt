@@ -54,7 +54,7 @@ object Sfx {
         GameEvents.WILD_FISHING -> if (a == 3) GOLD else SPLASH   // a = 3 is a treasure map, read on dry land
         GameEvents.WILD_PET -> CHIRP
         GameEvents.WILD_PERK -> LEVEL_UP
-        GameEvents.WILD_WEATHER -> if (c == 2) GOLD else null   // c = 2 is a rainbow's pot of gold
+        GameEvents.WILD_WEATHER -> if (c == 2 || c == 3) GOLD else null   // c = 2 a rainbow's pot of gold, 3 a shooting star's gem
         else -> null
     }
 }

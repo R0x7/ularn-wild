@@ -101,6 +101,7 @@ class SynthTest {
         assertNull(Sfx.forEvent(GameEvents.NEW_LEVEL, 1))   // the caller picks up / down
         assertNull(Sfx.forEvent(GameEvents.WILD_COIN, 0))   // the silent price tick
         assertEquals(Sfx.GOLD, Sfx.forEvent(GameEvents.WILD_WEATHER, 0, 2))   // a rainbow's pot of gold
+        assertEquals(Sfx.GOLD, Sfx.forEvent(GameEvents.WILD_WEATHER, 0, 3))   // a shooting star's gem
         assertNull(Sfx.forEvent(GameEvents.WILD_WEATHER, 0, 0))   // a plain change of weather
         assertNull(Sfx.forEvent(GameEvents.WILD_WEATHER, 3, 1))   // lightning: the screen flashes instead
         assertNull(Sfx.forEvent(9999, 0))

@@ -22,7 +22,10 @@
  *   - in a storm, lightning now and then strikes a monster near the player;
  *   - when rain or a storm clears in daylight, a rainbow comes out and a pot
  *     of gold waits at its end: an ordinary pile of gold on a free cell,
- *     marked on the player's map (nothing new is saved).
+ *     marked on the player's map (nothing new is saved);
+ *   - on a clear night a shooting star now and then falls somewhere in
+ *     town: an ordinary gem on a free cell, marked on the map like the pot
+ *     of gold (nothing new is saved either).
  * The app draws the rest (game/WeatherFx.kt): tint, rain, snow, stars, the
  * sun / moon in the HUD, lightning flashes.
  * =============================================================================
@@ -62,6 +65,7 @@ extern UlarnShared *ularn_shared;
 #define LIGHTNING_RANGE   7   /* "visible": this close to the player */
 #define RAINBOW_BASE     25   /* pot of gold: 25d + rnd(50d), d = deepest level */
 #define RAINBOW_RAND     50
+#define STAR_ODDS       500   /* 1 in 500 clear night turns (a night is 450) */
 
 /* A new game starts at 08:00, so the first night is a few hundred turns away. */
 #define DAY_START_HOUR 8
@@ -137,6 +141,35 @@ static int rainbow(int hour, int old)
   Print(old == WX_STORM ? "\nThe storm passes, and a rainbow arches over the town!" :
                          "\nThe rain stops, and a rainbow arches over the town!");
   Printf("\nIts end touches the ground to the %s. Is that a pot of gold?",
+         wild_compass(x, y));
+  return 1;
+}
+
+/* ---- shooting stars ---- */
+
+/* A shooting star falls on the town on a clear night: an ordinary gem on a
+ * free cell, already on the player's map. Its worth follows the formula
+ * makeobject() uses for the gems of a dungeon level, at the deepest level
+ * the character has been, so a star keeps up with the game the way a pot of
+ * gold does. Returns 0 (and nothing happens) if there is no free cell. */
+static int shooting_star(int hour)
+{
+  int x, y, gem, arg, d = deepest_level();
+  if (!wild_free_cell(&x, &y)) return 0;
+  switch (rnd(4))
+  {
+    case 1:  gem = ODIAMOND;  arg = rnd(10 * d + 1) + 10; break;
+    case 2:  gem = ORUBY;     arg = rnd(6 * d + 1) + 6;   break;
+    case 3:  gem = OEMERALD;  arg = rnd(4 * d + 1) + 4;   break;
+    default: gem = OSAPPHIRE; arg = rnd(3 * d + 1) + 2;   break;
+  }
+  item[x][y] = gem;
+  iarg[x][y] = (short) arg;
+  know[x][y] = gem;
+  show1cell(x, y);
+  wild_event(US_EV_WILD_WEATHER, WX_CLEAR, hour, 3);
+  Print("\nA shooting star streaks across the sky! You make a wish.");
+  Printf("\nIt falls to earth to the %s. Something glitters there.",
          wild_compass(x, y));
   return 1;
 }
@@ -353,6 +386,9 @@ void wild_weather_turn(void)
      * (never down to 0 here, so the game's own check makes the monster) */
     if (c[TIMESTOP] == 0 && rmst > 1) rmst--;
     if (rnd(MIGRATION_ODDS) == 1) lemming_migration();
+    /* stars are only seen through a clear sky, and not by the blind */
+    if (state == WX_CLEAR && c[BLINDCOUNT] == 0 && rnd(STAR_ODDS) == 1)
+      shooting_star(hour);
   }
   lemmings_march();
 

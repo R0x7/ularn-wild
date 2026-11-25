@@ -17,5 +17,5 @@ feature (a saved game keeps the set it was started with).
 | Fishing | [fishing.md](fishing.md) | Fish at fountains for fish, boots, bottles, rings... or the Fountain Kraken |
 | Pets | [pets.md](pets.md) | A mysterious egg hatches into a companion that follows and fights and grows up |
 | Level-up perks | [perks.md](perks.md) | Choose one of three roguelite perks on every level-up |
-| Atmosphere | [atmosphere.md](atmosphere.md) | Weather and day/night on the surface (lemming migrations! rainbows!) and a Polaroid photo mode |
+| Atmosphere | [atmosphere.md](atmosphere.md) | Weather and day/night on the surface (lemming migrations! rainbows! shooting stars!) and a Polaroid photo mode |
 | Bounty board | [bounty.md](bounty.md) | The town crier posts WANTED monsters with gold rewards |
