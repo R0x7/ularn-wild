@@ -187,6 +187,7 @@ typedef struct UlarnShared
    * whatever the turn (the species was genocided). */
 #define US_BOUNTY_INFO 4
   int32_t bounty_info[US_BOUNTY_INFO];
+  int32_t coin_held;            /* LarnCoin the player holds, for the side panel (wild_coin.c) */
   int32_t kill_counts[US_KILL_COUNTS];
   /* Event ring: ev[seq & (US_EVENTS-1)] = {type, a, b, c}; the app keeps the
    * last seq it consumed and reads forward. US_EV_* types below. */

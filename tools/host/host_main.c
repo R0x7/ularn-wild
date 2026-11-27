@@ -152,6 +152,8 @@ static void dump(void)
     if (S->bounty_info[0])
       printf(" bounty=%d:%dg:claimed%d:downat%d", S->bounty_info[0], S->bounty_info[1],
              S->bounty_info[2], S->bounty_info[3]);
+    if (S->coin_held)
+      printf(" coinheld=%d", S->coin_held);
     printf(" tile=%d\n", S->tiles[S->player_y][S->player_x]);
   }
   for (i = last_ev_seq; i < S->ev_seq; i++)

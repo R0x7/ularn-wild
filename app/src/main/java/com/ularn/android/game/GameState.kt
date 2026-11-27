@@ -45,7 +45,7 @@ class GameState(private val shared: ByteBuffer, layout: IntArray) {
         const val KILL_COUNTS = 70; const val KILL_COUNTS_N = 71
         const val EV_SEQ = 72; const val EV = 73; const val EVENTS_N = 74
         const val PET_INFO = 75; const val PET_LEVEL = 76
-        const val BOUNTY_INFO = 77
+        const val BOUNTY_INFO = 77; const val COIN_HELD = 78
     }
 
     private val off = layout
@@ -134,6 +134,12 @@ class GameState(private val shared: ByteBuffer, layout: IntArray) {
         fun info(n: Int) = buf.getInt(off[F.BOUNTY_INFO] + 4 * n)
         if (info(0) <= 0) return null
         return BountyStatus(info(0), info(1), info(2) != 0, info(3))
+    }
+    /** The LarnCoin held (shared_state.h: coin_held), or null with none. */
+    val coin: CoinStatus? get() {
+        val held = i(F.COIN_HELD)
+        val p = coinPrice
+        return if (held <= 0 || p == 0) null else CoinStatus(held, if (p < 0) -p else p)
     }
     /** The town clock and sky (compat/wild_weather.c), or null with the Weather feature off. */
     val sky: SkyStatus? get() =
