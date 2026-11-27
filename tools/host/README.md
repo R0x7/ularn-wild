@@ -15,6 +15,7 @@ tools/host/annihilation.sh          # regression: a scroll of annihilation's vic
 tools/host/pet_growth.sh            # regression: a pet grows after 5 kills of its own, and a save keeps that
 tools/host/pet_panel.sh             # regression: the pet status the side panel shows, with you and left behind
 tools/host/bounty_panel.sh          # regression: the bounty poster the side panel shows, posted, claimed and paid
+tools/host/coin_panel.sh            # regression: the LarnCoin the side panel shows, right after buying and selling
 tools/host/wild_monsters.sh         # regression: a genocided species is never replaced by a Wild monster
 tools/host/cartographer.sh          # regression: the Cartographer perk puts a new level's stairs on the map
 tools/host/died_event.sh            # regression: DIED reaches the app only when the game is over (not a revive, save or quit)

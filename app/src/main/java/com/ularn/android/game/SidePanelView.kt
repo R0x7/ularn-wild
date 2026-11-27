@@ -154,6 +154,17 @@ class SidePanelView(context: Context, private val stateOf: () -> GameState?) : V
             y = text(canvas, b.outlook(s.gameTime), x0, y, w, ui)
         }
 
+        // --- LarnCoin held (Wild Edition; compat/wild_coin.c)
+        s.coin?.let { coin ->
+            y += dp(8f)
+            y = header(canvas, "LARNCOIN", x0, y, w)
+            bold.textSize = dp(13f); bold.color = Color.WHITE
+            y = text(canvas, coin.title, x0, y, w, bold)
+            ui.textSize = dp(13f)
+            ui.color = accent
+            y = text(canvas, coin.worth, x0, y, w, ui)
+        }
+
         // --- the town clock and sky (Wild Edition; compat/wild_weather.c)
         s.sky?.let { sky ->
             y += dp(8f)

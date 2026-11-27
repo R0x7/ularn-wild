@@ -186,6 +186,7 @@ static void buy(int atm)
     c[BANKACCOUNT] = 0;
   }
   c[WILD_COINS] += n;
+  wild_coin_paint();   /* no map repaint follows a trade */
   Printf("\n  You buy %ld LarnCoin for %ld gp. Number go up.", n, cost);
   nap(1000);
 }
@@ -214,6 +215,7 @@ static void sell(int atm)
   if (atm) gp -= fee(gp);
   if (gp < 0) gp = 0;
   c[WILD_COINS] -= n;
+  wild_coin_paint();   /* no map repaint follows a trade */
   if (atm)
     c[GOLD] = add_capped(c[GOLD], gp);
   else
@@ -464,12 +466,14 @@ int  wild_coin_eat(int slot) { (void) slot; return 0; }
 int  wild_coin_dodge(void) { return 0; }
 void wild_coin_player_hit(int dmg) { (void) dmg; }
 
-/* The HUD ticker (GameView.kt): the price, negative when the ticker should
- * stay hidden (no coins held and no move this turn) so the app still sees
- * every change and can draw the arrow. */
+/* The HUD ticker (GameView.kt) and the side panel's LARNCOIN section: the
+ * price, negative when the ticker should stay hidden (no coins held and no
+ * move this turn) so the app still sees every change and can draw the
+ * arrow; and the coins held. */
 void wild_coin_paint(void)
 {
   UlarnShared *s = ularn_shared;
   if (s == NULL) return;
   s->coin_price = (int32_t) ((c[WILD_COINS] > 0 || price_moved) ? price() : -price());
+  s->coin_held = (int32_t) c[WILD_COINS];
 }

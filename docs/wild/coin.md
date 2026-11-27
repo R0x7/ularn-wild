@@ -14,6 +14,8 @@ buys and sells for cash at a 5% fee. It still works while the bank is frozen
 over unpaid taxes. Coins count towards your final score at the price on the
 day. A small ticker (Ⓛ 123 ▲) appears at the right end of the HUD while you
 hold coins, or on a turn when the price moves.
+On a wide screen the side panel also has a LARNCOIN section while you hold
+any: how many coins you have and what they are worth at today's price.
 
 If you owe the LRS taxes, a **tax auditor** may turn up by the dungeon entrance
 while you are on the home level. Each time it gets you, it garnishes 10% of the
