@@ -118,6 +118,10 @@ int  wild_free_cell(int *x, int *y);
  * half-damage curse doesn't weaken it and it doesn't break their hold
  * monster spell. Returns what hitm() returns. */
 int  wild_hit_monster(int x, int y, int amt);
+/* Empties pack slot `slot` after its item was eaten, read or hatched. A
+ * wielded one is unwielded too, or take() would put the next item picked up
+ * into that slot "in hand". */
+void wild_use_up(int slot);
 /* Which way (x,y) lies from the player, in words ("north-east", or "here"). */
 const char *wild_compass(int x, int y);
 /* Kills of species `monst` by this character, including the one being

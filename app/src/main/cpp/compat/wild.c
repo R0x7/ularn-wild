@@ -377,6 +377,17 @@ int wild_hit_monster(int x, int y, int amt)
   return r;
 }
 
+void wild_use_up(int slot)
+{
+  iven[slot] = ONOTHING;
+  ivenarg[slot] = 0;
+  if (c[WIELD] == slot)
+  {
+    c[WIELD] = -1;
+    recalc();
+  }
+}
+
 /* Which way (x,y) lies from the player, in words. y grows southwards. */
 const char *wild_compass(int x, int y)
 {
