@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ularn Web</title>
+<meta name="description" content="Ularn 1.6.3a (Wild Edition) in the browser: the original C game compiled to WebAssembly.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+<div id="home">
+  <section id="title" hidden>
+    <h1>Ularn <span class="ed">Web · Wild Edition</span></h1>
+    <p class="sub">The 1.6.3a dungeon crawl, running in your browser. Saves stay in this browser.</p>
+    <label>Name <input id="name" maxlength="30" autocomplete="off"></label>
+    <label>Character
+      <select id="gender"><option value="female">Female</option><option value="male">Male</option></select>
+    </label>
+    <label class="check"><input type="checkbox" id="wild" checked> Wild Edition features (weather, pets, hats, LarnCoin…)</label>
+    <label class="check"><input type="checkbox" id="radio" checked> Dungeon Radio: chiptune music and sound effects</label>
+    <label class="check"><input type="checkbox" id="skipintro" checked> Skip the intro</label>
+    <div class="buttons">
+      <button id="continue" hidden>Continue saved game</button>
+      <button id="checkpoint" hidden>Restore checkpoint</button>
+      <button id="newgame">New game</button>
+    </div>
+    <p class="hint">Keyboard: arrows / numpad or <kbd>hjklyubn</kbd> move (Shift runs), <kbd>i</kbd> inventory,
+      <kbd>?</kbd> help, <kbd>S</kbd> save &amp; quit. On a touch screen use the buttons under the map.</p>
+    <p class="hint"><a href="https://github.com/R0x7/ularn-wild">Source and Android app</a></p>
+  </section>
+  <section id="lb-title" class="lb" hidden>
+    <h2>Leaderboard</h2>
+    <p class="lb-status"></p>
+    <div class="lb-scroll"><table>
+      <thead><tr><th class="num">#</th><th>Name</th><th class="num">Score</th><th>Character</th><th>How it ended</th><th class="date">Date</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+</div>
+
+  <section id="game" hidden>
+    <header id="topbar">
+      <div id="hud"></div>
+      <div id="tools">
+        <button tabindex="-1" id="t-radio" class="tool" title="Dungeon Radio" hidden>♫ <span id="t-radio-name">Radio</span></button>
+        <span class="zoom"><button tabindex="-1" id="t-zout" class="tool" title="Zoom out (mouse wheel over the map)" aria-label="Zoom out">−</button><button tabindex="-1" id="t-zin" class="tool" title="Zoom in (mouse wheel over the map)" aria-label="Zoom in">+</button></span>
+        <button tabindex="-1" id="t-controls" class="tool" title="Show or hide the on-screen buttons">Buttons</button>
+        <button tabindex="-1" id="t-side" class="tool" title="Show or hide the side panel">Panel</button>
+        <button tabindex="-1" id="t-full" class="tool" title="Full screen">Full screen</button>
+      </div>
+    </header>
+    <div id="main">
+      <div id="playcol">
+        <div id="stage"><canvas id="map"></canvas><pre id="text" hidden></pre></div>
+        <pre id="msgs"></pre>
+        <pre id="status"></pre>
+      </div>
+      <aside id="side">
+        <section class="card" id="char"></section>
+        <section class="card" id="effects-card" hidden><h3>Effects</h3><div id="effects"></div></section>
+        <section class="card"><h3>Inventory <span class="dim">(<kbd>i</kbd>)</span></h3><ol id="inv"></ol></section>
+        <section class="card keyref">
+          <h3>Keys</h3>
+          <dl>
+            <dt><kbd>arrows</kbd> <kbd>hjklyubn</kbd></dt><dd>move (numpad too)</dd>
+            <dt><kbd>Shift</kbd>+move</dt><dd>run</dd>
+            <dt><kbd>.</kbd></dt><dd>stay / act here</dd>
+            <dt><kbd>t</kbd> <kbd>d</kbd></dt><dd>take / drop</dd>
+            <dt><kbd>w</kbd> <kbd>W</kbd> <kbd>T</kbd></dt><dd>wield / wear / take off</dd>
+            <dt><kbd>q</kbd> <kbd>r</kbd> <kbd>e</kbd></dt><dd>quaff / read / eat</dd>
+            <dt><kbd>c</kbd></dt><dd>cast a spell</dd>
+            <dt><kbd>o</kbd> <kbd>C</kbd> <kbd>O</kbd></dt><dd>open / close door, open chest</dd>
+            <dt><kbd>g</kbd> <kbd>P</kbd></dt><dd>pack weight / taxes</dd>
+            <dt><kbd>?</kbd></dt><dd>help</dd>
+            <dt><kbd>S</kbd></dt><dd>save &amp; quit</dd>
+            <dt><kbd>Esc</kbd> <kbd>Space</kbd></dt><dd>cancel / continue</dd>
+          </dl>
+        </section>
+      </aside>
+    </div>
+    <div id="controls">
+      <div id="pad">
+        <button tabindex="-1" data-k="y">↖</button><button tabindex="-1" data-k="k">↑</button><button tabindex="-1" data-k="u">↗</button>
+        <button tabindex="-1" data-k="h">←</button><button tabindex="-1" data-k="." title="Wait / act here">·</button><button tabindex="-1" data-k="l">→</button>
+        <button tabindex="-1" data-k="b">↙</button><button tabindex="-1" data-k="j">↓</button><button tabindex="-1" data-k="n">↘</button>
+      </div>
+      <div id="keys">
+        <button tabindex="-1" data-k="i">inv</button><button tabindex="-1" data-k="t">take</button><button tabindex="-1" data-k="w">wield</button>
+        <button tabindex="-1" data-k="W">wear</button><button tabindex="-1" data-k="q">quaff</button><button tabindex="-1" data-k="r">read</button>
+        <button tabindex="-1" data-k="c">cast</button><button tabindex="-1" data-k="d">drop</button><button tabindex="-1" data-k="e">eat</button>
+        <button tabindex="-1" data-k="o">open</button><button tabindex="-1" data-k="?">help</button><button tabindex="-1" data-k="S">save</button>
+        <button tabindex="-1" data-k="\x1b">esc</button><button tabindex="-1" data-k=" ">space</button><button tabindex="-1" data-k="\r">enter</button>
+        <button tabindex="-1" id="run" title="Next arrow runs">run</button><button tabindex="-1" id="kbd" title="Type letters">⌨</button>
+      </div>
+    </div>
+    <input id="typer" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Type keys">
+
+    <dialog id="radio-dialog" aria-labelledby="radio-title">
+      <h2 id="radio-title">Dungeon Radio</h2>
+      <p class="radio-now"><span id="radio-now">Now playing: nothing</span> <span id="radio-how" class="dim"></span></p>
+      <div class="buttons">
+        <button type="button" tabindex="-1" id="radio-next">Next track</button>
+        <button type="button" tabindex="-1" id="radio-follow">Follow the dungeon</button>
+      </div>
+      <h3>Cassette tapes</h3>
+      <div id="radio-tapes" class="buttons"></div>
+      <h3>Volume</h3>
+      <label class="slider">Music <output id="radio-music-v">60%</output><input type="range" id="radio-music" min="0" max="100" step="1"></label>
+      <label class="slider">Sound effects <output id="radio-sfx-v">80%</output><input type="range" id="radio-sfx" min="0" max="100" step="1"></label>
+      <label class="check"><input type="checkbox" id="radio-on" checked> Radio on <span class="dim">(off: new games also have no tapes)</span></label>
+      <div class="buttons end"><button type="button" tabindex="-1" id="radio-close">Close</button></div>
+    </dialog>
+  </section>
+  <div id="toast" role="status" hidden></div>
+
+  <section id="ended" hidden>
+    <h2 id="endmsg">The game has ended.</h2>
+    <button id="again">Back to the title screen</button>
+    <section id="lb-end" class="lb" hidden>
+    <h2>Leaderboard</h2>
+    <p class="lb-status"></p>
+    <div class="lb-scroll"><table>
+      <thead><tr><th class="num">#</th><th>Name</th><th class="num">Score</th><th>Character</th><th>How it ended</th><th class="date">Date</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    </section>
+  </section>
+
+  <p id="loading">Loading…</p>
+</div>
+<script src="leaderboard-config.js"></script>
+<script src="leaderboard.js"></script>
+<script src="radio.js"></script>
+<script src="game.js"></script>
+<script async src="ularn.js"></script>
+</body>
+</html>
