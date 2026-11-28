@@ -21,6 +21,7 @@ tools/host/cartographer.sh          # regression: the Cartographer perk puts a n
 tools/host/died_event.sh            # regression: DIED reaches the app only when the game is over (not a revive, save or quit)
 tools/host/rainbow.sh               # regression: rain clearing over the town by day leaves a pot of gold on the map
 tools/host/lightning_hold.sh        # regression: storm lightning leaves the player's hold monster spell alone
+tools/host/used_up_wield.sh          # regression: a wielded item that is eaten or hatches leaves nothing in hand
 ```
 
 `play.sh --help` lists the options. The essentials:

@@ -442,7 +442,7 @@ int wild_vending_eat(int slot)
 {
   int obj = iven[slot];
   if (!is_food(obj)) return 0;
-  iven[slot] = ONOTHING;
+  wild_use_up(slot);
   eat_food(obj);
   return 1;
 }

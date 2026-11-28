@@ -317,7 +317,7 @@ static void hatch(void)
     c[WILD_EGG] = 1;   /* no room: try again next turn */
     return;
   }
-  iven[slot] = ONOTHING;
+  wild_use_up(slot);
   m = random_species();
   c[WILD_EGG] = 0;
   wild_extra[WX_PET_KILLS] = 0;
@@ -671,7 +671,7 @@ int wild_pets_eat(int slot)
   y = wild_extra[WX_PET_Y];
   if (dist(x, y, playerx, playery) > 1) return 0;
   m = pet_species();
-  iven[slot] = ONOTHING;
+  wild_use_up(slot);
   hitp[x][y] = (short) (hitp[x][y] + PET_FISH_HP > pet_maxhp(m) ? pet_maxhp(m) : hitp[x][y] + PET_FISH_HP);
   c[WILD_PET_HP] = hitp[x][y];
   Printf("\nYou toss the fish to your %s. It gobbles it up happily.", pet_name());

@@ -524,7 +524,7 @@ int wild_fishing_takeoff(void) { return 0; }
 int wild_fishing_read(int slot)
 {
   if (iven[slot] != OBOTTLE) return 0;
-  iven[slot] = ONOTHING;
+  wild_use_up(slot);
   read_bottle();
   return 1;
 }
@@ -532,7 +532,7 @@ int wild_fishing_read(int slot)
 int wild_fishing_eat(int slot)
 {
   if (iven[slot] != OFISH) return 0;
-  iven[slot] = ONOTHING;
+  wild_use_up(slot);
   eat_fish();
   return 1;
 }
